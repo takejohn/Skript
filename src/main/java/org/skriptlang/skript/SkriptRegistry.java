@@ -22,13 +22,16 @@ import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Section;
 import ch.njol.skript.lang.Statement;
+import com.google.errorprone.annotations.DoNotCall;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Set;
 
 /**
- * The skript registry manages all registries for syntax registration.
+ * The Skript registry manages all registries for syntax registration.
+ * By default, the implementation is practically a wrapper around {@code Map<Key<?>, SyntaxRegistry<?>>}.
  */
 @ApiStatus.Experimental
 public interface SkriptRegistry {
@@ -37,6 +40,11 @@ public interface SkriptRegistry {
 	<I extends SyntaxInfo<?>> Set<I> syntaxes(Key<I> key);
 	
 	<I extends SyntaxInfo<?>> SyntaxRegistry<I> register(Key<I> key, I info);
+	
+	@DoNotCall
+	@ApiStatus.Internal
+	@Contract("-> new")
+	SkriptRegistry closeRegistration();
 	
 	interface Key<T extends SyntaxInfo<?>> {
 		

@@ -20,6 +20,10 @@ package org.skriptlang.skript;
 
 import org.jetbrains.annotations.ApiStatus;
 
+/**
+ * The main class for (soon to be) everything related to Skript. This is seperated
+ * from the Bukkit implementation.
+ */
 @ApiStatus.Experimental
 @ApiStatus.NonExtendable
 public interface Skript {
@@ -28,6 +32,9 @@ public interface Skript {
 		return SkriptImpl.instance();
 	}
 	
+	/**
+	 * @return {@link SkriptRegistry}
+	 */
 	SkriptRegistry registry();
 	
 }

@@ -23,11 +23,14 @@ import org.jetbrains.annotations.Nullable;
 final class SkriptImpl implements Skript {
 	
 	@Nullable
-	private static Skript instance;
+	private static volatile Skript instance;
 	
 	static Skript instance() {
-		if (instance == null)
+		Skript instance = SkriptImpl.instance;
+		if (instance == null) {
 			instance = new SkriptImpl();
+			SkriptImpl.instance = instance;
+		}
 		
 		return instance;
 	}

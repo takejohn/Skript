@@ -25,14 +25,16 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 final class SyntaxRegistryImpl<T extends SyntaxInfo<?>> implements SyntaxRegistry<T> {
 	
-	private final Set<T> registry = new HashSet<>();
+	private final BlockingQueue<T> registry = new LinkedBlockingDeque<>();
 	
 	@Override
 	public @Unmodifiable Set<T> syntaxes() {
-		return Collections.unmodifiableSet(registry);
+		return ImmutableSet.copyOf(registry);
 	}
 	
 	@Override
@@ -42,12 +44,20 @@ final class SyntaxRegistryImpl<T extends SyntaxInfo<?>> implements SyntaxRegistr
 		return this;
 	}
 	
+	@Override
+	@Contract("-> new")
+	public SyntaxRegistry<T> closeRegistration() {
+		return new FinalSyntaxRegistry<>(registry);
+	}
+	
 	static final class FinalSyntaxRegistry<T extends SyntaxInfo<?>> implements SyntaxRegistry<T> {
 		
 		private final Set<T> registry;
 		
-		FinalSyntaxRegistry(Set<T> registry) {
-			this.registry = ImmutableSet.copyOf(registry);
+		FinalSyntaxRegistry(BlockingQueue<T> registry) {
+			Set<T> set = new HashSet<>();
+			registry.drainTo(set);
+			this.registry = Collections.unmodifiableSet(set);
 		}
 		
 		@Override
@@ -58,6 +68,12 @@ final class SyntaxRegistryImpl<T extends SyntaxInfo<?>> implements SyntaxRegistr
 		@Override
 		@Contract("_ -> fail")
 		public SyntaxRegistry<T> register(T info) {
+			throw new UnsupportedOperationException("Registration is closed");
+		}
+		
+		@Override
+		@Contract("-> fail")
+		public SyntaxRegistry<T> closeRegistration() {
 			throw new UnsupportedOperationException("Registration is closed");
 		}
 		

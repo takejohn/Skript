@@ -18,23 +18,28 @@
  */
 package org.skriptlang.skript;
 
+import ch.njol.skript.lang.ExpressionType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Set;
+import java.util.List;
 
-/**
- * The syntax registry manages syntax registration of a single element. Registering may not be possible
- * after the registration stage is over.
- */
-@ApiStatus.Experimental
-public interface SyntaxRegistry<I extends SyntaxInfo<?>> {
+interface DefaultSyntaxInfos {
 	
-	@Unmodifiable
-	Set<I> syntaxes();
-	
-	@Contract("_ -> this")
-	SyntaxRegistry<I> register(I info);
+	@ApiStatus.NonExtendable
+	interface Expression<E extends ch.njol.skript.lang.Expression<R>, R> extends SyntaxInfo<E> {
+		
+		@Contract("_, _, _, _, _ -> new")
+		static <E extends ch.njol.skript.lang.Expression<R>, R> Expression<E, R> of(SyntaxOrigin origin, Class<E> type, List<String> patterns,
+		                            Class<R> returnType, ExpressionType expressionType) {
+			
+			return new SyntaxInfoImpl.ExpressionImpl<>(origin, type, patterns, returnType, expressionType);
+		}
+		
+		Class<R> returnType();
+		
+		ExpressionType expressionType();
+		
+	}
 	
 }

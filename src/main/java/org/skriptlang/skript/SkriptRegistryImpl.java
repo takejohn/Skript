@@ -18,33 +18,32 @@
  */
 package org.skriptlang.skript;
 
-import ch.njol.skript.lang.SyntaxElement;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+@SuppressWarnings("unchecked")
 final class SkriptRegistryImpl implements SkriptRegistry {
 	
 	private final Map<Key<?>, SyntaxRegistry<?>> registries = new ConcurrentHashMap<>();
 	
 	@Override
 	@Unmodifiable
-	public <T extends SyntaxElement> Set<RegistrationInfo<T>> syntaxes(Key<T> key) {
+	public <I extends SyntaxInfo<?>> Set<I> syntaxes(Key<I> key) {
 		return registry(key).syntaxes();
 	}
 	
 	@Override
-	public <T extends SyntaxElement> SyntaxRegistry<T> register(Key<T> key, RegistrationInfo<T> info) {
-		SyntaxRegistry<T> registry = registry(key);
+	public <I extends SyntaxInfo<?>> SyntaxRegistry<I> register(Key<I> key, I info) {
+		SyntaxRegistry<I> registry = registry(key);
 		registry.register(info);
 		return registry;
 	}
 	
-	@SuppressWarnings("unchecked")
-	private <T extends SyntaxElement> SyntaxRegistry<T> registry(Key<T> key) {
-		return (SyntaxRegistry<T>) registries.computeIfAbsent(key, k -> new SyntaxRegistryImpl<>());
+	private <I extends SyntaxInfo<?>> SyntaxRegistry<I> registry(Key<I> key) {
+		return (SyntaxRegistry<I>) registries.computeIfAbsent(key, k -> new SyntaxRegistryImpl<>());
 	}
 	
 }

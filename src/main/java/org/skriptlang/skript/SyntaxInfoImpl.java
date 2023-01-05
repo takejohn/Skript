@@ -18,21 +18,28 @@
  */
 package org.skriptlang.skript;
 
+import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SyntaxElement;
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.ArrayList;
 import java.util.List;
 
-final class RegistrationInfoImpl<T extends SyntaxElement> implements RegistrationInfo<T> {
+class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 	
+	private final SyntaxOrigin origin;
 	private final Class<T> type;
 	private final List<String> patterns;
 	
-	RegistrationInfoImpl(Class<T> type, List<String> patterns) {
+	SyntaxInfoImpl(SyntaxOrigin origin, Class<T> type, List<String> patterns) {
+		this.origin = origin;
 		this.type = type;
 		this.patterns = ImmutableList.copyOf(patterns);
+	}
+	
+	@Override
+	public SyntaxOrigin origin() {
+		return origin;
 	}
 	
 	@Override
@@ -46,24 +53,27 @@ final class RegistrationInfoImpl<T extends SyntaxElement> implements Registratio
 		return patterns;
 	}
 	
-	static final class BuilderImpl<T extends SyntaxElement> implements RegistrationInfo.Builder<T> {
+	static final class ExpressionImpl<E extends ch.njol.skript.lang.Expression<R>, R> extends SyntaxInfoImpl<E> implements SyntaxInfo.Expression<E, R> {
 		
-		private final Class<T> type;
-		private final List<String> patterns = new ArrayList<>();
+		private final Class<R> returnType;
+		private final ExpressionType expressionType;
 		
-		BuilderImpl(Class<T> type) {
-			this.type = type;
+		ExpressionImpl(SyntaxOrigin origin, Class<E> type, List<String> patterns,
+		               Class<R> returnType, ExpressionType expressionType) {
+			
+			super(origin, type, patterns);
+			this.returnType = returnType;
+			this.expressionType = expressionType;
 		}
 		
 		@Override
-		public Builder<T> addPattern(String pattern) {
-			patterns.add(pattern);
-			return this;
+		public Class<R> returnType() {
+			return returnType;
 		}
 		
 		@Override
-		public RegistrationInfo<T> build() {
-			return new RegistrationInfoImpl<>(type, patterns);
+		public ExpressionType expressionType() {
+			return expressionType;
 		}
 		
 	}

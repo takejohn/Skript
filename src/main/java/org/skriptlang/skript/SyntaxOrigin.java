@@ -19,22 +19,10 @@
 package org.skriptlang.skript;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Set;
-
-/**
- * The syntax registry manages syntax registration of a single element. Registering may not be possible
- * after the registration stage is over.
- */
 @ApiStatus.Experimental
-public interface SyntaxRegistry<I extends SyntaxInfo<?>> {
+public interface SyntaxOrigin {
 	
-	@Unmodifiable
-	Set<I> syntaxes();
-	
-	@Contract("_ -> this")
-	SyntaxRegistry<I> register(I info);
+	String name();
 	
 }

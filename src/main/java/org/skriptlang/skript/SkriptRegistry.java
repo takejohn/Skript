@@ -20,10 +20,8 @@ package org.skriptlang.skript;
 
 import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Effect;
-import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.Section;
 import ch.njol.skript.lang.SkriptEvent;
-import ch.njol.skript.lang.SyntaxElement;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Unmodifiable;
 import org.skriptlang.skript.lang.structure.Structure;
@@ -31,27 +29,26 @@ import org.skriptlang.skript.lang.structure.Structure;
 import java.util.Set;
 
 /**
- * The syntax registry manages syntax registration. Registering may not be possible
- * after the registration stage is over.
+ * The skript registry manages all registries for syntax registration.
  */
 @ApiStatus.Experimental
 public interface SkriptRegistry {
 	
 	@Unmodifiable
-	<T extends SyntaxElement> Set<RegistrationInfo<T>> syntaxes(Key<T> key);
+	<I extends SyntaxInfo<?>> Set<I> syntaxes(Key<I> key);
 	
-	<T extends SyntaxElement> SyntaxRegistry<T> register(Key<T> key, RegistrationInfo<T> info);
+	<I extends SyntaxInfo<?>> SyntaxRegistry<I> register(Key<I> key, I info);
 	
-	interface Key<T extends SyntaxElement> {
+	interface Key<T extends SyntaxInfo<?>> {
 		
-		Key<Condition> CONDITION = key("condition");
-		Key<Expression<?>> EXPRESSION = key("expression");
-		Key<Effect> EFFECT = key("effect");
-		Key<SkriptEvent> EVENT = key("event");
-		Key<Section> SECTION = key("section");
-		Key<Structure> STRUCTURE = key("structure");
+		Key<SyntaxInfo<Condition>> CONDITION = key("condition");
+		Key<DefaultSyntaxInfos.Expression<?, ?>> EXPRESSION = key("expression");
+		Key<SyntaxInfo<Effect>> EFFECT = key("effect");
+		Key<SyntaxInfo<SkriptEvent>> EVENT = key("event");
+		Key<SyntaxInfo<Section>> SECTION = key("section");
+		Key<SyntaxInfo<Structure>> STRUCTURE = key("structure");
 		
-		static <T extends SyntaxElement> Key<T> key(String key) {
+		static <T extends SyntaxInfo<?>> Key<T> key(String key) {
 			return new Key<T>() {
 				@Override
 				public String toString() {

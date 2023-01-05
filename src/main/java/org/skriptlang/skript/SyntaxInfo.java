@@ -18,57 +18,20 @@
  */
 package org.skriptlang.skript;
 
-import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SyntaxElement;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
 @ApiStatus.Experimental
-public interface RegistrationInfo<T extends SyntaxElement> {
+public interface SyntaxInfo<T extends SyntaxElement> extends DefaultSyntaxInfos {
+	
+	SyntaxOrigin origin();
 	
 	Class<T> type();
 	
 	@Unmodifiable
 	List<String> patterns();
-	
-	interface ExpressionRegistrationInfo<T> extends RegistrationInfo<Expression<T>> {
-		@Nullable
-		Class<T> returnType();
-	}
-	
-	interface Builder<T extends SyntaxElement> {
-		
-		@Contract("_ -> new")
-		static <T extends SyntaxElement> Builder<T> of(Class<T> type) {
-			return new RegistrationInfoImpl.BuilderImpl<>(type);
-		}
-		
-		@Contract("_ -> this")
-		Builder<T> addPattern(String pattern);
-		
-		@Contract("_ -> this")
-		default Builder<T> addPatterns(Iterable<String> patterns) {
-			for (String pattern : patterns)
-				addPattern(pattern);
-			
-			return this;
-		}
-		
-		@Contract("_ -> this")
-		default Builder<T> addPatterns(String... patterns) {
-			for (String pattern : patterns)
-				addPattern(pattern);
-			
-			return this;
-		}
-		
-		@Contract("-> new")
-		RegistrationInfo<T> build();
-		
-	}
 	
 }

@@ -34,6 +34,7 @@ import ch.njol.skript.command.Commands;
 import ch.njol.skript.doc.Documentation;
 import ch.njol.skript.events.EvtSkript;
 import ch.njol.skript.hooks.Hook;
+import ch.njol.skript.lang.BukkitOrigin;
 import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
@@ -83,10 +84,10 @@ import ch.njol.skript.variables.Variables;
 import ch.njol.util.Closeable;
 import ch.njol.util.Kleenean;
 import ch.njol.util.NullableChecker;
-import ch.njol.util.OpenCloseable;
 import ch.njol.util.StringUtils;
 import ch.njol.util.coll.iterator.CheckedIterator;
 import ch.njol.util.coll.iterator.EnumerationIterable;
+import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
@@ -108,6 +109,10 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.ApiStatus;
+import org.skriptlang.skript.SkriptLanguage;
+import org.skriptlang.skript.SkriptRegistry;
+import org.skriptlang.skript.SyntaxInfo;
 import org.skriptlang.skript.lang.entry.EntryValidator;
 import org.skriptlang.skript.lang.script.Script;
 import org.skriptlang.skript.lang.structure.Structure;
@@ -181,15 +186,23 @@ public final class Skript extends JavaPlugin implements Listener {
 	
 	@Nullable
 	private static Skript instance = null;
+	@Nullable
+	private static SkriptLanguage language = null;
 	
 	private static boolean disabled = false;
 	private static boolean partDisabled = false;
 	
 	public static Skript getInstance() {
-		final Skript i = instance;
-		if (i == null)
+		if (instance == null)
 			throw new IllegalStateException();
-		return i;
+		return instance;
+	}
+	
+	@ApiStatus.Experimental
+	public static SkriptLanguage language() {
+		if (language == null)
+			throw new IllegalStateException();
+		return language;
 	}
 	
 	/**
@@ -202,6 +215,7 @@ public final class Skript extends JavaPlugin implements Listener {
 		if (instance != null)
 			throw new IllegalStateException("Cannot create multiple instances of Skript!");
 		instance = this;
+		language = SkriptLanguage.instance();
 	}
 	
 	private static Version minecraftVersion = new Version(666), UNKNOWN_VERSION = new Version(666);
@@ -1339,8 +1353,6 @@ public final class Skript extends JavaPlugin implements Listener {
 
 	// ================ EXPRESSIONS ================
 	
-	private final static List<ExpressionInfo<?, ?>> expressions = new ArrayList<>(100);
-	
 	private final static int[] expressionTypesStartIndices = new int[ExpressionType.values().length];
 	
 	/**
@@ -1356,9 +1368,9 @@ public final class Skript extends JavaPlugin implements Listener {
 		checkAcceptRegistrations();
 		if (returnType.isAnnotation() || returnType.isArray() || returnType.isPrimitive())
 			throw new IllegalArgumentException("returnType must be a normal type");
-		String originClassPath = Thread.currentThread().getStackTrace()[2].getClassName();
-		final ExpressionInfo<E, T> info = new ExpressionInfo<>(patterns, returnType, c, originClassPath, type);
-		expressions.add(expressionTypesStartIndices[type.ordinal()], info);
+		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
+		SyntaxInfo.Expression<E, T> info = SyntaxInfo.Expression.of(BukkitOrigin.of(originClass), c, ImmutableList.copyOf(patterns), returnType, type);
+		language().registry().register(SkriptRegistry.Key.EXPRESSION, info);
 		for (int i = type.ordinal(); i < ExpressionType.values().length; i++) {
 			expressionTypesStartIndices[i]++;
 		}
@@ -1366,7 +1378,10 @@ public final class Skript extends JavaPlugin implements Listener {
 	
 	@SuppressWarnings("null")
 	public static Iterator<ExpressionInfo<?, ?>> getExpressions() {
-		return expressions.iterator();
+		List<ExpressionInfo<?, ?>> list = new ArrayList<>();
+		for (SyntaxInfo.Expression<?, ?> info : language().registry().syntaxes(SkriptRegistry.Key.EXPRESSION))
+			list.add(ExpressionInfo.from(info));
+		return list.iterator();
 	}
 	
 	public static Iterator<ExpressionInfo<?, ?>> getExpressions(final Class<?>... returnTypes) {

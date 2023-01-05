@@ -19,6 +19,8 @@
 package ch.njol.skript.lang;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Contract;
+import org.skriptlang.skript.SyntaxInfo;
 
 public class ExpressionInfo<E extends Expression<T>, T> extends SyntaxElementInfo<E> {
 	
@@ -52,4 +54,14 @@ public class ExpressionInfo<E extends Expression<T>, T> extends SyntaxElementInf
 	public ExpressionType getExpressionType() {
 		return expressionType;
 	}
+	
+	@Contract("_ -> new")
+	public static <E extends Expression<R>, R> ExpressionInfo<E, R> from(SyntaxInfo.Expression<E, R> info) {
+		return new ExpressionInfo<>(
+				info.patterns().toArray(new String[0]),
+				info.returnType(), info.type(),
+				info.origin().name(),
+				info.expressionType());
+	}
+	
 }

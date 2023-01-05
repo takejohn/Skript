@@ -16,25 +16,37 @@
  *
  * Copyright Peter Güttinger, SkriptLang team and contributors
  */
-package org.skriptlang.skript;
+package ch.njol.skript.lang;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Unmodifiable;
+import org.skriptlang.skript.SyntaxOrigin;
 
-import java.util.Set;
-
-/**
- * The syntax registry manages syntax registration of a single element. Registering may not be possible
- * after the registration stage is over.
- */
-@ApiStatus.Experimental
-public interface SyntaxRegistry<I extends SyntaxInfo<?>> {
+public final class BukkitOrigin implements SyntaxOrigin {
 	
-	@Unmodifiable
-	Set<I> syntaxes();
+	@Contract("_ -> new")
+	public static SyntaxOrigin of(Plugin plugin) {
+		return new BukkitOrigin(plugin);
+	}
 	
-	@Contract("_ -> this")
-	SyntaxRegistry<I> register(I info);
+	@Contract("_ -> new")
+	public static SyntaxOrigin of(String name) {
+		return new BukkitOrigin(name);
+	}
+	
+	private final String name;
+	
+	private BukkitOrigin(Plugin plugin) {
+		name = plugin.getClass().getCanonicalName();
+	}
+	
+	private BukkitOrigin(String name) {
+		this.name = name;
+	}
+	
+	@Override
+	public String name() {
+		return name;
+	}
 	
 }

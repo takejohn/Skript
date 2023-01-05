@@ -19,19 +19,39 @@
 package org.skriptlang.skript;
 
 import ch.njol.skript.lang.ExpressionType;
+import ch.njol.skript.lang.SkriptEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript.lang.entry.EntryValidator;
 
 import java.util.List;
 
-interface DefaultSyntaxInfos {
+public interface DefaultSyntaxInfos {
+	
+	@ApiStatus.NonExtendable
+	interface Event<E extends SkriptEvent> extends Structure<E> {
+		
+		@Contract("_, _, _, _, _ -> new")
+		static <E extends SkriptEvent> Event<E> of(SyntaxOrigin origin, String name, Class<E> type, List<String> patterns,
+		                                           List<Class<? extends org.bukkit.event.Event>> events) {
+			
+			return new SyntaxInfoImpl.EventImpl<>(origin, type, patterns, name, events);
+		}
+		
+		String name();
+		
+		List<Class<? extends org.bukkit.event.Event>> events();
+		
+	}
 	
 	@ApiStatus.NonExtendable
 	interface Expression<E extends ch.njol.skript.lang.Expression<R>, R> extends SyntaxInfo<E> {
 		
 		@Contract("_, _, _, _, _ -> new")
-		static <E extends ch.njol.skript.lang.Expression<R>, R> Expression<E, R> of(SyntaxOrigin origin, Class<E> type, List<String> patterns,
-		                            Class<R> returnType, ExpressionType expressionType) {
+		static <E extends ch.njol.skript.lang.Expression<R>, R> Expression<E, R>
+			of(SyntaxOrigin origin, Class<E> type, List<String> patterns, Class<R> returnType,
+			   ExpressionType expressionType) {
 			
 			return new SyntaxInfoImpl.ExpressionImpl<>(origin, type, patterns, returnType, expressionType);
 		}
@@ -39,6 +59,28 @@ interface DefaultSyntaxInfos {
 		Class<R> returnType();
 		
 		ExpressionType expressionType();
+		
+	}
+	
+	@ApiStatus.NonExtendable
+	interface Structure<E extends org.skriptlang.skript.lang.structure.Structure> extends SyntaxInfo<E> {
+		
+		@Contract("_, _, _ -> new")
+		static <E extends org.skriptlang.skript.lang.structure.Structure> Structure<E>
+		of(SyntaxOrigin origin, Class<E> type, List<String> patterns) {
+			
+			return new SyntaxInfoImpl.StructureImpl<>(origin, type, patterns, null);
+		}
+		
+		@Contract("_, _, _, _ -> new")
+		static <E extends org.skriptlang.skript.lang.structure.Structure> Structure<E>
+			of(SyntaxOrigin origin, Class<E> type, List<String> patterns, EntryValidator entryValidator) {
+			
+			return new SyntaxInfoImpl.StructureImpl<>(origin, type, patterns, entryValidator);
+		}
+		
+		@Nullable
+		EntryValidator entryValidator();
 		
 	}
 	

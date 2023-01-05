@@ -20,6 +20,8 @@ package org.skriptlang.skript.lang.structure;
 
 import ch.njol.skript.lang.SyntaxElementInfo;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Contract;
+import org.skriptlang.skript.SyntaxInfo;
 import org.skriptlang.skript.lang.entry.EntryValidator;
 
 /**
@@ -38,6 +40,12 @@ public class StructureInfo<E extends Structure> extends SyntaxElementInfo<E> {
 	public StructureInfo(String[] patterns, Class<E> c, String originClassPath, EntryValidator entryValidator) throws IllegalArgumentException {
 		super(patterns, c, originClassPath);
 		this.entryValidator = entryValidator;
+	}
+	
+	@Contract("_ -> new")
+	public static <E extends Structure> StructureInfo<E> fromStructureInfo(SyntaxInfo.Structure<E> info) {
+		return new StructureInfo<>(info.patterns().toArray(new String[0]), info.type(),
+				info.origin().name(), info.entryValidator());
 	}
 
 }

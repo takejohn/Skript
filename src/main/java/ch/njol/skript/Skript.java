@@ -83,7 +83,6 @@ import ch.njol.skript.util.chat.ChatMessages;
 import ch.njol.skript.variables.Variables;
 import ch.njol.util.Closeable;
 import ch.njol.util.Kleenean;
-import ch.njol.util.NullableChecker;
 import ch.njol.util.StringUtils;
 import ch.njol.util.coll.iterator.CheckedIterator;
 import ch.njol.util.coll.iterator.EnumerationIterable;
@@ -110,6 +109,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Unmodifiable;
 import org.skriptlang.skript.SkriptLanguage;
 import org.skriptlang.skript.SkriptRegistry;
 import org.skriptlang.skript.SyntaxInfo;
@@ -1288,95 +1288,114 @@ public final class Skript extends JavaPlugin implements Listener {
 
 	// ================ CONDITIONS & EFFECTS & SECTIONS ================
 
-	private static final Collection<SyntaxElementInfo<? extends Condition>> conditions = new ArrayList<>(50);
-	private static final Collection<SyntaxElementInfo<? extends Effect>> effects = new ArrayList<>(50);
-	private static final Collection<SyntaxElementInfo<? extends Statement>> statements = new ArrayList<>(100);
-	private static final Collection<SyntaxElementInfo<? extends Section>> sections = new ArrayList<>(50);
-
 	/**
 	 * registers a {@link Condition}.
 	 * 
-	 * @param condition The condition's class
+	 * @param conditionClass The condition's class
 	 * @param patterns Skript patterns to match this condition
 	 */
-	public static <E extends Condition> void registerCondition(final Class<E> condition, final String... patterns) throws IllegalArgumentException {
+	public static <E extends Condition> void registerCondition(Class<E> conditionClass, String... patterns) throws IllegalArgumentException {
 		checkAcceptRegistrations();
-		String originClassPath = Thread.currentThread().getStackTrace()[2].getClassName();
-		final SyntaxElementInfo<E> info = new SyntaxElementInfo<>(patterns, condition, originClassPath);
-		conditions.add(info);
-		statements.add(info);
+		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
+		SyntaxInfo<E> info = SyntaxInfo.of(BukkitOrigin.of(originClass),
+				conditionClass, ImmutableList.copyOf(patterns));
+		language().registry().register(SkriptRegistry.Key.CONDITION, info);
+		language().registry().register(SkriptRegistry.Key.STATEMENT, info);
 	}
 	
 	/**
 	 * Registers an {@link Effect}.
 	 * 
-	 * @param effect The effect's class
+	 * @param effectClass The effect's class
 	 * @param patterns Skript patterns to match this effect
 	 */
-	public static <E extends Effect> void registerEffect(final Class<E> effect, final String... patterns) throws IllegalArgumentException {
+	public static <E extends Effect> void registerEffect(Class<E> effectClass, String... patterns) throws IllegalArgumentException {
 		checkAcceptRegistrations();
-		String originClassPath = Thread.currentThread().getStackTrace()[2].getClassName();
-		final SyntaxElementInfo<E> info = new SyntaxElementInfo<>(patterns, effect, originClassPath);
-		effects.add(info);
-		statements.add(info);
+		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
+		SyntaxInfo<E> info = SyntaxInfo.of(BukkitOrigin.of(originClass),
+				effectClass, ImmutableList.copyOf(patterns));
+		language().registry().register(SkriptRegistry.Key.EFFECT, info);
+		language().registry().register(SkriptRegistry.Key.STATEMENT, info);
 	}
 
 	/**
 	 * Registers a {@link Section}.
 	 *
-	 * @param section The section's class
+	 * @param sectionClass The section's class
 	 * @param patterns Skript patterns to match this section
 	 * @see Section
 	 */
-	public static <E extends Section> void registerSection(Class<E> section, String... patterns) throws IllegalArgumentException {
+	public static <E extends Section> void registerSection(Class<E> sectionClass, String... patterns) throws IllegalArgumentException {
 		checkAcceptRegistrations();
-		String originClassPath = Thread.currentThread().getStackTrace()[2].getClassName();
-		SyntaxElementInfo<E> info = new SyntaxElementInfo<>(patterns, section, originClassPath);
-		sections.add(info);
+		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
+		SyntaxInfo<E> info = SyntaxInfo.of(BukkitOrigin.of(originClass),
+				sectionClass, ImmutableList.copyOf(patterns));
+		language().registry().register(SkriptRegistry.Key.SECTION, info);
 	}
-
+	
+	/**
+	 * @deprecated Use {@link SkriptLanguage#registry() }
+	 */
+	@Deprecated
+	@Unmodifiable
 	public static Collection<SyntaxElementInfo<? extends Statement>> getStatements() {
-		return statements;
+		return language().registry().syntaxes(SkriptRegistry.Key.STATEMENT)
+				.stream().map(SyntaxElementInfo::from).collect(Collectors.toList());
 	}
 	
+	/**
+	 * @deprecated Use {@link SkriptLanguage#registry() }
+	 */
+	@Deprecated
+	@Unmodifiable
 	public static Collection<SyntaxElementInfo<? extends Condition>> getConditions() {
-		return conditions;
+		return language().registry().syntaxes(SkriptRegistry.Key.CONDITION)
+				.stream().map(SyntaxElementInfo::from).collect(Collectors.toList());
 	}
 	
+	/**
+	 * @deprecated Use {@link SkriptLanguage#registry() }
+	 */
+	@Deprecated
+	@Unmodifiable
 	public static Collection<SyntaxElementInfo<? extends Effect>> getEffects() {
-		return effects;
+		return language().registry().syntaxes(SkriptRegistry.Key.EFFECT)
+				.stream().map(SyntaxElementInfo::from).collect(Collectors.toList());
 	}
-
+	
+	/**
+	 * @deprecated Use {@link SkriptLanguage#registry() }
+	 */
+	@Deprecated
+	@Unmodifiable
 	public static Collection<SyntaxElementInfo<? extends Section>> getSections() {
-		return sections;
+		return language().registry().syntaxes(SkriptRegistry.Key.SECTION)
+				.stream().map(SyntaxElementInfo::from).collect(Collectors.toList());
 	}
 
 	// ================ EXPRESSIONS ================
 	
-	private final static int[] expressionTypesStartIndices = new int[ExpressionType.values().length];
-	
 	/**
 	 * Registers an expression.
 	 * 
-	 * @param c The expression's class
+	 * @param expressionType The expression's class
 	 * @param returnType The superclass of all values returned by the expression
 	 * @param type The expression's {@link ExpressionType type}. This is used to determine in which order to try to parse expressions.
 	 * @param patterns Skript patterns that match this expression
 	 * @throws IllegalArgumentException if returnType is not a normal class
 	 */
-	public static <E extends Expression<T>, T> void registerExpression(final Class<E> c, final Class<T> returnType, final ExpressionType type, final String... patterns) throws IllegalArgumentException {
+	public static <E extends Expression<T>, T> void registerExpression(Class<E> expressionType, Class<T> returnType,
+	                                                                   ExpressionType type, String... patterns) throws IllegalArgumentException {
+		
 		checkAcceptRegistrations();
 		if (returnType.isAnnotation() || returnType.isArray() || returnType.isPrimitive())
 			throw new IllegalArgumentException("returnType must be a normal type");
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
-		SyntaxInfo.Expression<E, T> info = SyntaxInfo.Expression.of(BukkitOrigin.of(originClass), c, ImmutableList.copyOf(patterns), returnType, type);
+		SyntaxInfo.Expression<E, T> info = SyntaxInfo.Expression.of(BukkitOrigin.of(originClass),
+				expressionType, ImmutableList.copyOf(patterns), returnType, type);
 		language().registry().register(SkriptRegistry.Key.EXPRESSION, info);
-		for (int i = type.ordinal(); i < ExpressionType.values().length; i++) {
-			expressionTypesStartIndices[i]++;
-		}
 	}
 	
-	@SuppressWarnings("null")
 	public static Iterator<ExpressionInfo<?, ?>> getExpressions() {
 		List<ExpressionInfo<?, ?>> list = new ArrayList<>();
 		for (SyntaxInfo.Expression<?, ?> info : language().registry().syntaxes(SkriptRegistry.Key.EXPRESSION))
@@ -1384,25 +1403,22 @@ public final class Skript extends JavaPlugin implements Listener {
 		return list.iterator();
 	}
 	
-	public static Iterator<ExpressionInfo<?, ?>> getExpressions(final Class<?>... returnTypes) {
-		return new CheckedIterator<>(getExpressions(), new NullableChecker<ExpressionInfo<?, ?>>() {
-			@Override
-			public boolean check(final @Nullable ExpressionInfo<?, ?> i) {
-				if (i == null || i.returnType == Object.class)
+	public static Iterator<ExpressionInfo<?, ?>> getExpressions(Class<?>... returnTypes) {
+		return new CheckedIterator<>(getExpressions(), i -> {
+			if (i == null || i.returnType == Object.class)
+				return true;
+			
+			for (final Class<?> returnType : returnTypes) {
+				assert returnType != null;
+				if (Converters.converterExists(i.returnType, returnType))
 					return true;
-				for (final Class<?> returnType : returnTypes) {
-					assert returnType != null;
-					if (Converters.converterExists(i.returnType, returnType))
-						return true;
-				}
-				return false;
 			}
+			
+			return false;
 		});
 	}
 	
 	// ================ EVENTS ================
-
-	private static final List<StructureInfo<? extends Structure>> structures = new ArrayList<>(10);
 	
 	/**
 	 * Registers an event.
@@ -1423,50 +1439,62 @@ public final class Skript extends JavaPlugin implements Listener {
 	 * Registers an event.
 	 * 
 	 * @param name The name of the event, used for error messages
-	 * @param c The event's class
+	 * @param eventClass The event's class
 	 * @param events The Bukkit events this event applies to
 	 * @param patterns Skript patterns to match this event
 	 * @return A SkriptEventInfo representing the registered event. Used to generate Skript's documentation.
 	 */
-	public static <E extends SkriptEvent> SkriptEventInfo<E> registerEvent(String name, Class<E> c, Class<? extends Event>[] events, String... patterns) {
+	public static <E extends SkriptEvent> SkriptEventInfo<E> registerEvent(String name, Class<E> eventClass,
+	                                                                       Class<? extends Event>[] events, String... patterns) {
+		
 		checkAcceptRegistrations();
-		String originClassPath = Thread.currentThread().getStackTrace()[2].getClassName();
-
 		String[] transformedPatterns = new String[patterns.length];
 		for (int i = 0; i < patterns.length; i++)
 			transformedPatterns[i] = "[on] " + SkriptEvent.fixPattern(patterns[i]) + " [with priority (lowest|low|normal|high|highest|monitor)]";
-
-		SkriptEventInfo<E> r = new SkriptEventInfo<>(name, transformedPatterns, c, originClassPath, events);
-		structures.add(r);
-		return r;
+		
+		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
+		SyntaxInfo.Event<E> info = SyntaxInfo.Event.of(BukkitOrigin.of(originClass), name, eventClass,
+				ImmutableList.copyOf(transformedPatterns), ImmutableList.copyOf(events));
+		language().registry().register(SkriptRegistry.Key.EVENT, info);
+		language().registry().register(SkriptRegistry.Key.STRUCTURE, info);
+		return SkriptEventInfo.fromEventInfo(info);
 	}
 
-	public static <E extends Structure> void registerStructure(Class<E> c, String... patterns) {
+	public static <E extends Structure> void registerStructure(Class<E> structureClass, String... patterns) {
 		checkAcceptRegistrations();
-		String originClassPath = Thread.currentThread().getStackTrace()[2].getClassName();
-		StructureInfo<E> structureInfo = new StructureInfo<>(patterns, c, originClassPath);
-		structures.add(structureInfo);
+		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
+		SyntaxInfo.Structure<E> info = SyntaxInfo.Structure.of(BukkitOrigin.of(originClass),
+				structureClass, ImmutableList.copyOf(patterns));
+		language().registry().register(SkriptRegistry.Key.STRUCTURE, info);
 	}
 
-	public static <E extends Structure> void registerStructure(Class<E> c, EntryValidator entryValidator, String... patterns) {
+	public static <E extends Structure> void registerStructure(Class<E> structureClass, EntryValidator entryValidator, String... patterns) {
 		checkAcceptRegistrations();
-		String originClassPath = Thread.currentThread().getStackTrace()[2].getClassName();
-		StructureInfo<E> structureInfo = new StructureInfo<>(patterns, c, originClassPath, entryValidator);
-		structures.add(structureInfo);
+		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
+		SyntaxInfo.Structure<E> info = SyntaxInfo.Structure.of(BukkitOrigin.of(originClass),
+				structureClass, ImmutableList.copyOf(patterns), entryValidator);
+		language().registry().register(SkriptRegistry.Key.STRUCTURE, info);
 	}
-
+	
 	/**
-	 * Modifications made to the returned Collection will not be reflected in the events available for parsing.
+	 * @deprecated Use {@link SkriptLanguage#registry() }
 	 */
+	@Deprecated
+	@Unmodifiable
 	public static Collection<SkriptEventInfo<?>> getEvents() {
-		// Only used in documentation generation, so generating a new list each time is fine
-		return (Collection<SkriptEventInfo<?>>) (Collection<?>) structures.stream()
-			.filter(info -> info instanceof SkriptEventInfo)
-			.collect(Collectors.toList());
+		return language().registry().syntaxes(SkriptRegistry.Key.EVENT).stream()
+				.map(SkriptEventInfo::fromEventInfo).collect(Collectors.toList());
 	}
-
+	
+	/**
+	 * @deprecated Use {@link SkriptLanguage#registry() }
+	 */
+	@Unmodifiable
 	public static List<StructureInfo<? extends Structure>> getStructures() {
-		return structures;
+		return language().registry().syntaxes(SkriptRegistry.Key.STRUCTURE).stream()
+				.map(info -> info instanceof SyntaxInfo.Event
+						? SkriptEventInfo.fromEventInfo((SyntaxInfo.Event<?>) info)
+						: StructureInfo.fromStructureInfo(info)).collect(Collectors.toList());
 	}
 
 	// ================ COMMANDS ================

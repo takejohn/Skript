@@ -57,11 +57,8 @@ public class ExpressionInfo<E extends Expression<T>, T> extends SyntaxElementInf
 	
 	@Contract("_ -> new")
 	public static <E extends Expression<R>, R> ExpressionInfo<E, R> from(SyntaxInfo.Expression<E, R> info) {
-		return new ExpressionInfo<>(
-				info.patterns().toArray(new String[0]),
-				info.returnType(), info.type(),
-				info.origin().name(),
-				info.expressionType());
+		return new ExpressionInfo<>(info.patterns().toArray(new String[0]), info.returnType(),
+				info.type(), info.origin().name(), info.expressionType());
 	}
 	
 }

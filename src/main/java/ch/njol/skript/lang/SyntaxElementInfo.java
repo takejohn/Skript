@@ -18,6 +18,9 @@
  */
 package ch.njol.skript.lang;
 
+import org.jetbrains.annotations.Contract;
+import org.skriptlang.skript.SyntaxInfo;
+
 import java.util.Arrays;
 
 /**
@@ -69,4 +72,11 @@ public class SyntaxElementInfo<E extends SyntaxElement> {
 	public String getOriginClassPath() {
 		return originClassPath;
 	}
+	
+	@Contract("_ -> new")
+	public static <E extends SyntaxElement> SyntaxElementInfo<E> from(SyntaxInfo<E> info) {
+		return new SyntaxElementInfo<>(info.patterns().toArray(new String[0]), info.type(),
+				info.origin().name());
+	}
+	
 }

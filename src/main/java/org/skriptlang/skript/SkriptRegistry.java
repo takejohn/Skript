@@ -21,10 +21,9 @@ package org.skriptlang.skript;
 import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Section;
-import ch.njol.skript.lang.SkriptEvent;
+import ch.njol.skript.lang.Statement;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Unmodifiable;
-import org.skriptlang.skript.lang.structure.Structure;
 
 import java.util.Set;
 
@@ -41,14 +40,16 @@ public interface SkriptRegistry {
 	
 	interface Key<T extends SyntaxInfo<?>> {
 		
-		Key<SyntaxInfo<Condition>> CONDITION = key("condition");
+		Key<SyntaxInfo<? extends Condition>> CONDITION = key("condition");
+		Key<SyntaxInfo<? extends Effect>> EFFECT = key("effect");
+		Key<DefaultSyntaxInfos.Event<?>> EVENT = key("event");
 		Key<DefaultSyntaxInfos.Expression<?, ?>> EXPRESSION = key("expression");
-		Key<SyntaxInfo<Effect>> EFFECT = key("effect");
-		Key<SyntaxInfo<SkriptEvent>> EVENT = key("event");
-		Key<SyntaxInfo<Section>> SECTION = key("section");
-		Key<SyntaxInfo<Structure>> STRUCTURE = key("structure");
+		Key<SyntaxInfo<? extends Section>> SECTION = key("section");
+		Key<SyntaxInfo<? extends Statement>> STATEMENT = key("statement");
+		Key<DefaultSyntaxInfos.Structure<?>> STRUCTURE = key("structure");
 		
 		static <T extends SyntaxInfo<?>> Key<T> key(String key) {
+			//noinspection EqualsWhichDoesntCheckParameterClass
 			return new Key<T>() {
 				@Override
 				public String toString() {
@@ -62,8 +63,7 @@ public interface SkriptRegistry {
 				
 				@Override
 				public boolean equals(Object obj) {
-					//noinspection ConditionCoveredByFurtherCondition
-					return obj instanceof String && key.equals(obj);
+					return key.equals(obj);
 				}
 			};
 		}

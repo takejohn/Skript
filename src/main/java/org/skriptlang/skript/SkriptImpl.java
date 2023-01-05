@@ -20,14 +20,14 @@ package org.skriptlang.skript;
 
 import org.jetbrains.annotations.Nullable;
 
-final class SkriptLanguageImpl implements SkriptLanguage {
+final class SkriptImpl implements Skript {
 	
 	@Nullable
-	private static SkriptLanguage instance;
+	private static Skript instance;
 	
-	static SkriptLanguage instance() {
+	static Skript instance() {
 		if (instance == null)
-			instance = new SkriptLanguageImpl();
+			instance = new SkriptImpl();
 		
 		return instance;
 	}

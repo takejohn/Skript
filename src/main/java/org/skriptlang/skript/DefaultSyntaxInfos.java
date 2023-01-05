@@ -27,6 +27,7 @@ import org.skriptlang.skript.lang.entry.EntryValidator;
 
 import java.util.List;
 
+@ApiStatus.Internal
 public interface DefaultSyntaxInfos {
 	
 	@ApiStatus.NonExtendable

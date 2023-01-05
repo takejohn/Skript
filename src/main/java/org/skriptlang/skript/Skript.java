@@ -21,10 +21,11 @@ package org.skriptlang.skript;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Experimental
-public interface SkriptLanguage {
+@ApiStatus.NonExtendable
+public interface Skript {
 	
-	static SkriptLanguage instance() {
-		return SkriptLanguageImpl.instance();
+	static Skript instance() {
+		return SkriptImpl.instance();
 	}
 	
 	SkriptRegistry registry();

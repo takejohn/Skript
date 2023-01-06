@@ -28,7 +28,7 @@ import org.skriptlang.skript.lang.entry.EntryValidator;
 import java.util.List;
 
 @ApiStatus.Internal
-        interface DefaultSyntaxInfos {
+interface DefaultSyntaxInfos {
 	
 	@ApiStatus.NonExtendable
 	interface Event<E extends SkriptEvent> extends Structure<E> {

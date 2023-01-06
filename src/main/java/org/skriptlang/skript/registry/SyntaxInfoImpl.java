@@ -21,6 +21,8 @@ package org.skriptlang.skript.registry;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptEvent;
 import ch.njol.skript.lang.SyntaxElement;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -56,6 +58,29 @@ class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		return patterns;
 	}
 	
+	@Override
+	public boolean equals(Object other) {
+		if (this == other) return true;
+		if (!(other instanceof SyntaxInfo)) return false;
+		SyntaxInfo<?> info = (SyntaxInfo<?>) other;
+		return origin().equals(info.origin()) && type().equals(info.type()) &&
+			patterns().equals(info.patterns());
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(origin(), type(), patterns());
+	}
+	
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+			.add("origin", origin())
+			.add("type", type())
+			.add("patterns", patterns())
+			.toString();
+	}
+	
 	static final class EventImpl<E extends SkriptEvent> extends StructureImpl<E> implements DefaultSyntaxInfos.Event<E> {
 		
 		private final String name;
@@ -77,6 +102,31 @@ class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		@Override
 		public List<Class<? extends org.bukkit.event.Event>> events() {
 			return events;
+		}
+		
+		@Override
+		public boolean equals(Object other) {
+			if (this == other) return true;
+			if (!(other instanceof Event)) return false;
+			Event<?> event = (Event<?>) other;
+			return origin().equals(event.origin()) && type().equals(event.type()) &&
+				patterns().equals(event.patterns()) && name().equals(event.name());
+		}
+		
+		@Override
+		public int hashCode() {
+			return Objects.hashCode(origin(), type(), patterns(), name(), events());
+		}
+		
+		@Override
+		public String toString() {
+			return MoreObjects.toStringHelper(this)
+				.add("origin", origin())
+				.add("type", type())
+				.add("patterns", patterns())
+				.add("name", name())
+				.add("events", events())
+				.toString();
 		}
 		
 	}
@@ -105,6 +155,32 @@ class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 			return expressionType;
 		}
 		
+		@Override
+		public boolean equals(Object other) {
+			if (this == other) return true;
+			if (!(other instanceof Expression)) return false;
+			ExpressionImpl<?, ?> expression = (ExpressionImpl<?, ?>) other;
+			return origin().equals(expression.origin()) && type().equals(expression.type()) &&
+					patterns().equals(expression.patterns()) && returnType() == expression.returnType() &&
+					expressionType().equals(expression.expressionType());
+		}
+		
+		@Override
+		public int hashCode() {
+			return Objects.hashCode(origin(), type(), patterns(), returnType(), expressionType());
+		}
+		
+		@Override
+		public String toString() {
+			return MoreObjects.toStringHelper(this)
+				.add("origin", origin())
+				.add("type", type())
+				.add("patterns", patterns())
+				.add("returnType", returnType())
+				.add("expressionType", expressionType())
+				.toString();
+		}
+		
 	}
 	
 	static class StructureImpl<E extends org.skriptlang.skript.lang.structure.Structure>
@@ -124,6 +200,31 @@ class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		@Nullable
 		public EntryValidator entryValidator() {
 			return entryValidator;
+		}
+		
+		@Override
+		public boolean equals(Object other) {
+			if (this == other) return true;
+			if (!(other instanceof Structure)) return false;
+			Structure<?> structure = (Structure<?>) other;
+			return origin().equals(structure.origin()) && type().equals(structure.type()) &&
+					patterns().equals(structure.patterns()) &&
+					Objects.equal(entryValidator(), structure.entryValidator());
+		}
+		
+		@Override
+		public int hashCode() {
+			return Objects.hashCode(origin(), type(), patterns(), entryValidator());
+		}
+		
+		@Override
+		public String toString() {
+			return MoreObjects.toStringHelper(this)
+				.add("origin", origin())
+				.add("type", type())
+				.add("patterns", patterns())
+				.add("entryValidator", entryValidator())
+				.toString();
 		}
 		
 	}

@@ -18,8 +18,6 @@
  */
 package org.skriptlang.skript;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Map;
@@ -38,53 +36,22 @@ final class SkriptRegistryImpl implements SkriptRegistry {
 	}
 	
 	@Override
-	public <I extends SyntaxInfo<?>> SyntaxRegistry<I> register(Key<I> key, I info) {
+	public <I extends SyntaxInfo<?>> void register(Key<I> key, I info) {
+		registry(key).register(info);
+		
 		if (key instanceof ChildKey)
 			register(((ChildKey<? extends I, I>) key).parent(), info);
-		
-		SyntaxRegistry<I> registry = registry(key);
-		registry.register(info);
-		return registry;
 	}
 	
-	@Override
-	public SkriptRegistry closeRegistration() {
+	public void closeRegistration() {
 		synchronized (registries) {
 			for (Map.Entry<Key<?>, SyntaxRegistry<?>> entry : registries.entrySet())
 				entry.setValue(entry.getValue().closeRegistration());
 		}
-		
-		return new FinalSkriptRegistry(registries);
 	}
 	
 	private <I extends SyntaxInfo<?>> SyntaxRegistry<I> registry(Key<I> key) {
 		return (SyntaxRegistry<I>) registries.computeIfAbsent(key, k -> new SyntaxRegistryImpl<>());
-	}
-	
-	static final class FinalSkriptRegistry implements SkriptRegistry {
-		
-		private final Map<Key<?>, SyntaxRegistry<?>> registries;
-		
-		FinalSkriptRegistry(Map<Key<?>, SyntaxRegistry<?>> registries) {
-			this.registries = ImmutableMap.copyOf(registries);
-		}
-		
-		@Override
-		public @Unmodifiable <I extends SyntaxInfo<?>> Set<I> syntaxes(Key<I> key) {
-			SyntaxRegistry<I> registry = ((SyntaxRegistry<I>) registries.get(key));
-			return registry == null ? ImmutableSet.of() : registry.syntaxes();
-		}
-		
-		@Override
-		public <I extends SyntaxInfo<?>> SyntaxRegistry<I> register(Key<I> key, I info) {
-			throw new UnsupportedOperationException("Registration is closed");
-		}
-		
-		@Override
-		public SkriptRegistry closeRegistration() {
-			throw new UnsupportedOperationException("Registration is closed");
-		}
-		
 	}
 	
 }

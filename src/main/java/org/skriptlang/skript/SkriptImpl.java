@@ -35,11 +35,28 @@ final class SkriptImpl implements Skript {
 		return instance;
 	}
 	
+	private State state = State.REGISTRATION;
 	private final SkriptRegistry registry = new SkriptRegistryImpl();
 	
 	@Override
 	public SkriptRegistry registry() {
 		return registry;
+	}
+	
+	@Override
+	public State state() {
+		return state;
+	}
+	
+	@Override
+	public void updateState(State state) {
+		switch (state) {
+			case POST_REGISTRATION:
+				registry.closeRegistration();
+				break;
+		}
+		
+		this.state = state;
 	}
 	
 }

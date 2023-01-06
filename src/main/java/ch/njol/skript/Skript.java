@@ -110,6 +110,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Unmodifiable;
+import org.skriptlang.skript.Skript.State;
 import org.skriptlang.skript.SkriptRegistry;
 import org.skriptlang.skript.SyntaxInfo;
 import org.skriptlang.skript.lang.entry.EntryValidator;
@@ -1211,12 +1212,10 @@ public final class Skript extends JavaPlugin implements Listener {
 	
 	// ================ REGISTRATIONS ================
 	
-	private static boolean acceptRegistrations = true;
-	
 	public static boolean isAcceptRegistrations() {
 		if (instance == null)
 			throw new IllegalStateException("Skript was never loaded");
-		return acceptRegistrations && instance.isEnabled();
+		return instance().state().acceptRegistration() && instance.isEnabled();
 	}
 	
 	public static void checkAcceptRegistrations() {
@@ -1225,10 +1224,8 @@ public final class Skript extends JavaPlugin implements Listener {
 	}
 	
 	private static void stopAcceptingRegistrations() {
-		acceptRegistrations = false;
-		
+		instance().updateState(State.POST_REGISTRATION);
 		Converters.createMissingConverters();
-		
 		Classes.onRegistrationsStop();
 	}
 	
@@ -1289,7 +1286,6 @@ public final class Skript extends JavaPlugin implements Listener {
 	 * @param patterns Skript patterns to match this condition
 	 */
 	public static <E extends Condition> void registerCondition(Class<E> conditionClass, String... patterns) throws IllegalArgumentException {
-		checkAcceptRegistrations();
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		SyntaxInfo<E> info = SyntaxInfo.of(BukkitOrigin.of(originClass),
 				conditionClass, ImmutableList.copyOf(patterns));
@@ -1303,7 +1299,6 @@ public final class Skript extends JavaPlugin implements Listener {
 	 * @param patterns Skript patterns to match this effect
 	 */
 	public static <E extends Effect> void registerEffect(Class<E> effectClass, String... patterns) throws IllegalArgumentException {
-		checkAcceptRegistrations();
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		SyntaxInfo<E> info = SyntaxInfo.of(BukkitOrigin.of(originClass),
 				effectClass, ImmutableList.copyOf(patterns));
@@ -1318,7 +1313,6 @@ public final class Skript extends JavaPlugin implements Listener {
 	 * @see Section
 	 */
 	public static <E extends Section> void registerSection(Class<E> sectionClass, String... patterns) throws IllegalArgumentException {
-		checkAcceptRegistrations();
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		SyntaxInfo<E> info = SyntaxInfo.of(BukkitOrigin.of(originClass),
 				sectionClass, ImmutableList.copyOf(patterns));
@@ -1387,7 +1381,6 @@ public final class Skript extends JavaPlugin implements Listener {
 	public static <E extends Expression<T>, T> void registerExpression(Class<E> expressionType, Class<T> returnType,
 	                                                                   ExpressionType type, String... patterns) throws IllegalArgumentException {
 		
-		checkAcceptRegistrations();
 		if (returnType.isAnnotation() || returnType.isArray() || returnType.isPrimitive())
 			throw new IllegalArgumentException("returnType must be a normal type");
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
@@ -1447,7 +1440,6 @@ public final class Skript extends JavaPlugin implements Listener {
 	public static <E extends SkriptEvent> SkriptEventInfo<E> registerEvent(String name, Class<E> eventClass,
 	                                                                       Class<? extends Event>[] events, String... patterns) {
 		
-		checkAcceptRegistrations();
 		String[] transformedPatterns = new String[patterns.length];
 		for (int i = 0; i < patterns.length; i++)
 			transformedPatterns[i] = "[on] " + SkriptEvent.fixPattern(patterns[i]) + " [with priority (lowest|low|normal|high|highest|monitor)]";
@@ -1460,15 +1452,15 @@ public final class Skript extends JavaPlugin implements Listener {
 	}
 
 	public static <E extends Structure> void registerStructure(Class<E> structureClass, String... patterns) {
-		checkAcceptRegistrations();
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		SyntaxInfo.Structure<E> info = SyntaxInfo.Structure.of(BukkitOrigin.of(originClass),
 				structureClass, ImmutableList.copyOf(patterns));
 		instance().registry().register(SkriptRegistry.Key.STRUCTURE, info);
 	}
 
-	public static <E extends Structure> void registerStructure(Class<E> structureClass, EntryValidator entryValidator, String... patterns) {
-		checkAcceptRegistrations();
+	public static <E extends Structure> void registerStructure(Class<E> structureClass,
+	                                                           EntryValidator entryValidator, String... patterns) {
+		
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		SyntaxInfo.Structure<E> info = SyntaxInfo.Structure.of(BukkitOrigin.of(originClass),
 				structureClass, ImmutableList.copyOf(patterns), entryValidator);

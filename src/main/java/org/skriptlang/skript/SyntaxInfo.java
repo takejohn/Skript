@@ -33,10 +33,16 @@ public interface SyntaxInfo<T extends SyntaxElement> extends DefaultSyntaxInfos 
 		return new SyntaxInfoImpl<>(origin, type, patterns);
 	}
 	
+	/**
+	 * @return {@link SyntaxOrigin}
+	 */
 	SyntaxOrigin origin();
 	
 	Class<T> type();
 	
+	/**
+	 * @return The patterns of this syntax element.
+	 */
 	@Unmodifiable
 	List<String> patterns();
 	

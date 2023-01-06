@@ -37,4 +37,24 @@ public interface Skript {
 	 */
 	SkriptRegistry registry();
 	
+	State state();
+	
+	void updateState(State state);
+	
+	enum State {
+		REGISTRATION(true),
+		POST_REGISTRATION(false);
+		
+		private final boolean acceptRegistration;
+		
+		State(boolean acceptRegistration) {
+			this.acceptRegistration = acceptRegistration;
+		}
+		
+		public boolean acceptRegistration() {
+			return acceptRegistration;
+		}
+		
+	}
+	
 }

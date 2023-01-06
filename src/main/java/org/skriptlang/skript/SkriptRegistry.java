@@ -22,9 +22,7 @@ import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Section;
 import ch.njol.skript.lang.Statement;
-import com.google.errorprone.annotations.DoNotCall;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Set;
@@ -36,15 +34,16 @@ import java.util.Set;
 @ApiStatus.Experimental
 public interface SkriptRegistry {
 	
+	/**
+	 * Gets all syntaxes related to a key.
+	 */
 	@Unmodifiable
 	<I extends SyntaxInfo<?>> Set<I> syntaxes(Key<I> key);
 	
-	<I extends SyntaxInfo<?>> SyntaxRegistry<I> register(Key<I> key, I info);
+	<I extends SyntaxInfo<?>> void register(Key<I> key, I info);
 	
-	@DoNotCall
 	@ApiStatus.Internal
-	@Contract("-> new")
-	SkriptRegistry closeRegistration();
+	void closeRegistration();
 	
 	interface Key<T extends SyntaxInfo<?>> {
 		Key<SyntaxInfo.Expression<?, ?>> EXPRESSION = key("expression");

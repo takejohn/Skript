@@ -20,6 +20,9 @@ package org.skriptlang.skript;
 
 import org.jetbrains.annotations.ApiStatus;
 
+/**
+ * The origin of syntax, currently only used for documentation purposes.
+ */
 @ApiStatus.Experimental
 public interface SyntaxOrigin {
 	

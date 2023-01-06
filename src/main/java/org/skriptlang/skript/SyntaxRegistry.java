@@ -18,19 +18,12 @@
  */
 package org.skriptlang.skript;
 
-import com.google.errorprone.annotations.DoNotCall;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Set;
 
-/**
- * The syntax registry manages syntax registration of a single element.
- * Registering may not be possible after the registration stage is over.
- */
-@ApiStatus.Experimental
-public interface SyntaxRegistry<I extends SyntaxInfo<?>> {
+interface SyntaxRegistry<I extends SyntaxInfo<?>> {
 	
 	@Unmodifiable
 	Set<I> syntaxes();
@@ -38,8 +31,6 @@ public interface SyntaxRegistry<I extends SyntaxInfo<?>> {
 	@Contract("_ -> this")
 	SyntaxRegistry<I> register(I info);
 	
-	@DoNotCall
-	@ApiStatus.Internal
 	@Contract("-> new")
 	SyntaxRegistry<I> closeRegistration();
 	

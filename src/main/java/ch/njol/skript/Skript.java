@@ -283,41 +283,41 @@ public final class Skript extends JavaPlugin implements Listener {
 		String bukkitV = Bukkit.getBukkitVersion();
 		Matcher m = Pattern.compile("\\d+\\.\\d+(\\.\\d+)?").matcher(bukkitV);
 		if (!m.find()) {
-			ch.njol.skript.Skript.error("The Bukkit version '" + bukkitV + "' does not contain a version number which is required for Skript to enable or disable certain features. " +
+			Skript.error("The Bukkit version '" + bukkitV + "' does not contain a version number which is required for Skript to enable or disable certain features. " +
 					"Skript will still work, but you might get random errors if you use features that are not available in your version of Bukkit.");
 			minecraftVersion = new Version(666, 0, 0);
 		} else {
 			minecraftVersion = new Version("" + m.group());
 		}
-		ch.njol.skript.Skript.debug("Loading for Minecraft " + minecraftVersion);
+		Skript.debug("Loading for Minecraft " + minecraftVersion);
 		
 		// Check that MC version is supported
 		if (!isRunningMinecraft(1, 9)) {
 			// Prevent loading when not running at least Minecraft 1.9
-			ch.njol.skript.Skript.error("This version of Skript does not work with Minecraft " + minecraftVersion + " and requires Minecraft 1.9.4+");
-			ch.njol.skript.Skript.error("You probably want Skript 2.2 or 2.1 (Google to find where to get them)");
-			ch.njol.skript.Skript.error("Note that those versions are, of course, completely unsupported!");
+			Skript.error("This version of Skript does not work with Minecraft " + minecraftVersion + " and requires Minecraft 1.9.4+");
+			Skript.error("You probably want Skript 2.2 or 2.1 (Google to find where to get them)");
+			Skript.error("Note that those versions are, of course, completely unsupported!");
 			return false;
 		}
 		
 		// Check that current server platform is somewhat supported
 		serverPlatform = getServerPlatform();
-		ch.njol.skript.Skript.debug("Server platform: " + serverPlatform);
+		Skript.debug("Server platform: " + serverPlatform);
 		if (!serverPlatform.works) {
-			ch.njol.skript.Skript.error("It seems that this server platform (" + serverPlatform.name + ") does not work with Skript.");
+			Skript.error("It seems that this server platform (" + serverPlatform.name + ") does not work with Skript.");
 			if (SkriptConfig.allowUnsafePlatforms.value()) {
-				ch.njol.skript.Skript.error("However, you have chosen to ignore this. Skript will probably still not work.");
+				Skript.error("However, you have chosen to ignore this. Skript will probably still not work.");
 			} else {
-				ch.njol.skript.Skript.error("To prevent potentially unsafe behaviour, Skript has been disabled.");
-				ch.njol.skript.Skript.error("You may re-enable it by adding a configuration option 'allow unsafe platforms: true'");
-				ch.njol.skript.Skript.error("Note that it is unlikely that Skript works correctly even if you do so.");
-				ch.njol.skript.Skript.error("A better idea would be to install Paper or Spigot in place of your current server.");
+				Skript.error("To prevent potentially unsafe behaviour, Skript has been disabled.");
+				Skript.error("You may re-enable it by adding a configuration option 'allow unsafe platforms: true'");
+				Skript.error("Note that it is unlikely that Skript works correctly even if you do so.");
+				Skript.error("A better idea would be to install Paper or Spigot in place of your current server.");
 				return false;
 			}
 		} else if (!serverPlatform.supported) {
-			ch.njol.skript.Skript.warning("This server platform (" + serverPlatform.name + ") is not supported by Skript.");
-			ch.njol.skript.Skript.warning("It will still probably work, but if it does not, you are on your own.");
-			ch.njol.skript.Skript.warning("Skript officially supports Paper and Spigot.");
+			Skript.warning("This server platform (" + serverPlatform.name + ") is not supported by Skript.");
+			Skript.warning("It will still probably work, but if it does not, you are on your own.");
+			Skript.warning("Skript officially supports Paper and Spigot.");
 		}
 		
 		// If nothing got triggered, everything is probably ok
@@ -380,7 +380,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	public void onEnable() {
 		Bukkit.getPluginManager().registerEvents(this, this);
 		if (disabled) {
-			ch.njol.skript.Skript.error(m_invalid_reload.toString());
+			Skript.error(m_invalid_reload.toString());
 			setEnabled(false);
 			return;
 		}
@@ -396,7 +396,7 @@ public final class Skript extends JavaPlugin implements Listener {
 		try {
 			this.updater = new SkriptUpdater();
 		} catch (Exception e) {
-			ch.njol.skript.Skript.exception(e, "Update checker could not be initialized.");
+			Skript.exception(e, "Update checker could not be initialized.");
 		}
 		
 		if (!getDataFolder().isDirectory())
@@ -506,11 +506,11 @@ public final class Skript extends JavaPlugin implements Listener {
 			Aliases.load(); // Loaded before anything that might use them
 		} catch (StackOverflowError e) {
 			if (using32BitJava()) {
-				ch.njol.skript.Skript.error("");
-				ch.njol.skript.Skript.error("There was a StackOverflowError that occured while loading aliases.");
-				ch.njol.skript.Skript.error("As you are currently using 32-bit Java, please update to 64-bit Java to resolve the error.");
-				ch.njol.skript.Skript.error("Please report this issue to our GitHub only if updating to 64-bit Java does not fix the issue.");
-				ch.njol.skript.Skript.error("");
+				Skript.error("");
+				Skript.error("There was a StackOverflowError that occured while loading aliases.");
+				Skript.error("As you are currently using 32-bit Java, please update to 64-bit Java to resolve the error.");
+				Skript.error("Please report this issue to our GitHub only if updating to 64-bit Java does not fix the issue.");
+				Skript.error("");
 			} else {
 				throw e; // Uh oh, this shouldn't happen. Re-throw the error.
 			}
@@ -572,18 +572,18 @@ public final class Skript extends JavaPlugin implements Listener {
 										hook.getDeclaredConstructor().newInstance();
 									}
 								} catch (ClassNotFoundException ex) {
-									ch.njol.skript.Skript.exception(ex, "Cannot load class " + c);
+									Skript.exception(ex, "Cannot load class " + c);
 								} catch (ExceptionInInitializerError err) {
-									ch.njol.skript.Skript.exception(err.getCause(), "Class " + c + " generated an exception while loading");
+									Skript.exception(err.getCause(), "Class " + c + " generated an exception while loading");
 								} catch (Exception ex) {
-									ch.njol.skript.Skript.exception(ex, "Exception initializing hook: " + c);
+									Skript.exception(ex, "Exception initializing hook: " + c);
 								}
 							}
 						}
 					}
 				} catch (IOException e) {
 					error("Error while loading plugin hooks" + (e.getLocalizedMessage() == null ? "" : ": " + e.getLocalizedMessage()));
-					ch.njol.skript.Skript.exception(e);
+					Skript.exception(e);
 				}
 				finishedLoadingHooks = true;
 				
@@ -593,7 +593,7 @@ public final class Skript extends JavaPlugin implements Listener {
 					try {
 						getAddonInstance().loadClasses("ch.njol.skript", "tests");
 					} catch (IOException e) {
-						ch.njol.skript.Skript.exception("Failed to load testing environment.");
+						Skript.exception("Failed to load testing environment.");
 						Bukkit.getServer().shutdown();
 					}
 				}
@@ -653,7 +653,7 @@ public final class Skript extends JavaPlugin implements Listener {
 							try {
 								Files.write(TestMode.RESULTS_FILE, results.getBytes(StandardCharsets.UTF_8));
 							} catch (IOException e) {
-								ch.njol.skript.Skript.exception(e, "Failed to write test results.");
+								Skript.exception(e, "Failed to write test results.");
 							}
 							// Delay server shutdown to stop the server from crashing because the current tick takes a long time due to all the tests
 							Bukkit.getScheduler().runTaskLater(Skript.this, () -> {
@@ -692,7 +692,7 @@ public final class Skript extends JavaPlugin implements Listener {
 							try {
 								Files.write(TestMode.RESULTS_FILE, results.getBytes(StandardCharsets.UTF_8));
 							} catch (IOException e) {
-								ch.njol.skript.Skript.exception(e, "Failed to write test results.");
+								Skript.exception(e, "Failed to write test results.");
 							}
 							info("Testing done, shutting down the server.");
 							// Delay server shutdown to stop the server from crashing because the current tick takes a long time due to all the tests
@@ -737,7 +737,7 @@ public final class Skript extends JavaPlugin implements Listener {
 					SkriptConfig.apiSoftExceptions.value().toString()
 				));
 				metrics.addCustomChart(new SimplePie("timingsStatus", () -> {
-					if (!ch.njol.skript.Skript.classExists("co.aikar.timings.Timings"))
+					if (!Skript.classExists("co.aikar.timings.Timings"))
 						return "unsupported";
 					return SkriptConfig.enableTimings.value().toString();
 				}));
@@ -759,7 +759,7 @@ public final class Skript extends JavaPlugin implements Listener {
 					SkriptConfig.checkForNewVersion.value().toString()
 				));
 				metrics.addCustomChart(new SimplePie("releaseChannel", SkriptConfig.releaseChannel::value));
-				ch.njol.skript.Skript.metrics = metrics;
+				Skript.metrics = metrics;
 				
 				/*
 				 * Start loading scripts
@@ -773,17 +773,17 @@ public final class Skript extends JavaPlugin implements Listener {
 					.thenAccept(scriptInfo -> {
 						try {
 							if (logHandler.getCount() == 0)
-								ch.njol.skript.Skript.info(m_no_errors.toString());
+								Skript.info(m_no_errors.toString());
 							if (scriptInfo.files == 0)
-								ch.njol.skript.Skript.warning(m_no_scripts.toString());
-							if (ch.njol.skript.Skript.logNormal() && scriptInfo.files > 0)
-								ch.njol.skript.Skript.info(m_scripts_loaded.toString(
+								Skript.warning(m_no_scripts.toString());
+							if (Skript.logNormal() && scriptInfo.files > 0)
+								Skript.info(m_scripts_loaded.toString(
 									scriptInfo.files,
 									scriptInfo.structures,
 									start.difference(new Date())
 								));
 
-							ch.njol.skript.Skript.info(m_finished_loading.toString());
+							Skript.info(m_finished_loading.toString());
 
 							// EvtSkript.onSkriptStart should be called on main server thread
 							if (!ScriptLoader.isAsync()) {
@@ -808,7 +808,7 @@ public final class Skript extends JavaPlugin implements Listener {
 							}
 						} catch (Exception e) {
 							// Something went wrong, we need to make sure the exception is printed
-							throw ch.njol.skript.Skript.exception(e);
+							throw Skript.exception(e);
 						}
 					});
 				
@@ -832,7 +832,7 @@ public final class Skript extends JavaPlugin implements Listener {
 								// Last check indicated that an update is available
 								UpdateManifest update = updater.getUpdateManifest();
 								assert update != null; // Because we just checked that one is available
-								ch.njol.skript.Skript.info(p, "" + SkriptUpdater.m_update_available.toString(update.id, ch.njol.skript.Skript.getVersion()));
+								Skript.info(p, "" + SkriptUpdater.m_update_available.toString(update.id, Skript.getVersion()));
 								p.spigot().sendMessage(BungeeConverter.convert(ChatMessages.parseToArray(
 										"Download it at: <aqua><u><link:" + update.downloadUrl + ">" + update.downloadUrl)));
 							}
@@ -866,13 +866,13 @@ public final class Skript extends JavaPlugin implements Listener {
 			if (version == null) { // User should have provided JSON file path
 				String inputFile = System.getProperty("skript.burger.file");
 				if (inputFile == null) {
-					ch.njol.skript.Skript.exception("burger enabled but skript.burger.file not provided");
+					Skript.exception("burger enabled but skript.burger.file not provided");
 					return;
 				}
 				try {
 					burgerInput = new String(Files.readAllBytes(Paths.get(inputFile)), StandardCharsets.UTF_8);
 				} catch (IOException e) {
-					ch.njol.skript.Skript.exception(e);
+					Skript.exception(e);
 					return;
 				}
 			} else { // Try to download Burger dataset for this version
@@ -886,7 +886,7 @@ public final class Skript extends JavaPlugin implements Listener {
 					}
 					burgerInput = new String(Files.readAllBytes(data), StandardCharsets.UTF_8);
 				} catch (IOException e) {
-					ch.njol.skript.Skript.exception(e);
+					Skript.exception(e);
 					return;
 				}
 			}
@@ -903,7 +903,7 @@ public final class Skript extends JavaPlugin implements Listener {
 				Files.write(folder.resolve("id_mappings.json"), gson.toJson(ids)
 						.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
 			} catch (IOException e) {
-				ch.njol.skript.Skript.exception(e);
+				Skript.exception(e);
 			}
 		}
 	}
@@ -1093,7 +1093,7 @@ public final class Skript extends JavaPlugin implements Listener {
 			try {
 				// Spigot removed the mapping for this method in 1.18, so its back to obfuscated method
 				// 1.19 mapping is u and 1.18 is v
-				String isRunningMethod = ch.njol.skript.Skript.isRunningMinecraft(1, 19) ? "u" : ch.njol.skript.Skript.isRunningMinecraft(1, 18) ? "v" :"isRunning";
+				String isRunningMethod = Skript.isRunningMinecraft(1, 19) ? "u" : Skript.isRunningMinecraft(1, 18) ? "v" :"isRunning";
 				IS_RUNNING = MC_SERVER.getClass().getMethod(isRunningMethod);
 			} catch (NoSuchMethodException e) {
 				throw new RuntimeException(e);
@@ -1136,7 +1136,7 @@ public final class Skript extends JavaPlugin implements Listener {
 			try {
 				c.close();
 			} catch (final Exception e) {
-				ch.njol.skript.Skript.exception(e, "An error occurred while shutting down.", "This might or might not cause any issues.");
+				Skript.exception(e, "An error occurred while shutting down.", "This might or might not cause any issues.");
 			}
 		}
 	}
@@ -1197,7 +1197,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	public final static UncaughtExceptionHandler UEH = new UncaughtExceptionHandler() {
 		@Override
 		public void uncaughtException(final @Nullable Thread t, final @Nullable Throwable e) {
-			ch.njol.skript.Skript.exception(e, "Exception in thread " + (t == null ? null : t.getName()));
+			Skript.exception(e, "Exception in thread " + (t == null ? null : t.getName()));
 		}
 	};
 	
@@ -1271,7 +1271,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	 */
 	public static SkriptAddon getAddonInstance() {
 		if (addon == null) {
-			addon = new SkriptAddon(ch.njol.skript.Skript.getInstance());
+			addon = new SkriptAddon(Skript.getInstance());
 			addon.setLanguageFileDirectory("lang");
 		}
 		return addon;
@@ -1381,8 +1381,6 @@ public final class Skript extends JavaPlugin implements Listener {
 	public static <E extends Expression<T>, T> void registerExpression(Class<E> expressionType, Class<T> returnType,
 	                                                                   ExpressionType type, String... patterns) throws IllegalArgumentException {
 		
-		if (returnType.isAnnotation() || returnType.isArray() || returnType.isPrimitive())
-			throw new IllegalArgumentException("returnType must be a normal type");
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		SyntaxInfo.Expression<E, T> info = SyntaxInfo.Expression.of(BukkitOrigin.of(originClass),
 				expressionType, ImmutableList.copyOf(patterns), returnType, type);
@@ -1440,13 +1438,9 @@ public final class Skript extends JavaPlugin implements Listener {
 	public static <E extends SkriptEvent> SkriptEventInfo<E> registerEvent(String name, Class<E> eventClass,
 	                                                                       Class<? extends Event>[] events, String... patterns) {
 		
-		String[] transformedPatterns = new String[patterns.length];
-		for (int i = 0; i < patterns.length; i++)
-			transformedPatterns[i] = "[on] " + SkriptEvent.fixPattern(patterns[i]) + " [with priority (lowest|low|normal|high|highest|monitor)]";
-		
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		SyntaxInfo.Event<E> info = SyntaxInfo.Event.of(BukkitOrigin.of(originClass), name, eventClass,
-				ImmutableList.copyOf(transformedPatterns), ImmutableList.copyOf(events));
+				ImmutableList.copyOf(patterns), ImmutableList.copyOf(events));
 		instance().registry().register(SkriptRegistry.Key.EVENT, info);
 		return SyntaxElementInfo.fromModern(info);
 	}
@@ -1669,8 +1663,8 @@ public final class Skript extends JavaPlugin implements Listener {
 					
 					// Put this to map
 					pluginPackages.put(name.toString(), desc);
-					if (ch.njol.skript.Skript.debug())
-						ch.njol.skript.Skript.info("Identified potential addon: " + desc.getFullName() + " (" + name.toString() + ")");
+					if (Skript.debug())
+						Skript.info("Identified potential addon: " + desc.getFullName() + " (" + name.toString() + ")");
 				}
 			}
 			
@@ -1694,7 +1688,7 @@ public final class Skript extends JavaPlugin implements Listener {
 			}
 		}
 		
-		SkriptUpdater updater = ch.njol.skript.Skript.getInstance().getUpdater();
+		SkriptUpdater updater = Skript.getInstance().getUpdater();
 		
 		// Check if server platform is supported
 		if (tainted) {

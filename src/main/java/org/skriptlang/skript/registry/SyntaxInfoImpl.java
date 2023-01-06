@@ -29,6 +29,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import org.skriptlang.skript.lang.entry.EntryValidator;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 	
@@ -89,7 +90,8 @@ class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		EventImpl(SyntaxOrigin origin, Class<E> type, List<String> patterns,
 		               String name, List<Class<? extends org.bukkit.event.Event>> events) {
 			
-			super(origin, type, patterns, null);
+			super(origin, type, patterns.stream().map(EventImpl::pattern)
+					.collect(Collectors.toList()), null);
 			this.name = name;
 			this.events = ImmutableList.copyOf(events);
 		}
@@ -129,6 +131,10 @@ class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 				.toString();
 		}
 		
+		private static String pattern(String pattern) {
+			return "[on] " + SkriptEvent.fixPattern(pattern) + " [with priority (lowest|low|normal|high|highest|monitor)]";
+		}
+		
 	}
 	
 	static final class ExpressionImpl<E extends ch.njol.skript.lang.Expression<R>, R>
@@ -141,6 +147,8 @@ class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		               Class<R> returnType, ExpressionType expressionType) {
 			
 			super(origin, type, patterns);
+			if (returnType.isAnnotation() || returnType.isArray() || returnType.isPrimitive())
+				throw new IllegalArgumentException("returnType must be a normal type");
 			this.returnType = returnType;
 			this.expressionType = expressionType;
 		}

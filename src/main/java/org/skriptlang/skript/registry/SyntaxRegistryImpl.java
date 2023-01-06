@@ -16,7 +16,7 @@
  *
  * Copyright Peter Güttinger, SkriptLang team and contributors
  */
-package org.skriptlang.skript;
+package org.skriptlang.skript.registry;
 
 import com.google.common.collect.ImmutableSet;
 import org.jetbrains.annotations.Contract;

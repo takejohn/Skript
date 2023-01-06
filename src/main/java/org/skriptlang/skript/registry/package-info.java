@@ -16,37 +16,8 @@
  *
  * Copyright Peter Güttinger, SkriptLang team and contributors
  */
-package ch.njol.skript.lang;
+@NonNullByDefault({DefaultLocation.PARAMETER, DefaultLocation.RETURN_TYPE, DefaultLocation.FIELD})
+package org.skriptlang.skript.registry;
 
-import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.Contract;
-import org.skriptlang.skript.registry.SyntaxOrigin;
-
-public final class BukkitOrigin implements SyntaxOrigin {
-	
-	@Contract("_ -> new")
-	public static SyntaxOrigin of(Plugin plugin) {
-		return new BukkitOrigin(plugin);
-	}
-	
-	@Contract("_ -> new")
-	public static SyntaxOrigin of(String name) {
-		return new BukkitOrigin(name);
-	}
-	
-	private final String name;
-	
-	private BukkitOrigin(Plugin plugin) {
-		name = plugin.getClass().getCanonicalName();
-	}
-	
-	private BukkitOrigin(String name) {
-		this.name = name;
-	}
-	
-	@Override
-	public String name() {
-		return name;
-	}
-	
-}
+import org.eclipse.jdt.annotation.DefaultLocation;
+import org.eclipse.jdt.annotation.NonNullByDefault;

@@ -19,15 +19,21 @@
 package org.skriptlang.skript;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.skriptlang.skript.registry.SkriptRegistry;
 
 /**
  * The main class for (soon to be) everything related to Skript. This is seperated
- * from the Bukkit implementation.
+ * from platform-specific implementations.
  */
 @ApiStatus.Experimental
 @ApiStatus.NonExtendable
 public interface Skript {
 	
+	/**
+	 * This guarantees to always return the same object.
+	 *
+	 * @return {@link Skript}
+	 */
 	static Skript instance() {
 		return SkriptImpl.instance();
 	}
@@ -37,8 +43,12 @@ public interface Skript {
 	 */
 	SkriptRegistry registry();
 	
+	/**
+	 * @return The current state Skript is in
+	 */
 	State state();
 	
+	@ApiStatus.Internal
 	void updateState(State state);
 	
 	enum State {

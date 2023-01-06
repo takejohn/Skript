@@ -16,22 +16,34 @@
  *
  * Copyright Peter Güttinger, SkriptLang team and contributors
  */
-package org.skriptlang.skript;
+package org.skriptlang.skript.registry;
 
+import ch.njol.skript.lang.SyntaxElement;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Set;
+import java.util.List;
 
-interface SyntaxRegistry<I extends SyntaxInfo<?>> {
+@ApiStatus.Experimental
+public interface SyntaxInfo<T extends SyntaxElement> extends DefaultSyntaxInfos {
 	
+	@Contract("_, _, _ -> new")
+	static <E extends SyntaxElement> SyntaxInfo<E> of(SyntaxOrigin origin, Class<E> type, List<String> patterns) {
+		return new SyntaxInfoImpl<>(origin, type, patterns);
+	}
+	
+	/**
+	 * @return {@link SyntaxOrigin}
+	 */
+	SyntaxOrigin origin();
+	
+	Class<T> type();
+	
+	/**
+	 * @return The patterns of this syntax element.
+	 */
 	@Unmodifiable
-	Set<I> syntaxes();
-	
-	@Contract("_ -> this")
-	SyntaxRegistry<I> register(I info);
-	
-	@Contract("-> new")
-	SyntaxRegistry<I> closeRegistration();
+	List<String> patterns();
 	
 }

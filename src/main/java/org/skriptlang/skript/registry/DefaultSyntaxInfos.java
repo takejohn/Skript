@@ -16,7 +16,7 @@
  *
  * Copyright Peter Güttinger, SkriptLang team and contributors
  */
-package org.skriptlang.skript;
+package org.skriptlang.skript.registry;
 
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptEvent;

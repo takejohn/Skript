@@ -16,7 +16,7 @@
  *
  * Copyright Peter Güttinger, SkriptLang team and contributors
  */
-package org.skriptlang.skript;
+package org.skriptlang.skript.registry;
 
 import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Effect;
@@ -41,9 +41,6 @@ public interface SkriptRegistry {
 	<I extends SyntaxInfo<?>> Set<I> syntaxes(Key<I> key);
 	
 	<I extends SyntaxInfo<?>> void register(Key<I> key, I info);
-	
-	@ApiStatus.Internal
-	void closeRegistration();
 	
 	interface Key<T extends SyntaxInfo<?>> {
 		Key<SyntaxInfo.Expression<?, ?>> EXPRESSION = key("expression");

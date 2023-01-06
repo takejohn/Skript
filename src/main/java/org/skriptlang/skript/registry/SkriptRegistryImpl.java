@@ -16,8 +16,9 @@
  *
  * Copyright Peter Güttinger, SkriptLang team and contributors
  */
-package org.skriptlang.skript;
+package org.skriptlang.skript.registry;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Map;
@@ -25,7 +26,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("unchecked")
-final class SkriptRegistryImpl implements SkriptRegistry {
+@ApiStatus.Internal
+public final class SkriptRegistryImpl implements SkriptRegistry {
 	
 	private final Map<Key<?>, SyntaxRegistry<?>> registries = new ConcurrentHashMap<>();
 	

@@ -19,6 +19,8 @@
 package org.skriptlang.skript;
 
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript.registry.SkriptRegistry;
+import org.skriptlang.skript.registry.SkriptRegistryImpl;
 
 final class SkriptImpl implements Skript {
 	
@@ -35,8 +37,9 @@ final class SkriptImpl implements Skript {
 		return instance;
 	}
 	
+	private final SkriptRegistryImpl registry = new SkriptRegistryImpl();
+	
 	private State state = State.REGISTRATION;
-	private final SkriptRegistry registry = new SkriptRegistryImpl();
 	
 	@Override
 	public SkriptRegistry registry() {
@@ -50,11 +53,8 @@ final class SkriptImpl implements Skript {
 	
 	@Override
 	public void updateState(State state) {
-		switch (state) {
-			case POST_REGISTRATION:
-				registry.closeRegistration();
-				break;
-		}
+		if (state == State.POST_REGISTRATION)
+			registry.closeRegistration();
 		
 		this.state = state;
 	}

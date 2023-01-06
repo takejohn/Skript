@@ -16,7 +16,7 @@
  *
  * Copyright Peter Güttinger, SkriptLang team and contributors
  */
-package org.skriptlang.skript;
+package org.skriptlang.skript.registry;
 
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptEvent;
@@ -56,7 +56,7 @@ class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		return patterns;
 	}
 	
-	static final class EventImpl<E extends SkriptEvent> extends StructureImpl<E> implements SyntaxInfo.Event<E> {
+	static final class EventImpl<E extends SkriptEvent> extends StructureImpl<E> implements DefaultSyntaxInfos.Event<E> {
 		
 		private final String name;
 		private final List<Class<? extends org.bukkit.event.Event>> events;
@@ -81,7 +81,8 @@ class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		
 	}
 	
-	static final class ExpressionImpl<E extends ch.njol.skript.lang.Expression<R>, R> extends SyntaxInfoImpl<E> implements SyntaxInfo.Expression<E, R> {
+	static final class ExpressionImpl<E extends ch.njol.skript.lang.Expression<R>, R>
+		extends SyntaxInfoImpl<E> implements DefaultSyntaxInfos.Expression<E, R> {
 		
 		private final Class<R> returnType;
 		private final ExpressionType expressionType;
@@ -106,7 +107,8 @@ class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		
 	}
 	
-	static class StructureImpl<E extends org.skriptlang.skript.lang.structure.Structure> extends SyntaxInfoImpl<E> implements SyntaxInfo.Structure<E> {
+	static class StructureImpl<E extends org.skriptlang.skript.lang.structure.Structure>
+		extends SyntaxInfoImpl<E> implements DefaultSyntaxInfos.Structure<E> {
 		
 		@Nullable
 		private final EntryValidator entryValidator;

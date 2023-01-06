@@ -42,6 +42,7 @@ interface DefaultSyntaxInfos {
 		
 		String name();
 		
+		// TODO This shouldn't depend on Bukkit events
 		List<Class<? extends org.bukkit.event.Event>> events();
 		
 	}

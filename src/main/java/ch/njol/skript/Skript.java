@@ -1294,7 +1294,6 @@ public final class Skript extends JavaPlugin implements Listener {
 		SyntaxInfo<E> info = SyntaxInfo.of(BukkitOrigin.of(originClass),
 				conditionClass, ImmutableList.copyOf(patterns));
 		instance().registry().register(SkriptRegistry.Key.CONDITION, info);
-		instance().registry().register(SkriptRegistry.Key.STATEMENT, info);
 	}
 	
 	/**
@@ -1309,7 +1308,6 @@ public final class Skript extends JavaPlugin implements Listener {
 		SyntaxInfo<E> info = SyntaxInfo.of(BukkitOrigin.of(originClass),
 				effectClass, ImmutableList.copyOf(patterns));
 		instance().registry().register(SkriptRegistry.Key.EFFECT, info);
-		instance().registry().register(SkriptRegistry.Key.STATEMENT, info);
 	}
 
 	/**
@@ -1333,8 +1331,10 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Deprecated
 	@Unmodifiable
 	public static Collection<SyntaxElementInfo<? extends Statement>> getStatements() {
-		return instance().registry().syntaxes(SkriptRegistry.Key.STATEMENT)
-				.stream().map(SyntaxElementInfo::from).collect(Collectors.toList());
+		return instance().registry()
+				.syntaxes(SkriptRegistry.Key.STATEMENT).stream()
+				.map(SyntaxElementInfo::<SyntaxElementInfo<Statement>, Statement>fromModern)
+				.collect(Collectors.toList());
 	}
 	
 	/**
@@ -1343,8 +1343,10 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Deprecated
 	@Unmodifiable
 	public static Collection<SyntaxElementInfo<? extends Condition>> getConditions() {
-		return instance().registry().syntaxes(SkriptRegistry.Key.CONDITION)
-				.stream().map(SyntaxElementInfo::from).collect(Collectors.toList());
+		return instance().registry()
+				.syntaxes(SkriptRegistry.Key.CONDITION).stream()
+				.map(SyntaxElementInfo::<SyntaxElementInfo<Condition>, Condition>fromModern)
+				.collect(Collectors.toList());
 	}
 	
 	/**
@@ -1353,8 +1355,10 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Deprecated
 	@Unmodifiable
 	public static Collection<SyntaxElementInfo<? extends Effect>> getEffects() {
-		return instance().registry().syntaxes(SkriptRegistry.Key.EFFECT)
-				.stream().map(SyntaxElementInfo::from).collect(Collectors.toList());
+		return instance().registry()
+			.syntaxes(SkriptRegistry.Key.EFFECT).stream()
+			.map(SyntaxElementInfo::<SyntaxElementInfo<Effect>, Effect>fromModern)
+			.collect(Collectors.toList());
 	}
 	
 	/**
@@ -1363,8 +1367,10 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Deprecated
 	@Unmodifiable
 	public static Collection<SyntaxElementInfo<? extends Section>> getSections() {
-		return instance().registry().syntaxes(SkriptRegistry.Key.SECTION)
-				.stream().map(SyntaxElementInfo::from).collect(Collectors.toList());
+		return instance().registry()
+			.syntaxes(SkriptRegistry.Key.SECTION).stream()
+			.map(SyntaxElementInfo::<SyntaxElementInfo<Section>, Section>fromModern)
+			.collect(Collectors.toList());
 	}
 
 	// ================ EXPRESSIONS ================
@@ -1450,8 +1456,7 @@ public final class Skript extends JavaPlugin implements Listener {
 		SyntaxInfo.Event<E> info = SyntaxInfo.Event.of(BukkitOrigin.of(originClass), name, eventClass,
 				ImmutableList.copyOf(transformedPatterns), ImmutableList.copyOf(events));
 		instance().registry().register(SkriptRegistry.Key.EVENT, info);
-		instance().registry().register(SkriptRegistry.Key.STRUCTURE, info);
-		return SkriptEventInfo.fromEventInfo(info);
+		return SyntaxElementInfo.fromModern(info);
 	}
 
 	public static <E extends Structure> void registerStructure(Class<E> structureClass, String... patterns) {
@@ -1476,8 +1481,10 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Deprecated
 	@Unmodifiable
 	public static Collection<SkriptEventInfo<?>> getEvents() {
-		return instance().registry().syntaxes(SkriptRegistry.Key.EVENT).stream()
-				.map(SkriptEventInfo::fromEventInfo).collect(Collectors.toList());
+		return instance().registry()
+			.syntaxes(SkriptRegistry.Key.EVENT).stream()
+			.map(SyntaxElementInfo::<SkriptEventInfo<SkriptEvent>, SkriptEvent>fromModern)
+			.collect(Collectors.toList());
 	}
 	
 	/**
@@ -1485,10 +1492,10 @@ public final class Skript extends JavaPlugin implements Listener {
 	 */
 	@Unmodifiable
 	public static List<StructureInfo<? extends Structure>> getStructures() {
-		return instance().registry().syntaxes(SkriptRegistry.Key.STRUCTURE).stream()
-				.map(info -> info instanceof SyntaxInfo.Event
-						? SkriptEventInfo.fromEventInfo((SyntaxInfo.Event<?>) info)
-						: StructureInfo.fromStructureInfo(info)).collect(Collectors.toList());
+		return instance().registry()
+			.syntaxes(SkriptRegistry.Key.STRUCTURE).stream()
+			.map(SyntaxElementInfo::<StructureInfo<Structure>, Structure>fromModern)
+			.collect(Collectors.toList());
 	}
 
 	// ================ COMMANDS ================

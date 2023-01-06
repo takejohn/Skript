@@ -18,8 +18,10 @@
  */
 package ch.njol.skript.lang;
 
+import org.bukkit.event.Event;
 import org.jetbrains.annotations.Contract;
 import org.skriptlang.skript.SyntaxInfo;
+import org.skriptlang.skript.lang.structure.StructureInfo;
 
 import java.util.Arrays;
 
@@ -29,21 +31,24 @@ import java.util.Arrays;
  */
 public class SyntaxElementInfo<E extends SyntaxElement> {
 	
+	@Deprecated
 	public final Class<E> c;
+	@Deprecated
 	public final String[] patterns;
+	@Deprecated
 	public final String originClassPath;
 	
-	public SyntaxElementInfo(final String[] patterns, final Class<E> c, final String originClassPath) throws IllegalArgumentException {
+	public SyntaxElementInfo(String[] patterns, Class<E> elementClass, String originClassPath) throws IllegalArgumentException {
 		this.patterns = patterns;
-		this.c = c;
+		this.c = elementClass;
 		this.originClassPath = originClassPath;
 		try {
-			c.getConstructor();
+			elementClass.getConstructor();
 //			if (!c.getDeclaredConstructor().isAccessible())
 //				throw new IllegalArgumentException("The nullary constructor of class "+c.getName()+" is not public");
 		} catch (final NoSuchMethodException e) {
 			// throwing an Exception throws an (empty) ExceptionInInitializerError instead, thus an Error is used
-			throw new Error(c + " does not have a public nullary constructor", e);
+			throw new Error(elementClass + " does not have a public nullary constructor", e);
 		} catch (final SecurityException e) {
 			throw new IllegalStateException("Skript cannot run properly because a security manager is blocking it!");
 		}
@@ -73,10 +78,20 @@ public class SyntaxElementInfo<E extends SyntaxElement> {
 		return originClassPath;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Contract("_ -> new")
-	public static <E extends SyntaxElement> SyntaxElementInfo<E> from(SyntaxInfo<E> info) {
-		return new SyntaxElementInfo<>(info.patterns().toArray(new String[0]), info.type(),
-				info.origin().name());
+	public static <I extends SyntaxElementInfo<E>, E extends SyntaxElement> I fromModern(SyntaxInfo<? extends E> info) {
+		if (info instanceof SyntaxInfo.Event) {
+			SyntaxInfo.Event<?> event = (SyntaxInfo.Event<?>) info;
+			return (I) new SkriptEventInfo<>(event.name(), event.patterns().toArray(new String[0]), event.type(),
+				event.origin().name(), (Class<? extends Event>[]) event.events().toArray(new Class<?>[0]));
+		} else if (info instanceof SyntaxInfo.Structure) {
+			SyntaxInfo.Structure<?> structure = (SyntaxInfo.Structure<?>) info;
+			return (I) new StructureInfo<>(structure.patterns().toArray(new String[0]), structure.type(),
+				structure.origin().name(), structure.entryValidator());
+		}
+		
+		return (I) new SyntaxElementInfo<>(info.patterns().toArray(new String[0]), info.type(), info.origin().name());
 	}
 	
 }

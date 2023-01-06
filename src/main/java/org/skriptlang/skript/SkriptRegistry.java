@@ -47,18 +47,50 @@ public interface SkriptRegistry {
 	SkriptRegistry closeRegistration();
 	
 	interface Key<T extends SyntaxInfo<?>> {
-		
-		Key<SyntaxInfo<? extends Condition>> CONDITION = key("condition");
-		Key<SyntaxInfo<? extends Effect>> EFFECT = key("effect");
-		Key<DefaultSyntaxInfos.Event<?>> EVENT = key("event");
-		Key<DefaultSyntaxInfos.Expression<?, ?>> EXPRESSION = key("expression");
+		Key<SyntaxInfo.Expression<?, ?>> EXPRESSION = key("expression");
 		Key<SyntaxInfo<? extends Section>> SECTION = key("section");
+		
 		Key<SyntaxInfo<? extends Statement>> STATEMENT = key("statement");
-		Key<DefaultSyntaxInfos.Structure<?>> STRUCTURE = key("structure");
+		Key<SyntaxInfo<? extends Condition>> CONDITION = ChildKey.key(STATEMENT, "condition");
+		Key<SyntaxInfo<? extends Effect>> EFFECT = ChildKey.key(STATEMENT, "effect");
+		
+		Key<SyntaxInfo.Structure<?>> STRUCTURE = key("structure");
+		Key<SyntaxInfo.Event<?>> EVENT = ChildKey.key(STRUCTURE, "event");
 		
 		static <T extends SyntaxInfo<?>> Key<T> key(String key) {
 			//noinspection EqualsWhichDoesntCheckParameterClass
 			return new Key<T>() {
+				@Override
+				public String toString() {
+					return key;
+				}
+				
+				@Override
+				public int hashCode() {
+					return key.hashCode();
+				}
+				
+				@Override
+				public boolean equals(Object obj) {
+					return key.equals(obj);
+				}
+			};
+		}
+		
+	}
+	
+	interface ChildKey<T extends P, P extends SyntaxInfo<?>> extends Key<T> {
+		
+		Key<P> parent();
+		
+		static <T extends P, P extends SyntaxInfo<?>> Key<T> key(Key<P> parent, String key) {
+			//noinspection EqualsWhichDoesntCheckParameterClass
+			return new ChildKey<T, P>() {
+				@Override
+				public Key<P> parent() {
+					return parent;
+				}
+				
 				@Override
 				public String toString() {
 					return key;

@@ -22,8 +22,6 @@ import ch.njol.skript.SkriptAPIException;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jetbrains.annotations.Contract;
-import org.skriptlang.skript.SyntaxInfo;
 import org.skriptlang.skript.lang.structure.StructureInfo;
 
 import java.util.Locale;
@@ -186,13 +184,6 @@ public final class SkriptEventInfo<E extends SkriptEvent> extends StructureInfo<
 	@Nullable
 	public String getDocumentationID() {
 		return documentationID;
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Contract("_ -> new")
-	public static <E extends SkriptEvent> SkriptEventInfo<E> fromEventInfo(SyntaxInfo.Event<E> info) {
-		return new SkriptEventInfo<>(info.name(), info.patterns().toArray(new String[0]), info.type(),
-				info.origin().name(), (Class<? extends Event>[]) info.events().toArray(new Class<?>[0]));
 	}
 	
 }

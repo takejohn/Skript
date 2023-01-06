@@ -42,67 +42,31 @@ public interface SkriptRegistry {
 	
 	<I extends SyntaxInfo<?>> void register(Key<I> key, I info);
 	
+	/**
+	 * Represents a syntax element type.
+	 */
 	interface Key<T extends SyntaxInfo<?>> {
-		Key<SyntaxInfo.Expression<?, ?>> EXPRESSION = key("expression");
-		Key<SyntaxInfo<? extends Section>> SECTION = key("section");
+		Key<SyntaxInfo.Expression<?, ?>> EXPRESSION = KeyImpl.of("expression");
+		Key<SyntaxInfo<? extends Section>> SECTION = KeyImpl.of("section");
 		
-		Key<SyntaxInfo<? extends Statement>> STATEMENT = key("statement");
-		Key<SyntaxInfo<? extends Condition>> CONDITION = ChildKey.key(STATEMENT, "condition");
-		Key<SyntaxInfo<? extends Effect>> EFFECT = ChildKey.key(STATEMENT, "effect");
+		Key<SyntaxInfo<? extends Statement>> STATEMENT = KeyImpl.of("statement");
+		Key<SyntaxInfo<? extends Condition>> CONDITION = KeyImpl.Child.of(STATEMENT, "condition");
+		Key<SyntaxInfo<? extends Effect>> EFFECT = KeyImpl.Child.of(STATEMENT, "effect");
 		
-		Key<SyntaxInfo.Structure<?>> STRUCTURE = key("structure");
-		Key<SyntaxInfo.Event<?>> EVENT = ChildKey.key(STRUCTURE, "event");
+		Key<SyntaxInfo.Structure<?>> STRUCTURE = KeyImpl.of("structure");
+		Key<SyntaxInfo.Event<?>> EVENT = KeyImpl.Child.of(STRUCTURE, "event");
 		
-		static <T extends SyntaxInfo<?>> Key<T> key(String key) {
-			//noinspection EqualsWhichDoesntCheckParameterClass
-			return new Key<T>() {
-				@Override
-				public String toString() {
-					return key;
-				}
-				
-				@Override
-				public int hashCode() {
-					return key.hashCode();
-				}
-				
-				@Override
-				public boolean equals(Object obj) {
-					return key.equals(obj);
-				}
-			};
-		}
+		String name();
 		
 	}
 	
+	/**
+	 * Like a {@link Key} but has a parent which causes elements to
+	 * be registered to both this and the parent.
+	 */
 	interface ChildKey<T extends P, P extends SyntaxInfo<?>> extends Key<T> {
 		
 		Key<P> parent();
-		
-		static <T extends P, P extends SyntaxInfo<?>> Key<T> key(Key<P> parent, String key) {
-			//noinspection EqualsWhichDoesntCheckParameterClass
-			return new ChildKey<T, P>() {
-				@Override
-				public Key<P> parent() {
-					return parent;
-				}
-				
-				@Override
-				public String toString() {
-					return key;
-				}
-				
-				@Override
-				public int hashCode() {
-					return key.hashCode();
-				}
-				
-				@Override
-				public boolean equals(Object obj) {
-					return key.equals(obj);
-				}
-			};
-		}
 		
 	}
 	

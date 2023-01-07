@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
-final class SyntaxRegistryImpl<T extends SyntaxInfo<?>> implements SyntaxRegistry<T> {
+final class SyntaxRegisterImpl<T extends SyntaxInfo<?>> implements SyntaxRegister<T> {
 	
 	private final BlockingQueue<T> registry = new LinkedBlockingDeque<>();
 	
@@ -40,22 +40,22 @@ final class SyntaxRegistryImpl<T extends SyntaxInfo<?>> implements SyntaxRegistr
 	
 	@Override
 	@Contract("_ -> this")
-	public SyntaxRegistry<T> register(T info) {
+	public SyntaxRegister<T> register(T info) {
 		registry.add(info);
 		return this;
 	}
 	
 	@Override
 	@Contract("-> new")
-	public SyntaxRegistry<T> closeRegistration() {
-		return new FinalSyntaxRegistry<>(registry);
+	public SyntaxRegister<T> closeRegistration() {
+		return new FinalSyntaxRegister<>(registry);
 	}
 	
-	static final class FinalSyntaxRegistry<T extends SyntaxInfo<?>> implements SyntaxRegistry<T> {
+	static final class FinalSyntaxRegister<T extends SyntaxInfo<?>> implements SyntaxRegister<T> {
 		
 		private final Set<T> registry;
 		
-		FinalSyntaxRegistry(BlockingQueue<T> registry) {
+		FinalSyntaxRegister(BlockingQueue<T> registry) {
 			Set<T> set = new HashSet<>();
 			registry.drainTo(set);
 			this.registry = Collections.unmodifiableSet(set);
@@ -69,13 +69,13 @@ final class SyntaxRegistryImpl<T extends SyntaxInfo<?>> implements SyntaxRegistr
 		
 		@Override
 		@Contract("_ -> fail")
-		public SyntaxRegistry<T> register(T info) {
+		public SyntaxRegister<T> register(T info) {
 			throw new UnsupportedOperationException("Registration is closed");
 		}
 		
 		@Override
 		@Contract("-> fail")
-		public SyntaxRegistry<T> closeRegistration() {
+		public SyntaxRegister<T> closeRegistration() {
 			throw new UnsupportedOperationException("Registration is closed");
 		}
 		

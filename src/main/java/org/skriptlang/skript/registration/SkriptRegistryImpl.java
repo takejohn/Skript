@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @ApiStatus.Internal
 public final class SkriptRegistryImpl implements SkriptRegistry {
 	
-	private final Map<Key<?>, SyntaxRegistry<?>> registries = new ConcurrentHashMap<>();
+	private final Map<Key<?>, SyntaxRegister<?>> registries = new ConcurrentHashMap<>();
 	
 	@Override
 	@Unmodifiable
@@ -46,13 +46,13 @@ public final class SkriptRegistryImpl implements SkriptRegistry {
 	
 	public void closeRegistration() {
 		synchronized (registries) {
-			for (Map.Entry<Key<?>, SyntaxRegistry<?>> entry : registries.entrySet())
+			for (Map.Entry<Key<?>, SyntaxRegister<?>> entry : registries.entrySet())
 				entry.setValue(entry.getValue().closeRegistration());
 		}
 	}
 	
-	private <I extends SyntaxInfo<?>> SyntaxRegistry<I> registry(Key<I> key) {
-		return (SyntaxRegistry<I>) registries.computeIfAbsent(key, k -> new SyntaxRegistryImpl<>());
+	private <I extends SyntaxInfo<?>> SyntaxRegister<I> registry(Key<I> key) {
+		return (SyntaxRegister<I>) registries.computeIfAbsent(key, k -> new SyntaxRegisterImpl<>());
 	}
 	
 }

@@ -16,7 +16,7 @@
  *
  * Copyright Peter Güttinger, SkriptLang team and contributors
  */
-package ch.njol.skript.lang;
+package org.skriptlang.skript.bukkit.registration;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;

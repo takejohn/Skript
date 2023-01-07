@@ -23,15 +23,15 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Set;
 
-interface SyntaxRegistry<I extends SyntaxInfo<?>> {
+interface SyntaxRegister<I extends SyntaxInfo<?>> {
 	
 	@Unmodifiable
 	Set<I> syntaxes();
 	
 	@Contract("_ -> this")
-	SyntaxRegistry<I> register(I info);
+	SyntaxRegister<I> register(I info);
 	
 	@Contract("-> new")
-	SyntaxRegistry<I> closeRegistration();
+	SyntaxRegister<I> closeRegistration();
 	
 }

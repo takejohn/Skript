@@ -22,14 +22,14 @@ import ch.njol.skript.lang.SkriptEvent;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
-import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfo.Event;
+import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfos.Event;
 import org.skriptlang.skript.registration.SyntaxInfoImpl;
 import org.skriptlang.skript.registration.SyntaxOrigin;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-final class BukkitSyntaxInfoImpl {
+final class BukkitSyntaxInfosImpl {
 	
 	static final class EventImpl<E extends SkriptEvent> extends SyntaxInfoImpl.StructureImpl<E> implements Event<E> {
 		

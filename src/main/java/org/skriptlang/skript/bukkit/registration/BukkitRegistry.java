@@ -18,12 +18,14 @@
  */
 package org.skriptlang.skript.bukkit.registration;
 
-import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfo.Event;
+import org.jetbrains.annotations.ApiStatus;
+import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfos.Event;
 import org.skriptlang.skript.registration.SkriptRegistry.ChildKey;
 import org.skriptlang.skript.registration.SkriptRegistry.Key;
 
 import static org.skriptlang.skript.registration.SkriptRegistry.Key.STRUCTURE;
 
+@ApiStatus.Experimental
 public interface BukkitRegistry {
 	
 	Key<Event<?>> EVENT = ChildKey.of(STRUCTURE, "event");

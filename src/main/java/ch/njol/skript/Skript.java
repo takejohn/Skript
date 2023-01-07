@@ -111,7 +111,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import org.skriptlang.skript.Skript.State;
 import org.skriptlang.skript.bukkit.registration.BukkitOrigin;
 import org.skriptlang.skript.bukkit.registration.BukkitRegistry;
-import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfo;
+import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfos;
 import org.skriptlang.skript.lang.entry.EntryValidator;
 import org.skriptlang.skript.lang.script.Script;
 import org.skriptlang.skript.lang.structure.Structure;
@@ -1461,7 +1461,7 @@ public final class Skript extends JavaPlugin implements Listener {
 		String name, Class<E> eventClass, Class<? extends Event>[] events, String... patterns
 	) {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
-		BukkitSyntaxInfo.Event<E> info = BukkitSyntaxInfo.Event.of(BukkitOrigin.of(originClass), name, eventClass,
+		BukkitSyntaxInfos.Event<E> info = BukkitSyntaxInfos.Event.of(BukkitOrigin.of(originClass), name, eventClass,
 			Arrays.asList(patterns), Arrays.asList(events));
 		instance().registry().register(BukkitRegistry.EVENT, info);
 		return SyntaxElementInfo.fromModern(info);

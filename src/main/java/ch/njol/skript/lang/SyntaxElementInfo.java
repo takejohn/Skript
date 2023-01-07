@@ -20,7 +20,7 @@ package ch.njol.skript.lang;
 
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Contract;
-import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfo;
+import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfos;
 import org.skriptlang.skript.registration.SyntaxInfo;
 import org.skriptlang.skript.lang.structure.StructureInfo;
 
@@ -82,8 +82,8 @@ public class SyntaxElementInfo<E extends SyntaxElement> {
 	@SuppressWarnings("unchecked")
 	@Contract("_ -> new")
 	public static <I extends SyntaxElementInfo<E>, E extends SyntaxElement> I fromModern(SyntaxInfo<? extends E> info) {
-		if (info instanceof BukkitSyntaxInfo.Event) {
-			BukkitSyntaxInfo.Event<?> event = (BukkitSyntaxInfo.Event<?>) info;
+		if (info instanceof BukkitSyntaxInfos.Event) {
+			BukkitSyntaxInfos.Event<?> event = (BukkitSyntaxInfos.Event<?>) info;
 			return (I) new SkriptEventInfo<>(event.name(), event.patterns().toArray(new String[0]), event.type(),
 				event.origin().name(), (Class<? extends Event>[]) event.events().toArray(new Class<?>[0]));
 		} else if (info instanceof SyntaxInfo.Structure) {

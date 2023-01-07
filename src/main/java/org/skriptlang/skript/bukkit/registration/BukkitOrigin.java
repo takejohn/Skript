@@ -18,12 +18,12 @@
  */
 package org.skriptlang.skript.bukkit.registration;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.skriptlang.skript.registration.SyntaxOrigin;
 
+@ApiStatus.Experimental
 public final class BukkitOrigin implements SyntaxOrigin {
 	
 	@Contract("_ -> new")
@@ -50,28 +50,6 @@ public final class BukkitOrigin implements SyntaxOrigin {
 	@Override
 	public String name() {
 		return name;
-	}
-	
-	@Override
-	public boolean equals(Object other) {
-		if (this == other)
-			return true;
-		if (!(other instanceof BukkitOrigin))
-			return false;
-		BukkitOrigin origin = (BukkitOrigin) other;
-		return name().equals(origin.name());
-	}
-	
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(name);
-	}
-	
-	@Override
-	public String toString() {
-		return MoreObjects.toStringHelper(this)
-			.add("name", name)
-			.toString();
 	}
 	
 }

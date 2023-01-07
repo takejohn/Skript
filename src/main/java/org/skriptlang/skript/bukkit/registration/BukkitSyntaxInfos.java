@@ -27,17 +27,17 @@ import org.skriptlang.skript.registration.SyntaxOrigin;
 import java.util.List;
 
 @ApiStatus.Internal
-public interface BukkitSyntaxInfo {
+public interface BukkitSyntaxInfos {
 	
 	@ApiStatus.NonExtendable
 	interface Event<E extends SkriptEvent> extends SyntaxInfo.Structure<E> {
 		
 		@Contract("_, _, _, _, _ -> new")
-		static <E extends SkriptEvent> BukkitSyntaxInfo.Event<E> of(
+		static <E extends SkriptEvent> BukkitSyntaxInfos.Event<E> of(
 				SyntaxOrigin origin, String name, Class<E> type, List<String> patterns,
 				List<Class<? extends org.bukkit.event.Event>> events
-		 ) {
-			return new BukkitSyntaxInfoImpl.EventImpl<>(origin, type, patterns, name, events);
+		) {
+			return new BukkitSyntaxInfosImpl.EventImpl<>(origin, type, patterns, name, events);
 		}
 		
 		String name();

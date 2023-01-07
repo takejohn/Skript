@@ -24,7 +24,10 @@ import org.jetbrains.annotations.ApiStatus;
  * The origin of syntax, currently only used for documentation purposes.
  */
 @ApiStatus.Experimental
+@FunctionalInterface
 public interface SyntaxOrigin {
+	
+	SyntaxOrigin UNKNOWN = () -> "unknown";
 	
 	String name();
 	

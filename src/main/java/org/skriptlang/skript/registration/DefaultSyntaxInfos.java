@@ -53,13 +53,13 @@ interface DefaultSyntaxInfos {
 		static <E extends org.skriptlang.skript.lang.structure.Structure> Structure<E> of(
 			SyntaxOrigin origin, Class<E> type, List<String> patterns
 		) {
-			return new SyntaxInfoImpl.StructureImpl<>(origin, type, patterns, null);
+			return of(origin, type, patterns, null);
 		}
 		
 		@Contract("_, _, _, _ -> new")
 		static <E extends org.skriptlang.skript.lang.structure.Structure> Structure<E> of(
 			SyntaxOrigin origin, Class<E> type, List<String> patterns,
-			EntryValidator entryValidator
+			@Nullable EntryValidator entryValidator
 		) {
 			
 			return new SyntaxInfoImpl.StructureImpl<>(origin, type, patterns, entryValidator);

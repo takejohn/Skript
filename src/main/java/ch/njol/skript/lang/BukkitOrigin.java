@@ -28,7 +28,7 @@ public final class BukkitOrigin implements SyntaxOrigin {
 	
 	@Contract("_ -> new")
 	public static SyntaxOrigin of(Plugin plugin) {
-		return new BukkitOrigin(plugin);
+		return new BukkitOrigin(plugin.getClass().getCanonicalName());
 	}
 	
 	@Contract("_ -> new")
@@ -53,8 +53,10 @@ public final class BukkitOrigin implements SyntaxOrigin {
 	
 	@Override
 	public boolean equals(Object other) {
-		if (this == other) return true;
-		if (!(other instanceof BukkitOrigin)) return false;
+		if (this == other)
+			return true;
+		if (!(other instanceof BukkitOrigin))
+			return false;
 		BukkitOrigin origin = (BukkitOrigin) other;
 		return name().equals(origin.name());
 	}

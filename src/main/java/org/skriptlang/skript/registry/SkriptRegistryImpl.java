@@ -40,7 +40,6 @@ public final class SkriptRegistryImpl implements SkriptRegistry {
 	@Override
 	public <I extends SyntaxInfo<?>> void register(Key<I> key, I info) {
 		registry(key).register(info);
-		
 		if (key instanceof ChildKey)
 			register(((ChildKey<? extends I, I>) key).parent(), info);
 	}

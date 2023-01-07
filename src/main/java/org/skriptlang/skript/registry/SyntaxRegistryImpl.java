@@ -33,7 +33,8 @@ final class SyntaxRegistryImpl<T extends SyntaxInfo<?>> implements SyntaxRegistr
 	private final BlockingQueue<T> registry = new LinkedBlockingDeque<>();
 	
 	@Override
-	public @Unmodifiable Set<T> syntaxes() {
+	@Unmodifiable 
+	public Set<T> syntaxes() {
 		return ImmutableSet.copyOf(registry);
 	}
 	
@@ -61,7 +62,8 @@ final class SyntaxRegistryImpl<T extends SyntaxInfo<?>> implements SyntaxRegistr
 		}
 		
 		@Override
-		public @Unmodifiable Set<T> syntaxes() {
+		@Unmodifiable 
+		public Set<T> syntaxes() {
 			return registry;
 		}
 		

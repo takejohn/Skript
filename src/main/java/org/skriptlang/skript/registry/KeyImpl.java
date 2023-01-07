@@ -44,7 +44,8 @@ final class KeyImpl<T extends SyntaxInfo<?>> implements Key<T> {
 	
 	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof Key<?>)) return false;
+		if (!(other instanceof Key<?>))
+			return false;
 		Key<?> key = (Key<?>) other;
 		return name().equals(key.name());
 	}
@@ -85,7 +86,8 @@ final class KeyImpl<T extends SyntaxInfo<?>> implements Key<T> {
 		
 		@Override
 		public boolean equals(Object other) {
-			if (!(other instanceof Key<?>)) return false;
+			if (!(other instanceof Key<?>))
+				return false;
 			Key<?> key = (Key<?>) other;
 			return name().equals(key.name());
 		}

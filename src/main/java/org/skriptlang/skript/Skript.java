@@ -22,8 +22,8 @@ import org.jetbrains.annotations.ApiStatus;
 import org.skriptlang.skript.registry.SkriptRegistry;
 
 /**
- * The main class for (soon to be) everything related to Skript. This is seperated
- * from platform-specific implementations.
+ * The main class for everything related to Skript.
+ * This is separated from platform-specific implementations.
  */
 @ApiStatus.Experimental
 @ApiStatus.NonExtendable

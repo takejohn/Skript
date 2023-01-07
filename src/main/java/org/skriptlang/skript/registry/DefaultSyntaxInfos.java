@@ -34,9 +34,10 @@ interface DefaultSyntaxInfos {
 	interface Event<E extends SkriptEvent> extends Structure<E> {
 		
 		@Contract("_, _, _, _, _ -> new")
-		static <E extends SkriptEvent> Event<E> of(SyntaxOrigin origin, String name, Class<E> type, List<String> patterns,
-		                                           List<Class<? extends org.bukkit.event.Event>> events) {
-			
+		static <E extends SkriptEvent> Event<E> of(
+			SyntaxOrigin origin, String name, Class<E> type, List<String> patterns,
+			List<Class<? extends org.bukkit.event.Event>> events
+		 ) {
 			return new SyntaxInfoImpl.EventImpl<>(origin, type, patterns, name, events);
 		}
 		
@@ -51,10 +52,10 @@ interface DefaultSyntaxInfos {
 	interface Expression<E extends ch.njol.skript.lang.Expression<R>, R> extends SyntaxInfo<E> {
 		
 		@Contract("_, _, _, _, _ -> new")
-		static <E extends ch.njol.skript.lang.Expression<R>, R> Expression<E, R>
-			of(SyntaxOrigin origin, Class<E> type, List<String> patterns, Class<R> returnType,
-			   ExpressionType expressionType) {
-			
+		static <E extends ch.njol.skript.lang.Expression<R>, R> Expression<E, R> of(
+			SyntaxOrigin origin, Class<E> type, List<String> patterns, Class<R> returnType,
+			ExpressionType expressionType
+		) {
 			return new SyntaxInfoImpl.ExpressionImpl<>(origin, type, patterns, returnType, expressionType);
 		}
 		
@@ -68,15 +69,17 @@ interface DefaultSyntaxInfos {
 	interface Structure<E extends org.skriptlang.skript.lang.structure.Structure> extends SyntaxInfo<E> {
 		
 		@Contract("_, _, _ -> new")
-		static <E extends org.skriptlang.skript.lang.structure.Structure> Structure<E>
-		of(SyntaxOrigin origin, Class<E> type, List<String> patterns) {
-			
+		static <E extends org.skriptlang.skript.lang.structure.Structure> Structure<E> of(
+			SyntaxOrigin origin, Class<E> type, List<String> patterns
+		) {
 			return new SyntaxInfoImpl.StructureImpl<>(origin, type, patterns, null);
 		}
 		
 		@Contract("_, _, _, _ -> new")
-		static <E extends org.skriptlang.skript.lang.structure.Structure> Structure<E>
-			of(SyntaxOrigin origin, Class<E> type, List<String> patterns, EntryValidator entryValidator) {
+		static <E extends org.skriptlang.skript.lang.structure.Structure> Structure<E> of(
+			SyntaxOrigin origin, Class<E> type, List<String> patterns,
+			EntryValidator entryValidator
+		) {
 			
 			return new SyntaxInfoImpl.StructureImpl<>(origin, type, patterns, entryValidator);
 		}

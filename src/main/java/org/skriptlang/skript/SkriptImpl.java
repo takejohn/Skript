@@ -55,7 +55,6 @@ final class SkriptImpl implements Skript {
 	public void updateState(State state) {
 		if (state == State.POST_REGISTRATION)
 			registry.closeRegistration();
-		
 		this.state = state;
 	}
 	

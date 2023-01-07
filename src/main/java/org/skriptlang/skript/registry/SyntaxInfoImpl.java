@@ -61,8 +61,10 @@ class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 	
 	@Override
 	public boolean equals(Object other) {
-		if (this == other) return true;
-		if (!(other instanceof SyntaxInfo)) return false;
+		if (this == other)
+			return true;
+		if (!(other instanceof SyntaxInfo))
+			return false;
 		SyntaxInfo<?> info = (SyntaxInfo<?>) other;
 		return origin().equals(info.origin()) && type().equals(info.type()) &&
 			patterns().equals(info.patterns());
@@ -87,9 +89,10 @@ class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		private final String name;
 		private final List<Class<? extends org.bukkit.event.Event>> events;
 		
-		EventImpl(SyntaxOrigin origin, Class<E> type, List<String> patterns,
-		               String name, List<Class<? extends org.bukkit.event.Event>> events) {
-			
+		EventImpl(
+			SyntaxOrigin origin, Class<E> type, List<String> patterns,
+			String name, List<Class<? extends org.bukkit.event.Event>> events
+		) {
 			super(origin, type, patterns.stream().map(EventImpl::pattern)
 					.collect(Collectors.toList()), null);
 			this.name = name;
@@ -108,8 +111,10 @@ class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		
 		@Override
 		public boolean equals(Object other) {
-			if (this == other) return true;
-			if (!(other instanceof Event)) return false;
+			if (this == other)
+				return true;
+			if (!(other instanceof Event))
+				return false;
 			Event<?> event = (Event<?>) other;
 			return origin().equals(event.origin()) && type().equals(event.type()) &&
 				patterns().equals(event.patterns()) && name().equals(event.name());
@@ -143,9 +148,10 @@ class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		private final Class<R> returnType;
 		private final ExpressionType expressionType;
 		
-		ExpressionImpl(SyntaxOrigin origin, Class<E> type, List<String> patterns,
-		               Class<R> returnType, ExpressionType expressionType) {
-			
+		ExpressionImpl(
+			SyntaxOrigin origin, Class<E> type, List<String> patterns,
+			Class<R> returnType, ExpressionType expressionType
+		) {
 			super(origin, type, patterns);
 			if (returnType.isAnnotation() || returnType.isArray() || returnType.isPrimitive())
 				throw new IllegalArgumentException("returnType must be a normal type");
@@ -165,8 +171,10 @@ class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		
 		@Override
 		public boolean equals(Object other) {
-			if (this == other) return true;
-			if (!(other instanceof Expression)) return false;
+			if (this == other)
+				return true;
+			if (!(other instanceof Expression))
+				return false;
 			ExpressionImpl<?, ?> expression = (ExpressionImpl<?, ?>) other;
 			return origin().equals(expression.origin()) && type().equals(expression.type()) &&
 					patterns().equals(expression.patterns()) && returnType() == expression.returnType() &&
@@ -197,9 +205,10 @@ class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		@Nullable
 		private final EntryValidator entryValidator;
 		
-		StructureImpl(SyntaxOrigin origin, Class<E> type, List<String> patterns,
-		               @Nullable EntryValidator entryValidator) {
-			
+		StructureImpl(
+			SyntaxOrigin origin, Class<E> type, List<String> patterns,
+			@Nullable EntryValidator entryValidator
+		) {
 			super(origin, type, patterns);
 			this.entryValidator = entryValidator;
 		}
@@ -212,8 +221,10 @@ class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		
 		@Override
 		public boolean equals(Object other) {
-			if (this == other) return true;
-			if (!(other instanceof Structure)) return false;
+			if (this == other)
+				return true;
+			if (!(other instanceof Structure))
+				return false;
 			Structure<?> structure = (Structure<?>) other;
 			return origin().equals(structure.origin()) && type().equals(structure.type()) &&
 					patterns().equals(structure.patterns()) &&

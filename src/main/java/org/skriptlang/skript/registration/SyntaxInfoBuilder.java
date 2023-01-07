@@ -72,7 +72,7 @@ public final class SyntaxInfoBuilder<E extends SyntaxElement> {
 	
 	@SuppressWarnings("unchecked")
 	public <R> Expression<ch.njol.skript.lang.Expression<R>, R> expression(Class<R> returnType) {
-		return new Expression<>(origin, (Class<ch.njol.skript.lang.Expression<R>>) type, patterns);
+		return new Expression<>(origin, (Class<ch.njol.skript.lang.Expression<R>>) type, patterns, returnType);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -90,21 +90,15 @@ public final class SyntaxInfoBuilder<E extends SyntaxElement> {
 		private final SyntaxOrigin origin;
 		private final Class<E> type;
 		private final List<String> patterns;
-		@Nullable
-		private Class<R> returnType;
+		private final Class<R> returnType;
 		@Nullable
 		private ExpressionType expressionType;
 		
-		private Expression(SyntaxOrigin origin, Class<E> type, List<String> patterns) {
+		private Expression(SyntaxOrigin origin, Class<E> type, List<String> patterns, Class<R> returnType) {
 			this.origin = origin;
 			this.type = type;
 			this.patterns = ImmutableList.copyOf(patterns);
-		}
-		
-		@Contract("_ -> this")
-		public Expression<E, R> origin(Class<R> returnType) {
 			this.returnType = returnType;
-			return this;
 		}
 		
 		@Contract("_ -> this")
@@ -114,8 +108,6 @@ public final class SyntaxInfoBuilder<E extends SyntaxElement> {
 		}
 		
 		public SyntaxInfo.Expression<E, R> build() {
-			if (returnType == null)
-				throw new NullPointerException("returnType is not set");
 			if (expressionType == null)
 				throw new NullPointerException("expressionType is not set");
 			return SyntaxInfo.Expression.of(origin, type, patterns, returnType, expressionType);

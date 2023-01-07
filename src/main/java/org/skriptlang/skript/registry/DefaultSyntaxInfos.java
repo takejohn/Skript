@@ -19,7 +19,6 @@
 package org.skriptlang.skript.registry;
 
 import ch.njol.skript.lang.ExpressionType;
-import ch.njol.skript.lang.SkriptEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -29,24 +28,6 @@ import java.util.List;
 
 @ApiStatus.Internal
 interface DefaultSyntaxInfos {
-	
-	@ApiStatus.NonExtendable
-	interface Event<E extends SkriptEvent> extends Structure<E> {
-		
-		@Contract("_, _, _, _, _ -> new")
-		static <E extends SkriptEvent> Event<E> of(
-			SyntaxOrigin origin, String name, Class<E> type, List<String> patterns,
-			List<Class<? extends org.bukkit.event.Event>> events
-		 ) {
-			return new SyntaxInfoImpl.EventImpl<>(origin, type, patterns, name, events);
-		}
-		
-		String name();
-		
-		// TODO This shouldn't depend on Bukkit events
-		List<Class<? extends org.bukkit.event.Event>> events();
-		
-	}
 	
 	@ApiStatus.NonExtendable
 	interface Expression<E extends ch.njol.skript.lang.Expression<R>, R> extends SyntaxInfo<E> {

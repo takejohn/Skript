@@ -29,11 +29,10 @@ final class SkriptImpl implements Skript {
 	
 	static Skript instance() {
 		Skript instance = SkriptImpl.instance;
-		if (instance == null) {
-			instance = new SkriptImpl();
-			SkriptImpl.instance = instance;
-		}
-		
+		if (instance != null)
+			return instance;
+		instance = new SkriptImpl();
+		SkriptImpl.instance = instance;
 		return instance;
 	}
 	

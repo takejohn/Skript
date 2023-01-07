@@ -111,12 +111,14 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Unmodifiable;
 import org.skriptlang.skript.Skript.State;
-import org.skriptlang.skript.registry.SkriptRegistry;
-import org.skriptlang.skript.registry.SyntaxInfo;
+import org.skriptlang.skript.bukkit.registration.BukkitRegistry;
+import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfo;
 import org.skriptlang.skript.lang.entry.EntryValidator;
 import org.skriptlang.skript.lang.script.Script;
 import org.skriptlang.skript.lang.structure.Structure;
 import org.skriptlang.skript.lang.structure.StructureInfo;
+import org.skriptlang.skript.registry.SkriptRegistry;
+import org.skriptlang.skript.registry.SyntaxInfo;
 
 import java.io.File;
 import java.io.IOException;
@@ -1390,7 +1392,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	public static Iterator<ExpressionInfo<?, ?>> getExpressions() {
 		List<ExpressionInfo<?, ?>> list = new ArrayList<>();
 		for (SyntaxInfo.Expression<?, ?> info : instance().registry().syntaxes(SkriptRegistry.Key.EXPRESSION))
-			list.add(ExpressionInfo.from(info));
+			list.add(SyntaxElementInfo.<ExpressionInfo<Expression<?>, ?>, Expression<?>>fromModern(info));
 		return list.iterator();
 	}
 	
@@ -1439,9 +1441,9 @@ public final class Skript extends JavaPlugin implements Listener {
 		String name, Class<E> eventClass, Class<? extends Event>[] events, String... patterns
 	) {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
-		SyntaxInfo.Event<E> info = SyntaxInfo.Event.of(BukkitOrigin.of(originClass), name, eventClass,
+		BukkitSyntaxInfo.Event<E> info = BukkitSyntaxInfo.Event.of(BukkitOrigin.of(originClass), name, eventClass,
 				ImmutableList.copyOf(patterns), ImmutableList.copyOf(events));
-		instance().registry().register(SkriptRegistry.Key.EVENT, info);
+		instance().registry().register(BukkitRegistry.EVENT, info);
 		return SyntaxElementInfo.fromModern(info);
 	}
 
@@ -1468,7 +1470,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Unmodifiable
 	public static Collection<SkriptEventInfo<?>> getEvents() {
 		return instance().registry()
-			.syntaxes(SkriptRegistry.Key.EVENT).stream()
+			.syntaxes(BukkitRegistry.EVENT).stream()
 			.map(SyntaxElementInfo::<SkriptEventInfo<SkriptEvent>, SkriptEvent>fromModern)
 			.collect(Collectors.toList());
 	}

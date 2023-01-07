@@ -20,6 +20,7 @@ package ch.njol.skript.lang;
 
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Contract;
+import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfo;
 import org.skriptlang.skript.registry.SyntaxInfo;
 import org.skriptlang.skript.lang.structure.StructureInfo;
 
@@ -81,17 +82,25 @@ public class SyntaxElementInfo<E extends SyntaxElement> {
 	@SuppressWarnings("unchecked")
 	@Contract("_ -> new")
 	public static <I extends SyntaxElementInfo<E>, E extends SyntaxElement> I fromModern(SyntaxInfo<? extends E> info) {
-		if (info instanceof SyntaxInfo.Event) {
-			SyntaxInfo.Event<?> event = (SyntaxInfo.Event<?>) info;
+		if (info instanceof BukkitSyntaxInfo.Event) {
+			BukkitSyntaxInfo.Event<?> event = (BukkitSyntaxInfo.Event<?>) info;
 			return (I) new SkriptEventInfo<>(event.name(), event.patterns().toArray(new String[0]), event.type(),
 				event.origin().name(), (Class<? extends Event>[]) event.events().toArray(new Class<?>[0]));
 		} else if (info instanceof SyntaxInfo.Structure) {
 			SyntaxInfo.Structure<?> structure = (SyntaxInfo.Structure<?>) info;
 			return (I) new StructureInfo<>(structure.patterns().toArray(new String[0]), structure.type(),
 				structure.origin().name(), structure.entryValidator());
+		} else if (info instanceof SyntaxInfo.Expression) {
+			return (I) fromModernExpression((SyntaxInfo.Expression<?, ?>) info);
 		}
 		
 		return (I) new SyntaxElementInfo<>(info.patterns().toArray(new String[0]), info.type(), info.origin().name());
+	}
+	
+	@Contract("_ -> new")
+	private static <E extends Expression<R>, R> ExpressionInfo<E, R> fromModernExpression(SyntaxInfo.Expression<E, R> info) {
+		return new ExpressionInfo<>(info.patterns().toArray(new String[0]), info.returnType(),
+			info.type(), info.origin().name(), info.expressionType());
 	}
 	
 }

@@ -22,10 +22,6 @@ import org.skriptlang.skript.registry.SkriptRegistry.Key;
 
 final class KeyImpl<T extends SyntaxInfo<?>> implements Key<T> {
 	
-	static <T extends SyntaxInfo<?>> Key<T> of(String name) {
-		return new KeyImpl<>(name);
-	}
-	
 	private final String name;
 	
 	KeyImpl(String name) {
@@ -56,10 +52,6 @@ final class KeyImpl<T extends SyntaxInfo<?>> implements Key<T> {
 	}
 	
 	static final class Child<T extends P, P extends SyntaxInfo<?>> implements SkriptRegistry.ChildKey<T, P> {
-		
-		static <T extends P, P extends SyntaxInfo<?>> SkriptRegistry.Key<T> of(SkriptRegistry.Key<P> parent, String name) {
-			return new Child<>(parent, name);
-		}
 		
 		private final Key<P> parent;
 		private final String name;

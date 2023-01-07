@@ -46,17 +46,20 @@ public interface SkriptRegistry {
 	 * Represents a syntax element type.
 	 */
 	interface Key<T extends SyntaxInfo<?>> {
-		Key<SyntaxInfo.Expression<?, ?>> EXPRESSION = KeyImpl.of("expression");
-		Key<SyntaxInfo<? extends Section>> SECTION = KeyImpl.of("section");
+		Key<SyntaxInfo.Expression<?, ?>> EXPRESSION = of("expression");
+		Key<SyntaxInfo<? extends Section>> SECTION = of("section");
 		
-		Key<SyntaxInfo<? extends Statement>> STATEMENT = KeyImpl.of("statement");
-		Key<SyntaxInfo<? extends Condition>> CONDITION = KeyImpl.Child.of(STATEMENT, "condition");
-		Key<SyntaxInfo<? extends Effect>> EFFECT = KeyImpl.Child.of(STATEMENT, "effect");
+		Key<SyntaxInfo<? extends Statement>> STATEMENT = of("statement");
+		Key<SyntaxInfo<? extends Condition>> CONDITION = ChildKey.of(STATEMENT, "condition");
+		Key<SyntaxInfo<? extends Effect>> EFFECT = ChildKey.of(STATEMENT, "effect");
 		
-		Key<SyntaxInfo.Structure<?>> STRUCTURE = KeyImpl.of("structure");
-		Key<SyntaxInfo.Event<?>> EVENT = KeyImpl.Child.of(STRUCTURE, "event");
+		Key<SyntaxInfo.Structure<?>> STRUCTURE = of("structure");
 		
 		String name();
+		
+		static <T extends SyntaxInfo<?>> Key<T> of(String name) {
+			return new KeyImpl<>(name);
+		}
 		
 	}
 	
@@ -65,6 +68,10 @@ public interface SkriptRegistry {
 	 * be registered to both this and the parent.
 	 */
 	interface ChildKey<T extends P, P extends SyntaxInfo<?>> extends Key<T> {
+		
+		static <T extends P, P extends SyntaxInfo<?>> SkriptRegistry.Key<T> of(SkriptRegistry.Key<P> parent, String name) {
+			return new KeyImpl.Child<>(parent, name);
+		}
 		
 		Key<P> parent();
 		

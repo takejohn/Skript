@@ -31,16 +31,17 @@ public final class BukkitOrigin implements SyntaxOrigin {
 		return new BukkitOrigin(plugin.getClass().getCanonicalName());
 	}
 	
+	/**
+	 * This method is offered for backwards compatibility, however it will be
+	 * removed in a later release, the {@link BukkitOrigin#of(Plugin)} version is preferred.
+	 */
 	@Contract("_ -> new")
+	@Deprecated
 	public static SyntaxOrigin of(String name) {
 		return new BukkitOrigin(name);
 	}
 	
 	private final String name;
-	
-	private BukkitOrigin(Plugin plugin) {
-		name = plugin.getClass().getCanonicalName();
-	}
 	
 	private BukkitOrigin(String name) {
 		this.name = name;

@@ -34,7 +34,6 @@ import ch.njol.skript.command.Commands;
 import ch.njol.skript.doc.Documentation;
 import ch.njol.skript.events.EvtSkript;
 import ch.njol.skript.hooks.Hook;
-import org.skriptlang.skript.bukkit.registration.BukkitOrigin;
 import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
@@ -86,7 +85,6 @@ import ch.njol.util.Kleenean;
 import ch.njol.util.StringUtils;
 import ch.njol.util.coll.iterator.CheckedIterator;
 import ch.njol.util.coll.iterator.EnumerationIterable;
-import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
@@ -111,6 +109,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Unmodifiable;
 import org.skriptlang.skript.Skript.State;
+import org.skriptlang.skript.bukkit.registration.BukkitOrigin;
 import org.skriptlang.skript.bukkit.registration.BukkitRegistry;
 import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfo;
 import org.skriptlang.skript.lang.entry.EntryValidator;
@@ -134,6 +133,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1286,11 +1286,13 @@ public final class Skript extends JavaPlugin implements Listener {
 	 * 
 	 * @param conditionClass The condition's class
 	 * @param patterns Skript patterns to match this condition
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
 	 */
+	@Deprecated
 	public static <E extends Condition> void registerCondition(Class<E> conditionClass, String... patterns) throws IllegalArgumentException {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		SyntaxInfo<E> info = SyntaxInfo.of(BukkitOrigin.of(originClass),
-				conditionClass, ImmutableList.copyOf(patterns));
+				conditionClass, Arrays.asList(patterns));
 		instance().registry().register(SkriptRegistry.Key.CONDITION, info);
 	}
 	
@@ -1299,11 +1301,13 @@ public final class Skript extends JavaPlugin implements Listener {
 	 * 
 	 * @param effectClass The effect's class
 	 * @param patterns Skript patterns to match this effect
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
 	 */
+	@Deprecated
 	public static <E extends Effect> void registerEffect(Class<E> effectClass, String... patterns) throws IllegalArgumentException {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		SyntaxInfo<E> info = SyntaxInfo.of(BukkitOrigin.of(originClass),
-				effectClass, ImmutableList.copyOf(patterns));
+				effectClass, Arrays.asList(patterns));
 		instance().registry().register(SkriptRegistry.Key.EFFECT, info);
 	}
 
@@ -1313,11 +1317,13 @@ public final class Skript extends JavaPlugin implements Listener {
 	 * @param sectionClass The section's class
 	 * @param patterns Skript patterns to match this section
 	 * @see Section
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
 	 */
+	@Deprecated
 	public static <E extends Section> void registerSection(Class<E> sectionClass, String... patterns) throws IllegalArgumentException {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		SyntaxInfo<E> info = SyntaxInfo.of(BukkitOrigin.of(originClass),
-				sectionClass, ImmutableList.copyOf(patterns));
+				sectionClass, Arrays.asList(patterns));
 		instance().registry().register(SkriptRegistry.Key.SECTION, info);
 	}
 	
@@ -1379,16 +1385,22 @@ public final class Skript extends JavaPlugin implements Listener {
 	 * @param type The expression's {@link ExpressionType type}. This is used to determine in which order to try to parse expressions.
 	 * @param patterns Skript patterns that match this expression
 	 * @throws IllegalArgumentException if returnType is not a normal class
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
 	 */
+	@Deprecated
 	public static <E extends Expression<T>, T> void registerExpression(
 		Class<E> expressionType, Class<T> returnType, ExpressionType type, String... patterns
 	) throws IllegalArgumentException {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		SyntaxInfo.Expression<E, T> info = SyntaxInfo.Expression.of(BukkitOrigin.of(originClass),
-				expressionType, ImmutableList.copyOf(patterns), returnType, type);
+				expressionType, Arrays.asList(patterns), returnType, type);
 		instance().registry().register(SkriptRegistry.Key.EXPRESSION, info);
 	}
 	
+	/**
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
+	 */
+	@Deprecated
 	public static Iterator<ExpressionInfo<?, ?>> getExpressions() {
 		List<ExpressionInfo<?, ?>> list = new ArrayList<>();
 		for (SyntaxInfo.Expression<?, ?> info : instance().registry().syntaxes(SkriptRegistry.Key.EXPRESSION))
@@ -1396,6 +1408,10 @@ public final class Skript extends JavaPlugin implements Listener {
 		return list.iterator();
 	}
 	
+	/**
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
+	 */
+	@Deprecated
 	public static Iterator<ExpressionInfo<?, ?>> getExpressions(Class<?>... returnTypes) {
 		return new CheckedIterator<>(getExpressions(), i -> {
 			if (i == null || i.returnType == Object.class)
@@ -1422,7 +1438,9 @@ public final class Skript extends JavaPlugin implements Listener {
 	 * @param event The Bukkit event this event applies to
 	 * @param patterns Skript patterns to match this event
 	 * @return A SkriptEventInfo representing the registered event. Used to generate Skript's documentation.
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
 	 */
+	@Deprecated
 	@SuppressWarnings("unchecked")
 	public static <E extends SkriptEvent> SkriptEventInfo<E> registerEvent(String name, Class<E> c, Class<? extends Event> event, String... patterns) {
 		return registerEvent(name, c, new Class[] {event}, patterns);
@@ -1436,30 +1454,40 @@ public final class Skript extends JavaPlugin implements Listener {
 	 * @param events The Bukkit events this event applies to
 	 * @param patterns Skript patterns to match this event
 	 * @return A SkriptEventInfo representing the registered event. Used to generate Skript's documentation.
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
 	 */
+	@Deprecated
 	public static <E extends SkriptEvent> SkriptEventInfo<E> registerEvent(
 		String name, Class<E> eventClass, Class<? extends Event>[] events, String... patterns
 	) {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		BukkitSyntaxInfo.Event<E> info = BukkitSyntaxInfo.Event.of(BukkitOrigin.of(originClass), name, eventClass,
-				ImmutableList.copyOf(patterns), ImmutableList.copyOf(events));
+			Arrays.asList(patterns), Arrays.asList(events));
 		instance().registry().register(BukkitRegistry.EVENT, info);
 		return SyntaxElementInfo.fromModern(info);
 	}
-
+	
+	/**
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
+	 */
+	@Deprecated
 	public static <E extends Structure> void registerStructure(Class<E> structureClass, String... patterns) {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		SyntaxInfo.Structure<E> info = SyntaxInfo.Structure.of(BukkitOrigin.of(originClass),
-				structureClass, ImmutableList.copyOf(patterns));
+				structureClass, Arrays.asList(patterns));
 		instance().registry().register(SkriptRegistry.Key.STRUCTURE, info);
 	}
-
+	
+	/**
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
+	 */
+	@Deprecated
 	public static <E extends Structure> void registerStructure(
 		Class<E> structureClass, EntryValidator entryValidator, String... patterns
 	) {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		SyntaxInfo.Structure<E> info = SyntaxInfo.Structure.of(BukkitOrigin.of(originClass),
-				structureClass, ImmutableList.copyOf(patterns), entryValidator);
+				structureClass, Arrays.asList(patterns), entryValidator);
 		instance().registry().register(SkriptRegistry.Key.STRUCTURE, info);
 	}
 	

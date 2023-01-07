@@ -1378,9 +1378,9 @@ public final class Skript extends JavaPlugin implements Listener {
 	 * @param patterns Skript patterns that match this expression
 	 * @throws IllegalArgumentException if returnType is not a normal class
 	 */
-	public static <E extends Expression<T>, T> void registerExpression(Class<E> expressionType, Class<T> returnType,
-	                                                                   ExpressionType type, String... patterns) throws IllegalArgumentException {
-		
+	public static <E extends Expression<T>, T> void registerExpression(
+		Class<E> expressionType, Class<T> returnType, ExpressionType type, String... patterns
+	) throws IllegalArgumentException {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		SyntaxInfo.Expression<E, T> info = SyntaxInfo.Expression.of(BukkitOrigin.of(originClass),
 				expressionType, ImmutableList.copyOf(patterns), returnType, type);
@@ -1435,9 +1435,9 @@ public final class Skript extends JavaPlugin implements Listener {
 	 * @param patterns Skript patterns to match this event
 	 * @return A SkriptEventInfo representing the registered event. Used to generate Skript's documentation.
 	 */
-	public static <E extends SkriptEvent> SkriptEventInfo<E> registerEvent(String name, Class<E> eventClass,
-	                                                                       Class<? extends Event>[] events, String... patterns) {
-		
+	public static <E extends SkriptEvent> SkriptEventInfo<E> registerEvent(
+		String name, Class<E> eventClass, Class<? extends Event>[] events, String... patterns
+	) {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		SyntaxInfo.Event<E> info = SyntaxInfo.Event.of(BukkitOrigin.of(originClass), name, eventClass,
 				ImmutableList.copyOf(patterns), ImmutableList.copyOf(events));
@@ -1452,9 +1452,9 @@ public final class Skript extends JavaPlugin implements Listener {
 		instance().registry().register(SkriptRegistry.Key.STRUCTURE, info);
 	}
 
-	public static <E extends Structure> void registerStructure(Class<E> structureClass,
-	                                                           EntryValidator entryValidator, String... patterns) {
-		
+	public static <E extends Structure> void registerStructure(
+		Class<E> structureClass, EntryValidator entryValidator, String... patterns
+	) {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		SyntaxInfo.Structure<E> info = SyntaxInfo.Structure.of(BukkitOrigin.of(originClass),
 				structureClass, ImmutableList.copyOf(patterns), entryValidator);

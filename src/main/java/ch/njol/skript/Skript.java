@@ -112,12 +112,14 @@ import org.skriptlang.skript.Skript.State;
 import org.skriptlang.skript.bukkit.registration.BukkitOrigin;
 import org.skriptlang.skript.bukkit.registration.BukkitRegistry;
 import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfos;
+import org.skriptlang.skript.bukkit.registration.EventInfoBuilder;
 import org.skriptlang.skript.lang.entry.EntryValidator;
 import org.skriptlang.skript.lang.script.Script;
 import org.skriptlang.skript.lang.structure.Structure;
 import org.skriptlang.skript.lang.structure.StructureInfo;
 import org.skriptlang.skript.registration.SkriptRegistry;
 import org.skriptlang.skript.registration.SyntaxInfo;
+import org.skriptlang.skript.registration.SyntaxInfoBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -133,7 +135,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1291,9 +1292,10 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Deprecated
 	public static <E extends Condition> void registerCondition(Class<E> conditionClass, String... patterns) throws IllegalArgumentException {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
-		SyntaxInfo<E> info = SyntaxInfo.of(BukkitOrigin.of(originClass),
-				conditionClass, Arrays.asList(patterns));
-		instance().registry().register(SkriptRegistry.Key.CONDITION, info);
+		instance().registry().register(SkriptRegistry.Key.CONDITION, SyntaxInfoBuilder.builder(conditionClass)
+				.origin(BukkitOrigin.of(originClass))
+				.addPatterns(patterns)
+				.build());
 	}
 	
 	/**
@@ -1306,9 +1308,10 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Deprecated
 	public static <E extends Effect> void registerEffect(Class<E> effectClass, String... patterns) throws IllegalArgumentException {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
-		SyntaxInfo<E> info = SyntaxInfo.of(BukkitOrigin.of(originClass),
-				effectClass, Arrays.asList(patterns));
-		instance().registry().register(SkriptRegistry.Key.EFFECT, info);
+		instance().registry().register(SkriptRegistry.Key.EFFECT, SyntaxInfoBuilder.builder(effectClass)
+				.origin(BukkitOrigin.of(originClass))
+				.addPatterns(patterns)
+				.build());
 	}
 
 	/**
@@ -1322,9 +1325,10 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Deprecated
 	public static <E extends Section> void registerSection(Class<E> sectionClass, String... patterns) throws IllegalArgumentException {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
-		SyntaxInfo<E> info = SyntaxInfo.of(BukkitOrigin.of(originClass),
-				sectionClass, Arrays.asList(patterns));
-		instance().registry().register(SkriptRegistry.Key.SECTION, info);
+		instance().registry().register(SkriptRegistry.Key.SECTION, SyntaxInfoBuilder.builder(sectionClass)
+				.origin(BukkitOrigin.of(originClass))
+				.addPatterns(patterns)
+				.build());
 	}
 	
 	/**
@@ -1392,9 +1396,12 @@ public final class Skript extends JavaPlugin implements Listener {
 		Class<E> expressionType, Class<T> returnType, ExpressionType type, String... patterns
 	) throws IllegalArgumentException {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
-		SyntaxInfo.Expression<E, T> info = SyntaxInfo.Expression.of(BukkitOrigin.of(originClass),
-				expressionType, Arrays.asList(patterns), returnType, type);
-		instance().registry().register(SkriptRegistry.Key.EXPRESSION, info);
+		instance().registry().register(SkriptRegistry.Key.EXPRESSION, SyntaxInfoBuilder.builder(expressionType)
+				.origin(BukkitOrigin.of(originClass))
+				.addPatterns(patterns)
+				.expression(returnType)
+				.expressionType(type)
+				.build());
 	}
 	
 	/**
@@ -1461,8 +1468,11 @@ public final class Skript extends JavaPlugin implements Listener {
 		String name, Class<E> eventClass, Class<? extends Event>[] events, String... patterns
 	) {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
-		BukkitSyntaxInfos.Event<E> info = BukkitSyntaxInfos.Event.of(BukkitOrigin.of(originClass), name, eventClass,
-			Arrays.asList(patterns), Arrays.asList(events));
+		BukkitSyntaxInfos.Event<E> info = EventInfoBuilder.builder(eventClass, name)
+				.origin(BukkitOrigin.of(originClass))
+				.addPatterns(patterns)
+				.addEvents(events)
+				.build();
 		instance().registry().register(BukkitRegistry.EVENT, info);
 		return SyntaxElementInfo.fromModern(info);
 	}
@@ -1473,9 +1483,11 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Deprecated
 	public static <E extends Structure> void registerStructure(Class<E> structureClass, String... patterns) {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
-		SyntaxInfo.Structure<E> info = SyntaxInfo.Structure.of(BukkitOrigin.of(originClass),
-				structureClass, Arrays.asList(patterns));
-		instance().registry().register(SkriptRegistry.Key.STRUCTURE, info);
+		instance().registry().register(SkriptRegistry.Key.STRUCTURE, SyntaxInfoBuilder.builder(structureClass)
+				.origin(BukkitOrigin.of(originClass))
+				.addPatterns(patterns)
+				.structure()
+				.build());
 	}
 	
 	/**
@@ -1486,9 +1498,12 @@ public final class Skript extends JavaPlugin implements Listener {
 		Class<E> structureClass, EntryValidator entryValidator, String... patterns
 	) {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
-		SyntaxInfo.Structure<E> info = SyntaxInfo.Structure.of(BukkitOrigin.of(originClass),
-				structureClass, Arrays.asList(patterns), entryValidator);
-		instance().registry().register(SkriptRegistry.Key.STRUCTURE, info);
+		instance().registry().register(SkriptRegistry.Key.STRUCTURE, SyntaxInfoBuilder.builder(structureClass)
+				.origin(BukkitOrigin.of(originClass))
+				.addPatterns(patterns)
+				.structure()
+				.entryValidator(entryValidator)
+				.build());
 	}
 	
 	/**

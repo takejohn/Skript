@@ -72,21 +72,21 @@ public final class EventInfoBuilder<E extends SkriptEvent> {
 	}
 	
 	@Contract("_ -> this")
-	public EventInfoBuilder<E> addEvent(Class<Event> event) {
+	public EventInfoBuilder<E> addEvent(Class<? extends Event> event) {
 		events.add(event);
 		return this;
 	}
 	
 	@Contract("_ -> this")
-	public EventInfoBuilder<E> addEvents(Class<Event>... events) {
-		for (Class<Event> event : events)
+	public EventInfoBuilder<E> addEvents(Class<? extends Event>... events) {
+		for (Class<? extends Event> event : events)
 			addEvent(event);
 		return this;
 	}
 	
 	@Contract("_ -> this")
-	public EventInfoBuilder<E> addEvents(List<Class<Event>> events) {
-		for (Class<Event> event : events)
+	public EventInfoBuilder<E> addEvents(List<Class<? extends Event>> events) {
+		for (Class<? extends Event> event : events)
 			addEvent(event);
 		return this;
 	}

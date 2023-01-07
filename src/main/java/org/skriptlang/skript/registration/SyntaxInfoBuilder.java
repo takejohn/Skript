@@ -90,12 +90,12 @@ public final class SyntaxInfoBuilder<E extends SyntaxElement> {
 		}
 		
 		@Contract("_ -> this")
-		public Expression<E, R> origin(ExpressionType expressionType) {
+		public Expression<E, R> expressionType(ExpressionType expressionType) {
 			this.expressionType = expressionType;
 			return this;
 		}
 		
-		private SyntaxInfo.Expression<E, R> build() {
+		public SyntaxInfo.Expression<E, R> build() {
 			if (returnType == null)
 				throw new NullPointerException("returnType is not set");
 			if (expressionType == null)
@@ -125,7 +125,7 @@ public final class SyntaxInfoBuilder<E extends SyntaxElement> {
 			return this;
 		}
 		
-		private SyntaxInfo.Structure<E> build() {
+		public SyntaxInfo.Structure<E> build() {
 			return SyntaxInfo.Structure.of(origin, type, patterns, entryValidator);
 		}
 		

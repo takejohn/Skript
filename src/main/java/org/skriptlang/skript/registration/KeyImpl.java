@@ -16,9 +16,9 @@
  *
  * Copyright Peter Güttinger, SkriptLang team and contributors
  */
-package org.skriptlang.skript.registry;
+package org.skriptlang.skript.registration;
 
-import org.skriptlang.skript.registry.SkriptRegistry.Key;
+import org.skriptlang.skript.registration.SkriptRegistry.Key;
 
 final class KeyImpl<T extends SyntaxInfo<?>> implements Key<T> {
 	

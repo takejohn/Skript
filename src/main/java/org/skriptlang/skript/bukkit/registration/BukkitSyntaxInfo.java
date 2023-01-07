@@ -21,8 +21,8 @@ package org.skriptlang.skript.bukkit.registration;
 import ch.njol.skript.lang.SkriptEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
-import org.skriptlang.skript.registry.SyntaxInfo;
-import org.skriptlang.skript.registry.SyntaxOrigin;
+import org.skriptlang.skript.registration.SyntaxInfo;
+import org.skriptlang.skript.registration.SyntaxOrigin;
 
 import java.util.List;
 

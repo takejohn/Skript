@@ -21,7 +21,7 @@ package ch.njol.skript.lang;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Contract;
 import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfo;
-import org.skriptlang.skript.registry.SyntaxInfo;
+import org.skriptlang.skript.registration.SyntaxInfo;
 import org.skriptlang.skript.lang.structure.StructureInfo;
 
 import java.util.Arrays;

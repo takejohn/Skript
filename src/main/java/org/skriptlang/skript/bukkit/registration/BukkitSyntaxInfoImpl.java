@@ -23,8 +23,8 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfo.Event;
-import org.skriptlang.skript.registry.SyntaxInfoImpl;
-import org.skriptlang.skript.registry.SyntaxOrigin;
+import org.skriptlang.skript.registration.SyntaxInfoImpl;
+import org.skriptlang.skript.registration.SyntaxOrigin;
 
 import java.util.List;
 import java.util.stream.Collectors;

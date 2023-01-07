@@ -19,7 +19,7 @@
 package org.skriptlang.skript;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.skriptlang.skript.registry.SkriptRegistry;
+import org.skriptlang.skript.registration.SkriptRegistry;
 
 /**
  * The main class for everything related to Skript.

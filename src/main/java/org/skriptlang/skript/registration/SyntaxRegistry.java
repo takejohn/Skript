@@ -16,16 +16,22 @@
  *
  * Copyright Peter Güttinger, SkriptLang team and contributors
  */
-package org.skriptlang.skript.registry;
+package org.skriptlang.skript.registration;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Unmodifiable;
 
-/**
- * The origin of syntax, currently only used for documentation purposes.
- */
-@ApiStatus.Experimental
-public interface SyntaxOrigin {
+import java.util.Set;
+
+interface SyntaxRegistry<I extends SyntaxInfo<?>> {
 	
-	String name();
+	@Unmodifiable
+	Set<I> syntaxes();
+	
+	@Contract("_ -> this")
+	SyntaxRegistry<I> register(I info);
+	
+	@Contract("-> new")
+	SyntaxRegistry<I> closeRegistration();
 	
 }

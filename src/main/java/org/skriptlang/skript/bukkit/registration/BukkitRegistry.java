@@ -19,10 +19,10 @@
 package org.skriptlang.skript.bukkit.registration;
 
 import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfo.Event;
-import org.skriptlang.skript.registry.SkriptRegistry.ChildKey;
-import org.skriptlang.skript.registry.SkriptRegistry.Key;
+import org.skriptlang.skript.registration.SkriptRegistry.ChildKey;
+import org.skriptlang.skript.registration.SkriptRegistry.Key;
 
-import static org.skriptlang.skript.registry.SkriptRegistry.Key.STRUCTURE;
+import static org.skriptlang.skript.registration.SkriptRegistry.Key.STRUCTURE;
 
 public interface BukkitRegistry {
 	

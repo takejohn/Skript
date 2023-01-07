@@ -19,8 +19,8 @@
 package org.skriptlang.skript;
 
 import org.jetbrains.annotations.Nullable;
-import org.skriptlang.skript.registry.SkriptRegistry;
-import org.skriptlang.skript.registry.SkriptRegistryImpl;
+import org.skriptlang.skript.registration.SkriptRegistry;
+import org.skriptlang.skript.registration.SkriptRegistryImpl;
 
 final class SkriptImpl implements Skript {
 	

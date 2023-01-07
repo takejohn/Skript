@@ -117,8 +117,8 @@ import org.skriptlang.skript.lang.entry.EntryValidator;
 import org.skriptlang.skript.lang.script.Script;
 import org.skriptlang.skript.lang.structure.Structure;
 import org.skriptlang.skript.lang.structure.StructureInfo;
-import org.skriptlang.skript.registry.SkriptRegistry;
-import org.skriptlang.skript.registry.SyntaxInfo;
+import org.skriptlang.skript.registration.SkriptRegistry;
+import org.skriptlang.skript.registration.SyntaxInfo;
 
 import java.io.File;
 import java.io.IOException;

@@ -19,8 +19,6 @@
 package ch.njol.skript.lang;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.jetbrains.annotations.Contract;
-import org.skriptlang.skript.registry.SyntaxInfo;
 
 public class ExpressionInfo<E extends Expression<T>, T> extends SyntaxElementInfo<E> {
 	

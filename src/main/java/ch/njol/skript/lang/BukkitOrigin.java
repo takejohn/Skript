@@ -22,7 +22,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Contract;
-import org.skriptlang.skript.registry.SyntaxOrigin;
+import org.skriptlang.skript.registration.SyntaxOrigin;
 
 public final class BukkitOrigin implements SyntaxOrigin {
 	

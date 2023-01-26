@@ -45,10 +45,7 @@ public final class SkriptRegistryImpl implements SkriptRegistry {
 	}
 	
 	public void closeRegistration() {
-		synchronized (registers) {
-			for (Map.Entry<Key<?>, SyntaxRegister<?>> entry : registers.entrySet())
-				entry.setValue(entry.getValue().closeRegistration());
-		}
+		registers.replaceAll(((key, register) -> register.closeRegistration()));
 	}
 	
 	private <I extends SyntaxInfo<?>> SyntaxRegister<I> register(Key<I> key) {

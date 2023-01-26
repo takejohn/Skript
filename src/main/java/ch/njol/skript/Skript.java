@@ -604,7 +604,6 @@ public final class Skript extends JavaPlugin implements Listener {
 				
 				stopAcceptingRegistrations();
 				
-				
 				Documentation.generate(); // TODO move to test classes?
 				
 				if (logNormal())
@@ -1228,9 +1227,10 @@ public final class Skript extends JavaPlugin implements Listener {
 	}
 	
 	private static void stopAcceptingRegistrations() {
-		instance().updateState(State.POST_REGISTRATION);
+		instance().updateState(State.ENDED_REGISTRATION);
 		Converters.createChainedConverters();
 		Classes.onRegistrationsStop();
+		instance().updateState(State.CLOSED_REGISTRATION);
 	}
 	
 	// ================ ADDONS ================

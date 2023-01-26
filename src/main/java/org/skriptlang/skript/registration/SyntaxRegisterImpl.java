@@ -30,46 +30,44 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 final class SyntaxRegisterImpl<T extends SyntaxInfo<?>> implements SyntaxRegister<T> {
 	
-	private final BlockingQueue<T> registry = new LinkedBlockingDeque<>();
+	private final BlockingQueue<T> register = new LinkedBlockingDeque<>();
 	
 	@Override
 	@Unmodifiable 
 	public Set<T> syntaxes() {
-		return ImmutableSet.copyOf(registry);
+		return ImmutableSet.copyOf(register);
 	}
 	
 	@Override
-	@Contract("_ -> this")
-	public SyntaxRegister<T> register(T info) {
-		registry.add(info);
-		return this;
+	public void add(T info) {
+		register.add(info);
 	}
 	
 	@Override
 	@Contract("-> new")
 	public SyntaxRegister<T> closeRegistration() {
-		return new FinalSyntaxRegister<>(registry);
+		return new FinalSyntaxRegister<>(register);
 	}
 	
 	static final class FinalSyntaxRegister<T extends SyntaxInfo<?>> implements SyntaxRegister<T> {
 		
-		private final Set<T> registry;
+		private final Set<T> register;
 		
-		FinalSyntaxRegister(BlockingQueue<T> registry) {
+		FinalSyntaxRegister(BlockingQueue<T> register) {
 			Set<T> set = new HashSet<>();
-			registry.drainTo(set);
-			this.registry = Collections.unmodifiableSet(set);
+			register.drainTo(set);
+			this.register = Collections.unmodifiableSet(set);
 		}
 		
 		@Override
 		@Unmodifiable 
 		public Set<T> syntaxes() {
-			return registry;
+			return register;
 		}
 		
 		@Override
 		@Contract("_ -> fail")
-		public SyntaxRegister<T> register(T info) {
+		public void add(T info) {
 			throw new UnsupportedOperationException("Registration is closed");
 		}
 		

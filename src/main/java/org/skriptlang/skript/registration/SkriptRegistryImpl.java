@@ -29,30 +29,30 @@ import java.util.concurrent.ConcurrentHashMap;
 @ApiStatus.Internal
 public final class SkriptRegistryImpl implements SkriptRegistry {
 	
-	private final Map<Key<?>, SyntaxRegister<?>> registries = new ConcurrentHashMap<>();
+	private final Map<Key<?>, SyntaxRegister<?>> registers = new ConcurrentHashMap<>();
 	
 	@Override
 	@Unmodifiable
 	public <I extends SyntaxInfo<?>> Set<I> syntaxes(Key<I> key) {
-		return registry(key).syntaxes();
+		return register(key).syntaxes();
 	}
 	
 	@Override
 	public <I extends SyntaxInfo<?>> void register(Key<I> key, I info) {
-		registry(key).register(info);
+		register(key).add(info);
 		if (key instanceof ChildKey)
 			register(((ChildKey<? extends I, I>) key).parent(), info);
 	}
 	
 	public void closeRegistration() {
-		synchronized (registries) {
-			for (Map.Entry<Key<?>, SyntaxRegister<?>> entry : registries.entrySet())
+		synchronized (registers) {
+			for (Map.Entry<Key<?>, SyntaxRegister<?>> entry : registers.entrySet())
 				entry.setValue(entry.getValue().closeRegistration());
 		}
 	}
 	
-	private <I extends SyntaxInfo<?>> SyntaxRegister<I> registry(Key<I> key) {
-		return (SyntaxRegister<I>) registries.computeIfAbsent(key, k -> new SyntaxRegisterImpl<>());
+	private <I extends SyntaxInfo<?>> SyntaxRegister<I> register(Key<I> key) {
+		return (SyntaxRegister<I>) registers.computeIfAbsent(key, k -> new SyntaxRegisterImpl<>());
 	}
 	
 }

@@ -28,8 +28,7 @@ interface SyntaxRegister<I extends SyntaxInfo<?>> {
 	@Unmodifiable
 	Set<I> syntaxes();
 	
-	@Contract("_ -> this")
-	SyntaxRegister<I> register(I info);
+	void add(I info);
 	
 	@Contract("-> new")
 	SyntaxRegister<I> closeRegistration();

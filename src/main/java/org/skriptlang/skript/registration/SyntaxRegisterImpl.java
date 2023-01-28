@@ -19,31 +19,29 @@
 package org.skriptlang.skript.registration;
 
 import com.google.common.collect.ImmutableList;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 final class SyntaxRegisterImpl<T extends SyntaxInfo<?>> implements SyntaxRegister<T> {
 	
-	private final Int2ObjectMap<T> syntaxes = new Int2ObjectRBTreeMap<>();
+	private final Set<T> syntaxes = new ConcurrentSkipListSet<>(Comparator.comparingInt(SyntaxInfo::priority));
 	
 	@Override
 	@Unmodifiable 
 	public List<T> syntaxes() {
 		synchronized (syntaxes) {
-			return ImmutableList.copyOf(syntaxes.values());
+			return ImmutableList.copyOf(syntaxes);
 		}
 	}
 	
 	@Override
 	public void add(T info) {
-		synchronized (syntaxes) {
-			if (syntaxes.put(info.id(), info) != null)
-				throw new IllegalStateException("Duplicate id " + info.id() + " on info " + info);
-		}
+		syntaxes.add(info);
 	}
 	
 	@Override

@@ -65,7 +65,7 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 	}
 	
 	@Override
-	public int id() {
+	public int priority() {
 		if (id == UNIDENTIFIED)
 			id = IOTA.getAndIncrement();
 		return id;
@@ -152,8 +152,8 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		}
 		
 		@Override
-		public int id() {
-			return super.id() | expressionType.ordinal() << 24;
+		public int priority() {
+			return super.priority() | expressionType.ordinal() << 24;
 		}
 		
 	}

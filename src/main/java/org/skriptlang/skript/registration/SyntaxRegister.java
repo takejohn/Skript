@@ -21,12 +21,12 @@ package org.skriptlang.skript.registration;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Set;
+import java.util.List;
 
 interface SyntaxRegister<I extends SyntaxInfo<?>> {
 	
 	@Unmodifiable
-	Set<I> syntaxes();
+	List<I> syntaxes();
 	
 	void add(I info);
 	

@@ -21,8 +21,8 @@ package org.skriptlang.skript.registration;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("unchecked")
@@ -33,7 +33,7 @@ public final class SkriptRegistryImpl implements SkriptRegistry {
 	
 	@Override
 	@Unmodifiable
-	public <I extends SyntaxInfo<?>> Set<I> syntaxes(Key<I> key) {
+	public <I extends SyntaxInfo<?>> List<I> syntaxes(Key<I> key) {
 		return register(key).syntaxes();
 	}
 	

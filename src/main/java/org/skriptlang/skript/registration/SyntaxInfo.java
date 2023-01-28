@@ -46,4 +46,10 @@ public interface SyntaxInfo<T extends SyntaxElement> extends DefaultSyntaxInfos 
 	@Unmodifiable
 	List<String> patterns();
 	
+	/**
+	 * The id may never be a duplicate, used for sorting in ascending order.
+	 * @return The id of this SyntaxInfo
+	 */
+	int id();
+	
 }

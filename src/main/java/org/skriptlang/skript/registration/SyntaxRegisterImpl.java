@@ -18,51 +18,52 @@
  */
 package org.skriptlang.skript.registration;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.List;
 
 final class SyntaxRegisterImpl<T extends SyntaxInfo<?>> implements SyntaxRegister<T> {
 	
-	private final BlockingQueue<T> register = new LinkedBlockingDeque<>();
+	private final Int2ObjectMap<T> syntaxes = new Int2ObjectRBTreeMap<>();
 	
 	@Override
 	@Unmodifiable 
-	public Set<T> syntaxes() {
-		return ImmutableSet.copyOf(register);
+	public List<T> syntaxes() {
+		synchronized (syntaxes) {
+			return ImmutableList.copyOf(syntaxes.values());
+		}
 	}
 	
 	@Override
 	public void add(T info) {
-		register.add(info);
+		synchronized (syntaxes) {
+			if (syntaxes.put(info.id(), info) != null)
+				throw new IllegalStateException("Duplicate id " + info.id() + " on info " + info);
+		}
 	}
 	
 	@Override
 	@Contract("-> new")
 	public SyntaxRegister<T> closeRegistration() {
-		return new FinalSyntaxRegister<>(register);
+		return new FinalSyntaxRegister<>(this);
 	}
 	
 	static final class FinalSyntaxRegister<T extends SyntaxInfo<?>> implements SyntaxRegister<T> {
 		
-		private final Set<T> register;
+		private final List<T> syntaxes;
 		
-		FinalSyntaxRegister(BlockingQueue<T> register) {
-			Set<T> set = new HashSet<>();
-			register.drainTo(set);
-			this.register = Collections.unmodifiableSet(set);
+		FinalSyntaxRegister(SyntaxRegister<T> register) {
+			syntaxes = register.syntaxes();
 		}
 		
 		@Override
 		@Unmodifiable 
-		public Set<T> syntaxes() {
-			return register;
+		public List<T> syntaxes() {
+			return syntaxes;
 		}
 		
 		@Override

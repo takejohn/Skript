@@ -84,14 +84,21 @@ public class SyntaxElementInfo<E extends SyntaxElement> {
 	public static <I extends SyntaxElementInfo<E>, E extends SyntaxElement> I fromModern(SyntaxInfo<? extends E> info) {
 		if (info instanceof BukkitSyntaxInfos.Event) {
 			BukkitSyntaxInfos.Event<?> event = (BukkitSyntaxInfos.Event<?>) info;
-			return (I) new SkriptEventInfo<>(event.name(), event.patterns().toArray(new String[0]), event.type(),
+
+			// We must first go back to the raw input
+			String rawName = event.name().startsWith("On ")
+					? event.name().substring(3)
+					: "*" + event.name();
+			SkriptEventInfo<?> eventInfo = new SkriptEventInfo<>(rawName, event.patterns().toArray(new String[0]), event.type(),
 				event.origin().name(), (Class<? extends Event>[]) event.events().toArray(new Class<?>[0]))
-					.since(event.since())
-					.documentationID(event.documentationId())
-					.description(event.description().toArray(new String[0]))
-					.examples(event.examples().toArray(new String[0]))
-					.keywords(event.keywords().toArray(new String[0]))
-					.requiredPlugins(event.requiredPlugins().toArray(new String[0]));
+				.since(event.since())
+				.documentationID(event.documentationId())
+				.description(event.description().toArray(new String[0]))
+				.examples(event.examples().toArray(new String[0]))
+				.keywords(event.keywords().toArray(new String[0]))
+				.requiredPlugins(event.requiredPlugins().toArray(new String[0]));
+
+			return (I) eventInfo;
 		} else if (info instanceof SyntaxInfo.Structure) {
 			SyntaxInfo.Structure<?> structure = (SyntaxInfo.Structure<?>) info;
 			return (I) new StructureInfo<>(structure.patterns().toArray(new String[0]), structure.type(),

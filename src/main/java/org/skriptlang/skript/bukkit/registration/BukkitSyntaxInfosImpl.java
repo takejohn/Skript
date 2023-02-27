@@ -56,7 +56,9 @@ final class BukkitSyntaxInfosImpl {
 		) {
 			super(origin, type, patterns.stream().map(BukkitSyntaxInfos::pattern)
 				.collect(Collectors.toList()), null);
-			this.name = name;
+			this.name = name.startsWith("*")
+				? name.substring(1)
+				: "On " + name;
 			this.id = id;
 			this.since = since;
 			this.documentationId = documentationId;

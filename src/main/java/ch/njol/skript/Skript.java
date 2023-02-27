@@ -21,8 +21,6 @@ package ch.njol.skript;
 import ch.njol.skript.aliases.Aliases;
 import ch.njol.skript.bukkitutil.BurgerHelper;
 import ch.njol.skript.classes.ClassInfo;
-import org.skriptlang.skript.lang.comparator.Comparator;
-import org.skriptlang.skript.lang.converter.Converter;
 import ch.njol.skript.classes.data.BukkitClasses;
 import ch.njol.skript.classes.data.BukkitEventValues;
 import ch.njol.skript.classes.data.DefaultComparators;
@@ -59,8 +57,6 @@ import ch.njol.skript.log.LogHandler;
 import ch.njol.skript.log.SkriptLogger;
 import ch.njol.skript.log.Verbosity;
 import ch.njol.skript.registrations.Classes;
-import org.skriptlang.skript.lang.comparator.Comparators;
-import org.skriptlang.skript.lang.converter.Converters;
 import ch.njol.skript.registrations.EventValues;
 import ch.njol.skript.tests.runner.SkriptTestEvent;
 import ch.njol.skript.tests.runner.TestMode;
@@ -112,7 +108,10 @@ import org.skriptlang.skript.Skript.State;
 import org.skriptlang.skript.bukkit.registration.BukkitOrigin;
 import org.skriptlang.skript.bukkit.registration.BukkitRegistry;
 import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfos;
-import org.skriptlang.skript.bukkit.registration.EventInfoBuilder;
+import org.skriptlang.skript.lang.comparator.Comparator;
+import org.skriptlang.skript.lang.comparator.Comparators;
+import org.skriptlang.skript.lang.converter.Converter;
+import org.skriptlang.skript.lang.converter.Converters;
 import org.skriptlang.skript.lang.entry.EntryValidator;
 import org.skriptlang.skript.lang.script.Script;
 import org.skriptlang.skript.lang.structure.Structure;
@@ -1469,13 +1468,12 @@ public final class Skript extends JavaPlugin implements Listener {
 		String name, Class<E> eventClass, Class<? extends Event>[] events, String... patterns
 	) {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
-		BukkitSyntaxInfos.Event<E> info = EventInfoBuilder.builder(eventClass, name)
-				.origin(BukkitOrigin.of(originClass))
-				.addPatterns(patterns)
-				.addEvents(events)
-				.build();
+		for (int i = 0; i < patterns.length; i++)
+			patterns[i] = BukkitSyntaxInfos.pattern(patterns[i]);
+		SkriptEventInfo<E> legacy = new SkriptEventInfo<>(name, patterns, eventClass, originClass, events);
+		BukkitSyntaxInfos.Event<E> info = BukkitSyntaxInfos.Event.legacy(legacy);
 		instance().registry().register(BukkitRegistry.EVENT, info);
-		return SyntaxElementInfo.fromModern(info);
+		return legacy;
 	}
 	
 	/**

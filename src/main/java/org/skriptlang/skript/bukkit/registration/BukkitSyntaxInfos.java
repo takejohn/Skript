@@ -19,8 +19,10 @@
 package org.skriptlang.skript.bukkit.registration;
 
 import ch.njol.skript.lang.SkriptEvent;
+import ch.njol.skript.lang.SkriptEventInfo;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.registration.SyntaxInfo;
 import org.skriptlang.skript.registration.SyntaxOrigin;
 
@@ -32,18 +34,45 @@ public interface BukkitSyntaxInfos {
 	@ApiStatus.NonExtendable
 	interface Event<E extends SkriptEvent> extends SyntaxInfo.Structure<E> {
 		
-		@Contract("_, _, _, _, _ -> new")
+		@Contract("_, _, _, _, _, _, _, _, _, _, _, _ -> new")
 		static <E extends SkriptEvent> BukkitSyntaxInfos.Event<E> of(
-				SyntaxOrigin origin, String name, Class<E> type, List<String> patterns,
-				List<Class<? extends org.bukkit.event.Event>> events
+			SyntaxOrigin origin, Class<E> type, List<String> patterns, String name, String id, @Nullable String since,
+			@Nullable String documentationId, List<String> description, List<String> examples, List<String> keywords,
+			List<String> requiredPlugins, List<Class<? extends org.bukkit.event.Event>> events
 		) {
-			return new BukkitSyntaxInfosImpl.EventImpl<>(origin, type, patterns, name, events);
+			return new BukkitSyntaxInfosImpl.EventImpl<>(origin, type, patterns, name, id, since, documentationId,
+				description, examples, keywords, requiredPlugins, events);
+		}
+		
+		@Contract("_ -> new")
+		static <E extends SkriptEvent> BukkitSyntaxInfos.Event<E> legacy(SkriptEventInfo<E> info) {
+			return new BukkitSyntaxInfosImpl.LegacyEventImpl<>(info);
 		}
 		
 		String name();
 		
+		String id();
+		
+		@Nullable
+		String since();
+		
+		@Nullable
+		String documentationId();
+		
+		List<String> description();
+		
+		List<String> examples();
+		
+		List<String> keywords();
+		
+		List<String> requiredPlugins();
+		
 		List<Class<? extends org.bukkit.event.Event>> events();
 		
+	}
+	
+	static String pattern(String pattern) {
+		return "[on] " + SkriptEvent.fixPattern(pattern) + " [with priority (lowest|low|normal|high|highest|monitor)]";
 	}
 	
 }

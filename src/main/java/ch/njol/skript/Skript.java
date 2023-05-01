@@ -1276,7 +1276,9 @@ public final class Skript extends JavaPlugin implements Listener {
 	}
 	
 	private static void stopAcceptingRegistrations() {
-		instance().updateState(State.CLOSED_REGISTRATION);
+		org.skriptlang.skript.Skript instance = instance();
+		instance.updateState(State.ENDED_REGISTRATION);
+		instance.updateState(State.CLOSED_REGISTRATION);
 	}
 	
 	// ================ ADDONS ================

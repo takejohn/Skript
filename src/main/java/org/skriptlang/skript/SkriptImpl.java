@@ -54,8 +54,9 @@ final class SkriptImpl implements Skript {
 	
 	@Override
 	public void updateState(State state) {
-		if (state == State.CLOSED_REGISTRATION) {
+		if (state == State.ENDED_REGISTRATION)
 			Converters.createChainedConverters();
+		else if (state == State.CLOSED_REGISTRATION) {
 			registry.closeRegistration();
 			Classes.onRegistrationsStop();
 		}

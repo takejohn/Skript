@@ -18,7 +18,9 @@
  */
 package org.skriptlang.skript;
 
+import ch.njol.skript.registrations.Classes;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript.lang.converter.Converters;
 import org.skriptlang.skript.registration.SkriptRegistry;
 import org.skriptlang.skript.registration.SkriptRegistryImpl;
 
@@ -52,9 +54,13 @@ final class SkriptImpl implements Skript {
 	
 	@Override
 	public void updateState(State state) {
-		if (state == State.CLOSED_REGISTRATION)
+		if (state == State.CLOSED_REGISTRATION) {
+			Converters.createChainedConverters();
 			registry.closeRegistration();
+			Classes.onRegistrationsStop();
+		}
+
 		this.state = state;
 	}
-	
+
 }

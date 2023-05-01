@@ -1276,10 +1276,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	}
 	
 	private static void stopAcceptingRegistrations() {
-		instance().updateState(State.ENDED_REGISTRATION);
-		Converters.createChainedConverters();
 		instance().updateState(State.CLOSED_REGISTRATION);
-		Classes.onRegistrationsStop();
 	}
 	
 	// ================ ADDONS ================

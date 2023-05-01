@@ -53,7 +53,6 @@ public interface Skript {
 	
 	enum State {
 		REGISTRATION(true),
-		ENDED_REGISTRATION(false),
 		CLOSED_REGISTRATION(false);
 		
 		private final boolean acceptRegistration;

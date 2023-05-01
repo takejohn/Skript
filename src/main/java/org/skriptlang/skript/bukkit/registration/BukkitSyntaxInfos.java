@@ -72,7 +72,7 @@ public interface BukkitSyntaxInfos {
 	}
 	
 	static String pattern(String pattern) {
-		return "[on] " + SkriptEvent.fixPattern(pattern) + " [with priority (lowest|low|normal|high|highest|monitor)]";
+		return "[on] " + SkriptEvent.fixPattern(pattern) + SkriptEventInfo.EVENT_PRIORITY_SYNTAX;
 	}
 	
 }

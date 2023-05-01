@@ -36,12 +36,12 @@ public interface BukkitSyntaxInfos {
 		
 		@Contract("_, _, _, _, _, _, _, _, _, _, _, _ -> new")
 		static <E extends SkriptEvent> BukkitSyntaxInfos.Event<E> of(
-			SyntaxOrigin origin, Class<E> type, List<String> patterns, String name, String id, @Nullable String since,
-			@Nullable String documentationId, List<String> description, List<String> examples, List<String> keywords,
-			List<String> requiredPlugins, List<Class<? extends org.bukkit.event.Event>> events
+				SyntaxOrigin origin, Class<E> type, List<String> patterns, String name, String id, @Nullable String since,
+				@Nullable String documentationId, List<String> description, List<String> examples, List<String> keywords,
+				List<String> requiredPlugins, List<Class<? extends org.bukkit.event.Event>> events
 		) {
 			return new BukkitSyntaxInfosImpl.EventImpl<>(origin, type, patterns, name, id, since, documentationId,
-				description, examples, keywords, requiredPlugins, events);
+					description, examples, keywords, requiredPlugins, events);
 		}
 		
 		@Contract("_ -> new")

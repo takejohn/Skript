@@ -1412,9 +1412,9 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Unmodifiable
 	public static Collection<SyntaxElementInfo<? extends Effect>> getEffects() {
 		return instance().registry()
-			.syntaxes(SkriptRegistry.Key.EFFECT).stream()
-			.map(SyntaxElementInfo::<SyntaxElementInfo<Effect>, Effect>fromModern)
-			.collect(Collectors.toList());
+				.syntaxes(SkriptRegistry.Key.EFFECT).stream()
+				.map(SyntaxElementInfo::<SyntaxElementInfo<Effect>, Effect>fromModern)
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -1424,9 +1424,9 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Unmodifiable
 	public static Collection<SyntaxElementInfo<? extends Section>> getSections() {
 		return instance().registry()
-			.syntaxes(SkriptRegistry.Key.SECTION).stream()
-			.map(SyntaxElementInfo::<SyntaxElementInfo<Section>, Section>fromModern)
-			.collect(Collectors.toList());
+				.syntaxes(SkriptRegistry.Key.SECTION).stream()
+				.map(SyntaxElementInfo::<SyntaxElementInfo<Section>, Section>fromModern)
+				.collect(Collectors.toList());
 	}
 
 	// ================ EXPRESSIONS ================
@@ -1562,9 +1562,9 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Unmodifiable
 	public static Collection<SkriptEventInfo<?>> getEvents() {
 		return instance().registry()
-			.syntaxes(BukkitRegistry.EVENT).stream()
-			.map(SyntaxElementInfo::<SkriptEventInfo<SkriptEvent>, SkriptEvent>fromModern)
-			.collect(Collectors.toList());
+				.syntaxes(BukkitRegistry.EVENT).stream()
+				.map(SyntaxElementInfo::<SkriptEventInfo<SkriptEvent>, SkriptEvent>fromModern)
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -1573,9 +1573,9 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Unmodifiable
 	public static List<StructureInfo<? extends Structure>> getStructures() {
 		return instance().registry()
-			.syntaxes(SkriptRegistry.Key.STRUCTURE).stream()
-			.map(SyntaxElementInfo::<StructureInfo<Structure>, Structure>fromModern)
-			.collect(Collectors.toList());
+				.syntaxes(SkriptRegistry.Key.STRUCTURE).stream()
+				.map(SyntaxElementInfo::<StructureInfo<Structure>, Structure>fromModern)
+				.collect(Collectors.toList());
 	}
 
 	// ================ COMMANDS ================

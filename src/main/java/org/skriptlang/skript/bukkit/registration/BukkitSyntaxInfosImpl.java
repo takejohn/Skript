@@ -50,12 +50,12 @@ final class BukkitSyntaxInfosImpl {
 		private final List<Class<? extends org.bukkit.event.Event>> events;
 		
 		EventImpl(
-			SyntaxOrigin origin, Class<E> type, List<String> patterns, String name, String id, @Nullable String since,
-			@Nullable String documentationId, List<String> description, List<String> examples, List<String> keywords,
-			List<String> requiredPlugins, List<Class<? extends org.bukkit.event.Event>> events
+				SyntaxOrigin origin, Class<E> type, List<String> patterns, String name, String id, @Nullable String since,
+				@Nullable String documentationId, List<String> description, List<String> examples, List<String> keywords,
+				List<String> requiredPlugins, List<Class<? extends org.bukkit.event.Event>> events
 		) {
 			super(origin, type, patterns.stream().map(BukkitSyntaxInfos::pattern)
-				.collect(Collectors.toList()), null);
+					.collect(Collectors.toList()), null);
 			this.name = name.startsWith("*")
 				? name.substring(1)
 				: "On " + name;
@@ -124,7 +124,7 @@ final class BukkitSyntaxInfosImpl {
 				return false;
 			Event<?> event = (Event<?>) other;
 			return origin().equals(event.origin()) && type().equals(event.type()) &&
-				patterns().equals(event.patterns()) && name().equals(event.name());
+					patterns().equals(event.patterns()) && name().equals(event.name());
 		}
 		
 		@Override
@@ -135,12 +135,12 @@ final class BukkitSyntaxInfosImpl {
 		@Override
 		public String toString() {
 			return MoreObjects.toStringHelper(this)
-				.add("origin", origin())
-				.add("type", type())
-				.add("patterns", patterns())
-				.add("name", name())
-				.add("events", events())
-				.toString();
+					.add("origin", origin())
+					.add("type", type())
+					.add("patterns", patterns())
+					.add("name", name())
+					.add("events", events())
+					.toString();
 		}
 		
 	}
@@ -151,7 +151,7 @@ final class BukkitSyntaxInfosImpl {
 		
 		LegacyEventImpl(SkriptEventInfo<E> info) {
 			super(BukkitOrigin.of(info.getOriginClassPath()), info.getElementClass(),
-				Arrays.asList(info.getPatterns()), null);
+					Arrays.asList(info.getPatterns()), null);
 			this.info = info;
 		}
 		
@@ -180,29 +180,29 @@ final class BukkitSyntaxInfosImpl {
 		@Override
 		public List<String> description() {
 			return info.getDescription() == null
-				? Collections.emptyList()
-				: Arrays.asList(info.getDescription());
+					? Collections.emptyList()
+					: Arrays.asList(info.getDescription());
 		}
 		
 		@Override
 		public List<String> examples() {
 			return info.getExamples() == null
-				? Collections.emptyList()
-				: Arrays.asList(info.getExamples());
+					? Collections.emptyList()
+					: Arrays.asList(info.getExamples());
 		}
 		
 		@Override
 		public List<String> keywords() {
 			return info.getKeywords() == null
-				? Collections.emptyList()
-				: Arrays.asList(info.getKeywords());
+					? Collections.emptyList()
+					: Arrays.asList(info.getKeywords());
 		}
 		
 		@Override
 		public List<String> requiredPlugins() {
 			return info.getRequiredPlugins() == null
-				? Collections.emptyList()
-				: Arrays.asList(info.getRequiredPlugins());
+					? Collections.emptyList()
+					: Arrays.asList(info.getRequiredPlugins());
 		}
 		
 		@Override
@@ -218,7 +218,7 @@ final class BukkitSyntaxInfosImpl {
 				return false;
 			Event<?> event = (Event<?>) other;
 			return origin().equals(event.origin()) && type().equals(event.type()) &&
-				patterns().equals(event.patterns()) && name().equals(event.name());
+					patterns().equals(event.patterns()) && name().equals(event.name());
 		}
 		
 		@Override
@@ -229,12 +229,12 @@ final class BukkitSyntaxInfosImpl {
 		@Override
 		public String toString() {
 			return MoreObjects.toStringHelper(this)
-				.add("origin", origin())
-				.add("type", type())
-				.add("patterns", patterns())
-				.add("name", name())
-				.add("events", events())
-				.toString();
+					.add("origin", origin())
+					.add("type", type())
+					.add("patterns", patterns())
+					.add("name", name())
+					.add("events", events())
+					.toString();
 		}
 		
 	}

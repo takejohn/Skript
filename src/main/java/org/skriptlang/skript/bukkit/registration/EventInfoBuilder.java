@@ -198,7 +198,7 @@ public final class EventInfoBuilder<E extends SkriptEvent> {
 	@Contract("-> new")
 	public BukkitSyntaxInfos.Event<E> build() {
 		return BukkitSyntaxInfos.Event.of(origin, type, patterns, name, id, since, documentationId,
-			description, examples, keywords, requiredPlugins, events);
+				description, examples, keywords, requiredPlugins, events);
 	}
 	
 }

@@ -89,20 +89,22 @@ public class SyntaxElementInfo<E extends SyntaxElement> {
 			String rawName = event.name().startsWith("On ")
 					? event.name().substring(3)
 					: "*" + event.name();
-			SkriptEventInfo<?> eventInfo = new SkriptEventInfo<>(rawName, event.patterns().toArray(new String[0]), event.type(),
-				event.origin().name(), (Class<? extends Event>[]) event.events().toArray(new Class<?>[0]))
-				.since(event.since())
-				.documentationID(event.documentationId())
-				.description(event.description().toArray(new String[0]))
-				.examples(event.examples().toArray(new String[0]))
-				.keywords(event.keywords().toArray(new String[0]))
-				.requiredPlugins(event.requiredPlugins().toArray(new String[0]));
+			SkriptEventInfo<?> eventInfo = new SkriptEventInfo<>(
+					rawName, event.patterns().toArray(new String[0]),
+					event.type(), event.origin().name(),
+					(Class<? extends Event>[]) event.events().toArray(new Class<?>[0])
+			).since(event.since())
+					.documentationID(event.documentationId())
+					.description(event.description().toArray(new String[0]))
+					.examples(event.examples().toArray(new String[0]))
+					.keywords(event.keywords().toArray(new String[0]))
+					.requiredPlugins(event.requiredPlugins().toArray(new String[0]));
 
 			return (I) eventInfo;
 		} else if (info instanceof SyntaxInfo.Structure) {
 			SyntaxInfo.Structure<?> structure = (SyntaxInfo.Structure<?>) info;
 			return (I) new StructureInfo<>(structure.patterns().toArray(new String[0]), structure.type(),
-				structure.origin().name(), structure.entryValidator());
+					structure.origin().name(), structure.entryValidator());
 		} else if (info instanceof SyntaxInfo.Expression) {
 			return (I) fromModernExpression((SyntaxInfo.Expression<?, ?>) info);
 		}
@@ -113,7 +115,7 @@ public class SyntaxElementInfo<E extends SyntaxElement> {
 	@Contract("_ -> new")
 	private static <E extends Expression<R>, R> ExpressionInfo<E, R> fromModernExpression(SyntaxInfo.Expression<E, R> info) {
 		return new ExpressionInfo<>(info.patterns().toArray(new String[0]), info.returnType(),
-			info.type(), info.origin().name(), info.expressionType());
+				info.type(), info.origin().name(), info.expressionType());
 	}
 	
 }

@@ -79,7 +79,7 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 			return false;
 		SyntaxInfo<?> info = (SyntaxInfo<?>) other;
 		return origin().equals(info.origin()) && type().equals(info.type()) &&
-			patterns().equals(info.patterns());
+				patterns().equals(info.patterns());
 	}
 	
 	@Override
@@ -90,10 +90,10 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this)
-			.add("origin", origin())
-			.add("type", type())
-			.add("patterns", patterns())
-			.toString();
+				.add("origin", origin())
+				.add("type", type())
+				.add("patterns", patterns())
+				.toString();
 	}
 	
 	static final class ExpressionImpl<E extends ch.njol.skript.lang.Expression<R>, R>
@@ -143,12 +143,12 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		@Override
 		public String toString() {
 			return MoreObjects.toStringHelper(this)
-				.add("origin", origin())
-				.add("type", type())
-				.add("patterns", patterns())
-				.add("returnType", returnType())
-				.add("expressionType", expressionType())
-				.toString();
+					.add("origin", origin())
+					.add("type", type())
+					.add("patterns", patterns())
+					.add("returnType", returnType())
+					.add("expressionType", expressionType())
+					.toString();
 		}
 		
 		@Override
@@ -199,11 +199,11 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		@Override
 		public String toString() {
 			return MoreObjects.toStringHelper(this)
-				.add("origin", origin())
-				.add("type", type())
-				.add("patterns", patterns())
-				.add("entryValidator", entryValidator())
-				.toString();
+					.add("origin", origin())
+					.add("type", type())
+					.add("patterns", patterns())
+					.add("entryValidator", entryValidator())
+					.toString();
 		}
 		
 	}

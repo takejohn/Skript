@@ -26,16 +26,25 @@ import org.skriptlang.skript.registration.SkriptRegistry;
  * This is separated from platform-specific implementations.
  */
 @ApiStatus.Experimental
-@ApiStatus.NonExtendable
 public interface Skript {
 	
 	/**
-	 * This guarantees to always return the same object.
+	 * Returns the current Skript instance, can be updated with {@link Skript#setInstance(Skript)}
 	 *
 	 * @return {@link Skript}
 	 */
 	static Skript instance() {
 		return SkriptImpl.instance();
+	}
+
+	/**
+	 * Updates the Skript instance returned by {@link Skript#instance()}. Because state doesn't get preserved,
+	 * it is recommended to update the Skript instance before any syntax loading.
+	 *
+	 * @param instance The new Skript instance
+	 */
+	static void setInstance(Skript instance) {
+		SkriptImpl.setInstance(instance);
 	}
 	
 	/**

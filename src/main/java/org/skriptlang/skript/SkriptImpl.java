@@ -34,8 +34,12 @@ final class SkriptImpl implements Skript {
 		if (instance != null)
 			return instance;
 		instance = new SkriptImpl();
-		SkriptImpl.instance = instance;
+		setInstance(instance);
 		return instance;
+	}
+
+	static void setInstance(Skript instance) {
+		SkriptImpl.instance = instance;
 	}
 	
 	private final SkriptRegistryImpl registry = new SkriptRegistryImpl();

@@ -27,29 +27,30 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("unchecked")
 @ApiStatus.Internal
-public final class SkriptRegistryImpl implements SkriptRegistry {
-	
+public class SimpleSkriptRegistry implements SkriptRegistry {
+
 	private final Map<Key<?>, SyntaxRegister<?>> registers = new ConcurrentHashMap<>();
-	
+
 	@Override
 	@Unmodifiable
 	public <I extends SyntaxInfo<?>> List<I> syntaxes(Key<I> key) {
 		return register(key).syntaxes();
 	}
-	
+
 	@Override
 	public <I extends SyntaxInfo<?>> void register(Key<I> key, I info) {
 		register(key).add(info);
 		if (key instanceof ChildKey)
 			register(((ChildKey<? extends I, I>) key).parent(), info);
 	}
-	
+
+	@Override
 	public void closeRegistration() {
 		registers.replaceAll(((key, register) -> register.closeRegistration()));
 	}
-	
-	private <I extends SyntaxInfo<?>> SyntaxRegister<I> register(Key<I> key) {
+
+	protected <I extends SyntaxInfo<?>> SyntaxRegister<I> register(Key<I> key) {
 		return (SyntaxRegister<I>) registers.computeIfAbsent(key, k -> new SyntaxRegisterImpl<>());
 	}
-	
+
 }

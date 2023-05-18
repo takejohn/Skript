@@ -33,48 +33,62 @@ import java.util.List;
  */
 @ApiStatus.Experimental
 public interface SkriptRegistry {
-	
+
 	/**
 	 * Gets all syntaxes related to a key.
 	 */
 	@Unmodifiable
 	<I extends SyntaxInfo<?>> List<I> syntaxes(Key<I> key);
-	
+
+	/**
+	 * Registers a new syntax at a certain key.
+	 *
+	 * @param key The key to register the syntax at
+	 * @param info The syntax info
+	 * @param <I> The syntax type
+	 */
 	<I extends SyntaxInfo<?>> void register(Key<I> key, I info);
-	
+
+	/**
+	 * Closes registration of the registry. After this {@link SkriptRegistry#register(Key, SyntaxInfo)} is no longer
+	 * expected to work. Do not call this method more than once.
+	 */
+	@ApiStatus.Internal
+	void closeRegistration();
+
 	/**
 	 * Represents a syntax element type.
 	 */
 	interface Key<T extends SyntaxInfo<?>> {
 		Key<SyntaxInfo.Structure<?>> STRUCTURE = of("structure");
 		Key<SyntaxInfo<? extends Section>> SECTION = of("section");
-		
+
 		Key<SyntaxInfo<? extends Statement>> STATEMENT = of("statement");
 		Key<SyntaxInfo<? extends Condition>> CONDITION = ChildKey.of(STATEMENT, "condition");
 		Key<SyntaxInfo<? extends Effect>> EFFECT = ChildKey.of(STATEMENT, "effect");
 
 		Key<SyntaxInfo.Expression<?, ?>> EXPRESSION = of("expression");
-		
+
 		String name();
-		
+
 		static <T extends SyntaxInfo<?>> Key<T> of(String name) {
 			return new KeyImpl<>(name);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Like a {@link Key} but has a parent which causes elements to
 	 * be registered to both this and the parent.
 	 */
 	interface ChildKey<T extends P, P extends SyntaxInfo<?>> extends Key<T> {
-		
+
 		static <T extends P, P extends SyntaxInfo<?>> Key<T> of(Key<P> parent, String name) {
 			return new KeyImpl.Child<>(parent, name);
 		}
-		
+
 		Key<P> parent();
-		
+
 	}
-	
+
 }

@@ -22,7 +22,7 @@ import ch.njol.skript.registrations.Classes;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.lang.converter.Converters;
 import org.skriptlang.skript.registration.SkriptRegistry;
-import org.skriptlang.skript.registration.SkriptRegistryImpl;
+import org.skriptlang.skript.registration.SimpleSkriptRegistry;
 
 final class SkriptImpl implements Skript {
 	
@@ -42,7 +42,7 @@ final class SkriptImpl implements Skript {
 		SkriptImpl.instance = instance;
 	}
 	
-	private final SkriptRegistryImpl registry = new SkriptRegistryImpl();
+	private final SkriptRegistry registry = new SimpleSkriptRegistry();
 	
 	private State state = State.REGISTRATION;
 	

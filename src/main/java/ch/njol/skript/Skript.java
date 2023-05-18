@@ -1267,7 +1267,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	public static boolean isAcceptRegistrations() {
 		if (instance == null)
 			throw new IllegalStateException("Skript was never loaded");
-		return instance().state().acceptRegistration() && instance.isEnabled();
+		return instance().state().acceptsRegistration() && instance.isEnabled();
 	}
 	
 	public static void checkAcceptRegistrations() {

@@ -18,11 +18,12 @@
  */
 package org.skriptlang.skript.registration;
 
+import org.skriptlang.skript.registration.SkriptRegistry.ChildKey;
 import org.skriptlang.skript.registration.SkriptRegistry.Key;
 
-final class KeyImpl<T extends SyntaxInfo<?>> implements Key<T> {
+class KeyImpl<T extends SyntaxInfo<?>> implements Key<T> {
 	
-	private final String name;
+	protected final String name;
 	
 	KeyImpl(String name) {
 		this.name = name;
@@ -51,42 +52,18 @@ final class KeyImpl<T extends SyntaxInfo<?>> implements Key<T> {
 		return name;
 	}
 	
-	static final class Child<T extends P, P extends SyntaxInfo<?>> implements SkriptRegistry.ChildKey<T, P> {
+	static final class Child<T extends P, P extends SyntaxInfo<?>> extends KeyImpl<T> implements ChildKey<T, P> {
 		
 		private final Key<P> parent;
-		private final String name;
 		
 		Child(Key<P> parent, String name) {
+			super(name);
 			this.parent = parent;
-			this.name = name;
-		}
-		
-		@Override
-		public String name() {
-			return name;
 		}
 		
 		@Override
 		public Key<P> parent() {
 			return parent;
-		}
-		
-		@Override
-		public int hashCode() {
-			return name.hashCode();
-		}
-		
-		@Override
-		public boolean equals(Object other) {
-			if (!(other instanceof Key<?>))
-				return false;
-			Key<?> key = (Key<?>) other;
-			return name().equals(key.name());
-		}
-		
-		@Override
-		public String toString() {
-			return name;
 		}
 		
 	}

@@ -27,9 +27,10 @@ import org.skriptlang.skript.lang.structure.StructureInfo;
 import java.util.Arrays;
 
 /**
- * @author Peter Güttinger
+ * @deprecated Use {@link SyntaxInfo}
  * @param <E> the syntax element this info is for
  */
+@Deprecated
 public class SyntaxElementInfo<E extends SyntaxElement> {
 	
 	@Deprecated

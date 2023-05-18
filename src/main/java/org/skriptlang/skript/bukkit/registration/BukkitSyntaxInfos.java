@@ -30,6 +30,8 @@ import java.util.List;
 
 @ApiStatus.Internal
 public interface BukkitSyntaxInfos {
+
+	String EVENT_PRIORITY_SYNTAX = " [with priority (lowest|low|normal|high|highest|monitor)]";
 	
 	@ApiStatus.NonExtendable
 	interface Event<E extends SkriptEvent> extends SyntaxInfo.Structure<E> {
@@ -70,9 +72,46 @@ public interface BukkitSyntaxInfos {
 		List<Class<? extends org.bukkit.event.Event>> events();
 		
 	}
-	
-	static String pattern(String pattern) {
-		return "[on] " + SkriptEvent.fixPattern(pattern) + SkriptEventInfo.EVENT_PRIORITY_SYNTAX;
+
+	/**
+	 * Fixes a pattern for events. Adds {@literal on} as prefix and {@literal with priority ...} as suffix.
+	 * Make sure to only use this on a pattern once at most.
+	 *
+	 * @param pattern The pattern to make usable as event
+	 * @return The event-ready pattern
+	 */
+	static String eventPattern(String pattern) {
+		return "[on] " + fixPattern(pattern) + EVENT_PRIORITY_SYNTAX;
+	}
+
+	/**
+	 * Fixes patterns in event by modifying every {@link ch.njol.skript.patterns.TypePatternElement}
+	 * to be nullable.
+	 */
+	static String fixPattern(String pattern) {
+		char[] chars = pattern.toCharArray();
+		StringBuilder stringBuilder = new StringBuilder();
+
+		boolean inType = false;
+		for (int i = 0; i < chars.length; i++) {
+			char c = chars[i];
+			stringBuilder.append(c);
+
+			if (c == '%') {
+				// toggle inType
+				inType = !inType;
+
+				// add the dash character if it's not already present
+				// a type specification can have two prefix characters for modification
+				if (inType && i + 2 < chars.length && chars[i + 1] != '-' && chars[i + 2] != '-')
+					stringBuilder.append('-');
+			} else if (c == '\\' && i + 1 < chars.length) {
+				// Make sure we don't toggle inType for escape percentage signs
+				stringBuilder.append(chars[i + 1]);
+				i++;
+			}
+		}
+		return stringBuilder.toString();
 	}
 	
 }

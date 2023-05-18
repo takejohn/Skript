@@ -25,6 +25,7 @@ import ch.njol.skript.SkriptEventHandler;
 import ch.njol.skript.config.SectionNode;
 import ch.njol.skript.events.EvtClick;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
+import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfos;
 import org.skriptlang.skript.lang.script.Script;
 import org.skriptlang.skript.lang.entry.EntryContainer;
 import org.skriptlang.skript.lang.structure.Structure;
@@ -219,31 +220,12 @@ public abstract class SkriptEvent extends Structure {
 	/**
 	 * Fixes patterns in event by modifying every {@link ch.njol.skript.patterns.TypePatternElement}
 	 * to be nullable.
+	 * 
+	 * @deprecated Use {@link BukkitSyntaxInfos#fixPattern(String)}
 	 */
+	@Deprecated
 	public static String fixPattern(String pattern) {
-		char[] chars = pattern.toCharArray();
-		StringBuilder stringBuilder = new StringBuilder();
-
-		boolean inType = false;
-		for (int i = 0; i < chars.length; i++) {
-			char c = chars[i];
-			stringBuilder.append(c);
-
-			if (c == '%') {
-				// toggle inType
-				inType = !inType;
-
-				// add the dash character if it's not already present
-				// a type specification can have two prefix characters for modification
-				if (inType && i + 2 < chars.length && chars[i + 1] != '-' && chars[i + 2] != '-')
-					stringBuilder.append('-');
-			} else if (c == '\\' && i + 1 < chars.length) {
-				// Make sure we don't toggle inType for escape percentage signs
-				stringBuilder.append(chars[i + 1]);
-				i++;
-			}
-		}
-		return stringBuilder.toString();
+		return BukkitSyntaxInfos.fixPattern(pattern);
 	}
 
 }

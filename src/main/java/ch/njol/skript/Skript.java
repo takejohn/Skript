@@ -1518,7 +1518,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	) {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		for (int i = 0; i < patterns.length; i++)
-			patterns[i] = BukkitSyntaxInfos.pattern(patterns[i]);
+			patterns[i] = BukkitSyntaxInfos.eventPattern(patterns[i]);
 		SkriptEventInfo<E> legacy = new SkriptEventInfo<>(name, patterns, eventClass, originClass, events);
 		BukkitSyntaxInfos.Event<E> info = BukkitSyntaxInfos.Event.legacy(legacy);
 		instance().registry().register(BukkitRegistry.EVENT, info);

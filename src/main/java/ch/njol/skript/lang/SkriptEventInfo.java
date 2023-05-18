@@ -22,14 +22,19 @@ import ch.njol.skript.SkriptAPIException;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.eclipse.jdt.annotation.Nullable;
+import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfos;
 import org.skriptlang.skript.lang.structure.StructureInfo;
 
 import java.util.Locale;
 
 public final class SkriptEventInfo<E extends SkriptEvent> extends StructureInfo<E> {
 
-	public static final String EVENT_PRIORITY_SYNTAX = " [with priority (lowest|low|normal|high|highest|monitor)]";
-	
+	/**
+	 * @deprecated Use {@link BukkitSyntaxInfos#EVENT_PRIORITY_SYNTAX}
+	 */
+	@Deprecated
+	public static final String EVENT_PRIORITY_SYNTAX = BukkitSyntaxInfos.EVENT_PRIORITY_SYNTAX;
+
 	public Class<? extends Event>[] events;
 	public final String name;
 	

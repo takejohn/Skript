@@ -56,14 +56,14 @@ public interface Skript {
 		ENDED_REGISTRATION(false),
 		CLOSED_REGISTRATION(false);
 
-		private final boolean acceptRegistration;
+		private final boolean acceptsRegistration;
 		
-		State(boolean acceptRegistration) {
-			this.acceptRegistration = acceptRegistration;
+		State(boolean acceptsRegistration) {
+			this.acceptsRegistration = acceptsRegistration;
 		}
 		
-		public boolean acceptRegistration() {
-			return acceptRegistration;
+		public boolean acceptsRegistration() {
+			return acceptsRegistration;
 		}
 		
 	}

@@ -67,7 +67,7 @@ final class KeyImpl<T extends SyntaxInfo<?>> implements Key<T> {
 		}
 		
 		@Override
-		public SkriptRegistry.Key<P> parent() {
+		public Key<P> parent() {
 			return parent;
 		}
 		

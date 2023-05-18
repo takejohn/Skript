@@ -32,7 +32,7 @@ public final class BukkitOrigin implements SyntaxOrigin {
 	}
 	
 	/**
-	 * This method is offered for backwards compatibility, however it will be
+	 * @deprecated This method is offered for backwards compatibility, however it will be
 	 * removed in a later release, the {@link BukkitOrigin#of(Plugin)} version is preferred.
 	 */
 	@Contract("_ -> new")

@@ -46,14 +46,14 @@ public interface SkriptRegistry {
 	 * Represents a syntax element type.
 	 */
 	interface Key<T extends SyntaxInfo<?>> {
-		Key<SyntaxInfo.Expression<?, ?>> EXPRESSION = of("expression");
+		Key<SyntaxInfo.Structure<?>> STRUCTURE = of("structure");
 		Key<SyntaxInfo<? extends Section>> SECTION = of("section");
 		
 		Key<SyntaxInfo<? extends Statement>> STATEMENT = of("statement");
 		Key<SyntaxInfo<? extends Condition>> CONDITION = ChildKey.of(STATEMENT, "condition");
 		Key<SyntaxInfo<? extends Effect>> EFFECT = ChildKey.of(STATEMENT, "effect");
-		
-		Key<SyntaxInfo.Structure<?>> STRUCTURE = of("structure");
+
+		Key<SyntaxInfo.Expression<?, ?>> EXPRESSION = of("expression");
 		
 		String name();
 		
@@ -69,7 +69,7 @@ public interface SkriptRegistry {
 	 */
 	interface ChildKey<T extends P, P extends SyntaxInfo<?>> extends Key<T> {
 		
-		static <T extends P, P extends SyntaxInfo<?>> SkriptRegistry.Key<T> of(SkriptRegistry.Key<P> parent, String name) {
+		static <T extends P, P extends SyntaxInfo<?>> Key<T> of(Key<P> parent, String name) {
 			return new KeyImpl.Child<>(parent, name);
 		}
 		

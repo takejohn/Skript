@@ -114,8 +114,10 @@ public class SyntaxElementInfo<E extends SyntaxElement> {
 	
 	@Contract("_ -> new")
 	private static <E extends Expression<R>, R> ExpressionInfo<E, R> fromModernExpression(SyntaxInfo.Expression<E, R> info) {
-		return new ExpressionInfo<>(info.patterns().toArray(new String[0]), info.returnType(),
-				info.type(), info.origin().name(), info.expressionType());
+		return new ExpressionInfo<>(
+				info.patterns().toArray(new String[0]), info.returnType(),
+				info.type(), info.origin().name(), info.expressionType()
+		);
 	}
 	
 }

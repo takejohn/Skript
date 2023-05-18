@@ -22,30 +22,28 @@ import ch.njol.skript.lang.SyntaxElement;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Unmodifiable;
+import org.skriptlang.skript.lang.Priority;
 
 import java.util.List;
 
 @ApiStatus.Experimental
 public interface SyntaxInfo<T extends SyntaxElement> extends DefaultSyntaxInfos {
-	
+
 	@Contract("_, _, _ -> new")
 	static <E extends SyntaxElement> SyntaxInfo<E> of(SyntaxOrigin origin, Class<E> type, List<String> patterns) {
 		return new SyntaxInfoImpl<>(origin, type, patterns);
 	}
-	
+
 	/**
 	 * @return {@link SyntaxOrigin}
 	 */
 	SyntaxOrigin origin();
-	
+
 	Class<T> type();
-	
+
 	@Unmodifiable
 	List<String> patterns();
-	
-	/**
-	 * Used for sorting in ascending order.
-	 */
-	int priority();
-	
+
+	Priority priority();
+
 }

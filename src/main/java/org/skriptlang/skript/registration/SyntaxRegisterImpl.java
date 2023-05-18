@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 final class SyntaxRegisterImpl<T extends SyntaxInfo<?>> implements SyntaxRegister<T> {
 	
-	private final Set<T> syntaxes = new ConcurrentSkipListSet<>(Comparator.comparingInt(SyntaxInfo::priority));
+	private final Set<T> syntaxes = new ConcurrentSkipListSet<>(Comparator.comparing(SyntaxInfo::priority));
 	
 	@Override
 	@Unmodifiable 

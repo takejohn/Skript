@@ -26,51 +26,46 @@ import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.skriptlang.skript.lang.Priority;
 import org.skriptlang.skript.lang.entry.EntryValidator;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @ApiStatus.Internal
 public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
-	
-	static final AtomicInteger IOTA = new AtomicInteger();
-	private static final int UNIDENTIFIED = -1;
-	
+
 	private final SyntaxOrigin origin;
 	private final Class<T> type;
 	private final List<String> patterns;
-	private int id = UNIDENTIFIED;
-	
+	private final Priority priority = new Priority();
+
 	SyntaxInfoImpl(SyntaxOrigin origin, Class<T> type, List<String> patterns) {
 		this.origin = origin;
 		this.type = type;
 		this.patterns = ImmutableList.copyOf(patterns);
 	}
-	
+
 	@Override
 	public SyntaxOrigin origin() {
 		return origin;
 	}
-	
+
 	@Override
 	public Class<T> type() {
 		return type;
 	}
-	
+
 	@Override
 	@Unmodifiable
 	public List<String> patterns() {
 		return patterns;
 	}
-	
+
 	@Override
-	public int priority() {
-		if (id == UNIDENTIFIED)
-			id = IOTA.getAndIncrement();
-		return id;
+	public Priority priority() {
+		return priority;
 	}
-	
+
 	@Override
 	public boolean equals(Object other) {
 		if (this == other)
@@ -81,12 +76,12 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		return origin().equals(info.origin()) && type().equals(info.type()) &&
 				patterns().equals(info.patterns());
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(origin(), type(), patterns());
 	}
-	
+
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this)
@@ -95,13 +90,13 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 				.add("patterns", patterns())
 				.toString();
 	}
-	
+
 	static final class ExpressionImpl<E extends ch.njol.skript.lang.Expression<R>, R>
 		extends SyntaxInfoImpl<E> implements DefaultSyntaxInfos.Expression<E, R> {
-		
+
 		private final Class<R> returnType;
 		private final ExpressionType expressionType;
-		
+
 		ExpressionImpl(
 			SyntaxOrigin origin, Class<E> type, List<String> patterns,
 			Class<R> returnType, ExpressionType expressionType
@@ -112,17 +107,17 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 			this.returnType = returnType;
 			this.expressionType = expressionType;
 		}
-		
+
 		@Override
 		public Class<R> returnType() {
 			return returnType;
 		}
-		
+
 		@Override
 		public ExpressionType expressionType() {
 			return expressionType;
 		}
-		
+
 		@Override
 		public boolean equals(Object other) {
 			if (this == other)
@@ -134,12 +129,12 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 					patterns().equals(expression.patterns()) && returnType() == expression.returnType() &&
 					expressionType().equals(expression.expressionType());
 		}
-		
+
 		@Override
 		public int hashCode() {
 			return Objects.hashCode(origin(), type(), patterns(), returnType(), expressionType());
 		}
-		
+
 		@Override
 		public String toString() {
 			return MoreObjects.toStringHelper(this)
@@ -150,21 +145,21 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 					.add("expressionType", expressionType())
 					.toString();
 		}
-		
+
 		@Override
-		public int priority() {
-			return super.priority() | expressionType.ordinal() << 24;
+		public Priority priority() {
+			return new Priority(super.priority().getPriority() | expressionType.ordinal() << 24);
 		}
-		
+
 	}
-	
+
 	@ApiStatus.Internal
 	public static class StructureImpl<E extends org.skriptlang.skript.lang.structure.Structure>
 		extends SyntaxInfoImpl<E> implements DefaultSyntaxInfos.Structure<E> {
-		
+
 		@Nullable
 		private final EntryValidator entryValidator;
-		
+
 		protected StructureImpl(
 			SyntaxOrigin origin, Class<E> type, List<String> patterns,
 			@Nullable EntryValidator entryValidator
@@ -172,13 +167,13 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 			super(origin, type, patterns);
 			this.entryValidator = entryValidator;
 		}
-		
+
 		@Override
 		@Nullable
 		public EntryValidator entryValidator() {
 			return entryValidator;
 		}
-		
+
 		@Override
 		public boolean equals(Object other) {
 			if (this == other)
@@ -190,12 +185,12 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 					patterns().equals(structure.patterns()) &&
 					Objects.equal(entryValidator(), structure.entryValidator());
 		}
-		
+
 		@Override
 		public int hashCode() {
 			return Objects.hashCode(origin(), type(), patterns(), entryValidator());
 		}
-		
+
 		@Override
 		public String toString() {
 			return MoreObjects.toStringHelper(this)
@@ -205,7 +200,7 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 					.add("entryValidator", entryValidator())
 					.toString();
 		}
-		
+
 	}
-	
+
 }

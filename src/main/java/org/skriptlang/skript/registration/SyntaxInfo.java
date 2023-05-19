@@ -21,17 +21,22 @@ package org.skriptlang.skript.registration;
 import ch.njol.skript.lang.SyntaxElement;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 import org.skriptlang.skript.lang.Priority;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 @ApiStatus.Experimental
 public interface SyntaxInfo<T extends SyntaxElement> extends DefaultSyntaxInfos {
 
-	@Contract("_, _, _ -> new")
-	static <E extends SyntaxElement> SyntaxInfo<E> of(SyntaxOrigin origin, Class<E> type, List<String> patterns) {
-		return new SyntaxInfoImpl<>(origin, type, patterns);
+	@Contract("_, _, _, _ -> new")
+	static <E extends SyntaxElement> SyntaxInfo<E> of(
+		SyntaxOrigin origin, Class<E> type,
+		@Nullable Supplier<E> supplier, List<String> patterns
+	) {
+		return new SyntaxInfoImpl<>(origin, type, supplier, patterns);
 	}
 
 	/**
@@ -40,6 +45,9 @@ public interface SyntaxInfo<T extends SyntaxElement> extends DefaultSyntaxInfos 
 	SyntaxOrigin origin();
 
 	Class<T> type();
+
+	@Contract("-> new")
+	T instance();
 
 	@Unmodifiable
 	List<String> patterns();

@@ -30,18 +30,22 @@ import org.skriptlang.skript.lang.Priority;
 import org.skriptlang.skript.lang.entry.EntryValidator;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 @ApiStatus.Internal
 public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 
 	private final SyntaxOrigin origin;
 	private final Class<T> type;
+	@Nullable
+	private final Supplier<T> supplier;
 	private final List<String> patterns;
 	private final Priority priority = new Priority();
 
-	SyntaxInfoImpl(SyntaxOrigin origin, Class<T> type, List<String> patterns) {
+	SyntaxInfoImpl(SyntaxOrigin origin, Class<T> type, @Nullable Supplier<T> supplier, List<String> patterns) {
 		this.origin = origin;
 		this.type = type;
+		this.supplier = supplier;
 		this.patterns = ImmutableList.copyOf(patterns);
 	}
 
@@ -53,6 +57,15 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 	@Override
 	public Class<T> type() {
 		return type;
+	}
+
+	@Override
+	public T instance() {
+		try {
+			return supplier == null ? type.newInstance() : supplier.get();
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -98,10 +111,10 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		private final ExpressionType expressionType;
 
 		ExpressionImpl(
-			SyntaxOrigin origin, Class<E> type, List<String> patterns,
-			Class<R> returnType, ExpressionType expressionType
+			SyntaxOrigin origin, Class<E> type, @Nullable Supplier<E> supplier,
+			List<String> patterns, Class<R> returnType, ExpressionType expressionType
 		) {
-			super(origin, type, patterns);
+			super(origin, type, supplier, patterns);
 			if (returnType.isAnnotation() || returnType.isArray() || returnType.isPrimitive())
 				throw new IllegalArgumentException("returnType must be a normal type");
 			this.returnType = returnType;
@@ -161,10 +174,10 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		private final EntryValidator entryValidator;
 
 		protected StructureImpl(
-			SyntaxOrigin origin, Class<E> type, List<String> patterns,
-			@Nullable EntryValidator entryValidator
+			SyntaxOrigin origin, Class<E> type, @Nullable Supplier<E> supplier,
+			List<String> patterns, @Nullable EntryValidator entryValidator
 		) {
-			super(origin, type, patterns);
+			super(origin, type, supplier, patterns);
 			this.entryValidator = entryValidator;
 		}
 

@@ -18,11 +18,13 @@
  */
 package org.skriptlang.skript.registration;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
+@ApiStatus.Experimental
 interface SyntaxRegister<I extends SyntaxInfo<?>> {
 	
 	@Unmodifiable

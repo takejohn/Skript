@@ -27,6 +27,7 @@ import org.skriptlang.skript.registration.SyntaxInfo;
 import org.skriptlang.skript.registration.SyntaxOrigin;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 @ApiStatus.Internal
 public interface BukkitSyntaxInfos {
@@ -36,14 +37,14 @@ public interface BukkitSyntaxInfos {
 	@ApiStatus.NonExtendable
 	interface Event<E extends SkriptEvent> extends SyntaxInfo.Structure<E> {
 		
-		@Contract("_, _, _, _, _, _, _, _, _, _, _, _ -> new")
+		@Contract("_, _, _, _, _, _, _, _, _, _, _, _, _ -> new")
 		static <E extends SkriptEvent> BukkitSyntaxInfos.Event<E> of(
-				SyntaxOrigin origin, Class<E> type, List<String> patterns, String name, String id, @Nullable String since,
-				@Nullable String documentationId, List<String> description, List<String> examples, List<String> keywords,
-				List<String> requiredPlugins, List<Class<? extends org.bukkit.event.Event>> events
+				SyntaxOrigin origin, Class<E> type, @Nullable Supplier<E> supplier, List<String> patterns, String name, String id,
+				@Nullable String since, @Nullable String documentationId, List<String> description, List<String> examples,
+				List<String> keywords, List<String> requiredPlugins, List<Class<? extends org.bukkit.event.Event>> events
 		) {
-			return new BukkitSyntaxInfosImpl.EventImpl<>(origin, type, patterns, name, id, since, documentationId,
-					description, examples, keywords, requiredPlugins, events);
+			return new BukkitSyntaxInfosImpl.EventImpl<>(origin, type, supplier, patterns, name, id,
+					since, documentationId, description, examples, keywords, requiredPlugins, events);
 		}
 		
 		@Contract("_ -> new")

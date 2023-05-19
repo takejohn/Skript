@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.lang.entry.EntryValidator;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 @ApiStatus.Internal
 interface DefaultSyntaxInfos {
@@ -32,12 +33,12 @@ interface DefaultSyntaxInfos {
 	@ApiStatus.NonExtendable
 	interface Expression<E extends ch.njol.skript.lang.Expression<R>, R> extends SyntaxInfo<E> {
 		
-		@Contract("_, _, _, _, _ -> new")
+		@Contract("_, _, _, _, _, _ -> new")
 		static <E extends ch.njol.skript.lang.Expression<R>, R> Expression<E, R> of(
-			SyntaxOrigin origin, Class<E> type, List<String> patterns, Class<R> returnType,
-			ExpressionType expressionType
+			SyntaxOrigin origin, Class<E> type, @Nullable Supplier<E> supplier, List<String> patterns,
+			Class<R> returnType, ExpressionType expressionType
 		) {
-			return new SyntaxInfoImpl.ExpressionImpl<>(origin, type, patterns, returnType, expressionType);
+			return new SyntaxInfoImpl.ExpressionImpl<>(origin, type, supplier, patterns, returnType, expressionType);
 		}
 		
 		Class<R> returnType();
@@ -49,20 +50,20 @@ interface DefaultSyntaxInfos {
 	@ApiStatus.NonExtendable
 	interface Structure<E extends org.skriptlang.skript.lang.structure.Structure> extends SyntaxInfo<E> {
 		
-		@Contract("_, _, _ -> new")
-		static <E extends org.skriptlang.skript.lang.structure.Structure> Structure<E> of(
-			SyntaxOrigin origin, Class<E> type, List<String> patterns
-		) {
-			return of(origin, type, patterns, null);
-		}
-		
 		@Contract("_, _, _, _ -> new")
 		static <E extends org.skriptlang.skript.lang.structure.Structure> Structure<E> of(
-			SyntaxOrigin origin, Class<E> type, List<String> patterns,
-			@Nullable EntryValidator entryValidator
+			SyntaxOrigin origin, Class<E> type, @Nullable Supplier<E> supplier, List<String> patterns
+		) {
+			return of(origin, type, supplier, patterns, null);
+		}
+		
+		@Contract("_, _, _, _, _ -> new")
+		static <E extends org.skriptlang.skript.lang.structure.Structure> Structure<E> of(
+			SyntaxOrigin origin, Class<E> type, @Nullable Supplier<E> supplier,
+			List<String> patterns, @Nullable EntryValidator entryValidator
 		) {
 			
-			return new SyntaxInfoImpl.StructureImpl<>(origin, type, patterns, entryValidator);
+			return new SyntaxInfoImpl.StructureImpl<>(origin, type, supplier, patterns, entryValidator);
 		}
 		
 		@Nullable

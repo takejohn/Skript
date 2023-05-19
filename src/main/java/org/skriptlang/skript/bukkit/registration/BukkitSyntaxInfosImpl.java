@@ -31,6 +31,7 @@ import org.skriptlang.skript.registration.SyntaxOrigin;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 final class BukkitSyntaxInfosImpl {
@@ -50,11 +51,11 @@ final class BukkitSyntaxInfosImpl {
 		private final List<Class<? extends org.bukkit.event.Event>> events;
 		
 		EventImpl(
-				SyntaxOrigin origin, Class<E> type, List<String> patterns, String name, String id, @Nullable String since,
-				@Nullable String documentationId, List<String> description, List<String> examples, List<String> keywords,
-				List<String> requiredPlugins, List<Class<? extends org.bukkit.event.Event>> events
+			SyntaxOrigin origin, Class<E> type, @Nullable Supplier<E> supplier, List<String> patterns, String name, String id,
+			@Nullable String since, @Nullable String documentationId, List<String> description, List<String> examples,
+			List<String> keywords, List<String> requiredPlugins, List<Class<? extends org.bukkit.event.Event>> events
 		) {
-			super(origin, type, patterns.stream().map(BukkitSyntaxInfos::eventPattern)
+			super(origin, type, supplier, patterns.stream().map(BukkitSyntaxInfos::eventPattern)
 					.collect(Collectors.toList()), null);
 			this.name = name.startsWith("*")
 				? name.substring(1)
@@ -151,7 +152,7 @@ final class BukkitSyntaxInfosImpl {
 		
 		LegacyEventImpl(SkriptEventInfo<E> info) {
 			super(BukkitOrigin.of(info.getOriginClassPath()), info.getElementClass(),
-					Arrays.asList(info.getPatterns()), null);
+					null, Arrays.asList(info.getPatterns()), null);
 			this.info = info;
 		}
 		

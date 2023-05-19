@@ -193,7 +193,8 @@ public final class Skript extends JavaPlugin implements Listener {
 	
 	@Nullable
 	private static Skript instance = null;
-	
+	private static final org.skriptlang.skript.Skript skript = org.skriptlang.skript.Skript.createInstance();
+
 	private static boolean disabled = false;
 	private static boolean partDisabled = false;
 	
@@ -205,7 +206,7 @@ public final class Skript extends JavaPlugin implements Listener {
 
 	@ApiStatus.Experimental
 	public static org.skriptlang.skript.Skript instance() {
-		return org.skriptlang.skript.Skript.instance();
+		return skript;
 	}
 	
 	/**

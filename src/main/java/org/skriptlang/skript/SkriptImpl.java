@@ -19,43 +19,26 @@
 package org.skriptlang.skript;
 
 import ch.njol.skript.registrations.Classes;
-import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.lang.converter.Converters;
-import org.skriptlang.skript.registration.SkriptRegistry;
 import org.skriptlang.skript.registration.SimpleSkriptRegistry;
+import org.skriptlang.skript.registration.SkriptRegistry;
 
 final class SkriptImpl implements Skript {
-	
-	@Nullable
-	private static volatile Skript instance;
-	
-	static Skript instance() {
-		Skript instance = SkriptImpl.instance;
-		if (instance != null)
-			return instance;
-		instance = new SkriptImpl();
-		setInstance(instance);
-		return instance;
-	}
 
-	static void setInstance(Skript instance) {
-		SkriptImpl.instance = instance;
-	}
-	
 	private final SkriptRegistry registry = new SimpleSkriptRegistry();
-	
+
 	private State state = State.REGISTRATION;
-	
+
 	@Override
 	public SkriptRegistry registry() {
 		return registry;
 	}
-	
+
 	@Override
 	public State state() {
 		return state;
 	}
-	
+
 	@Override
 	public void updateState(State state) {
 		if (state == State.ENDED_REGISTRATION) {

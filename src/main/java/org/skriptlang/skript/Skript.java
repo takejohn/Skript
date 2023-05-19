@@ -19,6 +19,7 @@
 package org.skriptlang.skript;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
 import org.skriptlang.skript.registration.SkriptRegistry;
 
 /**
@@ -27,54 +28,45 @@ import org.skriptlang.skript.registration.SkriptRegistry;
  */
 @ApiStatus.Experimental
 public interface Skript {
-	
+
 	/**
-	 * Returns the current Skript instance, can be updated with {@link Skript#setInstance(Skript)}
+	 * Returns a new instance of the default Skript implementation.
 	 *
 	 * @return {@link Skript}
 	 */
-	static Skript instance() {
-		return SkriptImpl.instance();
+	@Contract("-> new")
+	static Skript createInstance() {
+		return new SkriptImpl();
 	}
 
-	/**
-	 * Updates the Skript instance returned by {@link Skript#instance()}. Because state doesn't get preserved,
-	 * it is recommended to update the Skript instance before any syntax loading.
-	 *
-	 * @param instance The new Skript instance
-	 */
-	static void setInstance(Skript instance) {
-		SkriptImpl.setInstance(instance);
-	}
-	
 	/**
 	 * @return {@link SkriptRegistry}
 	 */
 	SkriptRegistry registry();
-	
+
 	/**
 	 * @return The current state Skript is in
 	 */
 	State state();
-	
+
 	@ApiStatus.Internal
 	void updateState(State state);
-	
+
 	enum State {
 		REGISTRATION(true),
 		ENDED_REGISTRATION(false),
 		CLOSED_REGISTRATION(false);
 
 		private final boolean acceptsRegistration;
-		
+
 		State(boolean acceptsRegistration) {
 			this.acceptsRegistration = acceptsRegistration;
 		}
-		
+
 		public boolean acceptsRegistration() {
 			return acceptsRegistration;
 		}
-		
+
 	}
-	
+
 }

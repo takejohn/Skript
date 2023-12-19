@@ -55,7 +55,7 @@ final class BukkitSyntaxInfosImpl {
 			@Nullable String since, @Nullable String documentationId, List<String> description, List<String> examples,
 			List<String> keywords, List<String> requiredPlugins, List<Class<? extends org.bukkit.event.Event>> events
 		) {
-			super(origin, type, supplier, patterns.stream().map(BukkitSyntaxInfos::eventPattern)
+			super(origin, type, supplier, patterns.stream().map(BukkitSyntaxInfos::fixPattern)
 					.collect(Collectors.toList()), null);
 			this.name = name.startsWith("*")
 				? name.substring(1)

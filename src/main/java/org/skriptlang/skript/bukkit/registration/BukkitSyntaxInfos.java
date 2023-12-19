@@ -31,8 +31,6 @@ import java.util.function.Supplier;
 
 @ApiStatus.Internal
 public interface BukkitSyntaxInfos {
-
-	String EVENT_PRIORITY_SYNTAX = " [with priority (lowest|low|normal|high|highest|monitor)]";
 	
 	@ApiStatus.NonExtendable
 	interface Event<E extends SkriptEvent> extends SyntaxInfo.Structure<E> {
@@ -72,17 +70,6 @@ public interface BukkitSyntaxInfos {
 		
 		List<Class<? extends org.bukkit.event.Event>> events();
 		
-	}
-
-	/**
-	 * Fixes a pattern for events. Adds {@literal on} as prefix and {@literal with priority ...} as suffix.
-	 * Make sure to only use this on a pattern once at most.
-	 *
-	 * @param pattern The pattern to make usable as event
-	 * @return The event-ready pattern
-	 */
-	static String eventPattern(String pattern) {
-		return "[on] " + fixPattern(pattern) + EVENT_PRIORITY_SYNTAX;
 	}
 
 	/**

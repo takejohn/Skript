@@ -604,6 +604,8 @@ public final class Skript extends JavaPlugin implements Listener {
 					tainted = true;
 					try {
 						getAddonInstance().loadClasses("ch.njol.skript.test.runner");
+						if (TestMode.JUNIT)
+							getAddonInstance().loadClasses("org.skriptlang.skript.test.junit.registration");
 					} catch (IOException e) {
 						Skript.exception("Failed to load testing environment.");
 						Bukkit.getServer().shutdown();
@@ -613,52 +615,51 @@ public final class Skript extends JavaPlugin implements Listener {
 				stopAcceptingRegistrations();
 
 				Documentation.generate(); // TODO move to test classes?
-				
-				Bukkit.getScheduler().scheduleSyncDelayedTask(Skript.this, () -> {
-					if (logNormal())
-						info("Loading variables...");
-					long vls = System.currentTimeMillis();
 
-					LogHandler h = SkriptLogger.startLogHandler(new ErrorDescLogHandler() {
-						@Override
-						public LogResult log(final LogEntry entry) {
-							super.log(entry);
-							if (entry.level.intValue() >= Level.SEVERE.intValue()) {
-								logEx(entry.message); // no [Skript] prefix
-								return LogResult.DO_NOT_LOG;
-							} else {
-								return LogResult.LOG;
-							}
+				// Variable loading
+				if (logNormal())
+					info("Loading variables...");
+				long vls = System.currentTimeMillis();
+
+				LogHandler h = SkriptLogger.startLogHandler(new ErrorDescLogHandler() {
+					@Override
+					public LogResult log(final LogEntry entry) {
+						super.log(entry);
+						if (entry.level.intValue() >= Level.SEVERE.intValue()) {
+							logEx(entry.message); // no [Skript] prefix
+							return LogResult.DO_NOT_LOG;
+						} else {
+							return LogResult.LOG;
 						}
-
-						@Override
-						protected void beforeErrors() {
-							logEx();
-							logEx("===!!!=== Skript variable load error ===!!!===");
-							logEx("Unable to load (all) variables:");
-						}
-
-						@Override
-						protected void afterErrors() {
-							logEx();
-							logEx("Skript will work properly, but old variables might not be available at all and new ones may or may not be saved until Skript is able to create a backup of the old file and/or is able to connect to the database (which requires a restart of Skript)!");
-							logEx();
-						}
-					});
-
-					try (CountingLogHandler c = new CountingLogHandler(SkriptLogger.SEVERE).start()) {
-						if (!Variables.load())
-							if (c.getCount() == 0)
-								error("(no information available)");
-					} finally {
-						h.stop();
 					}
 
-					long vld = System.currentTimeMillis() - vls;
-					if (logNormal())
-						info("Loaded " + Variables.numVariables() + " variables in " + ((vld / 100) / 10.) + " seconds");
+					@Override
+					protected void beforeErrors() {
+						logEx();
+						logEx("===!!!=== Skript variable load error ===!!!===");
+						logEx("Unable to load (all) variables:");
+					}
+
+					@Override
+					protected void afterErrors() {
+						logEx();
+						logEx("Skript will work properly, but old variables might not be available at all and new ones may or may not be saved until Skript is able to create a backup of the old file and/or is able to connect to the database (which requires a restart of Skript)!");
+						logEx();
+					}
 				});
-				
+
+				try (CountingLogHandler c = new CountingLogHandler(SkriptLogger.SEVERE).start()) {
+					if (!Variables.load())
+						if (c.getCount() == 0)
+							error("(no information available)");
+				} finally {
+					h.stop();
+				}
+
+				long vld = System.currentTimeMillis() - vls;
+				if (logNormal())
+					info("Loaded " + Variables.numVariables() + " variables in " + ((vld / 100) / 10.) + " seconds");
+
 				// Skript initialization done
 				debug("Early init done");
 
@@ -697,7 +698,6 @@ public final class Skript extends JavaPlugin implements Listener {
 								TestTracker.testFailed("exception was thrown during execution");
 							}
 							if (TestMode.JUNIT) {
-								SkriptLogger.setVerbosity(Verbosity.DEBUG);
 								info("Running all JUnit tests...");
 								long milliseconds = 0, tests = 0, fails = 0, ignored = 0, size = 0;
 								try {
@@ -725,7 +725,7 @@ public final class Skript extends JavaPlugin implements Listener {
 										// If JUnit failures are present, add them to the TestTracker.
 										junit.getFailures().forEach(failure -> {
 											String message = failure.getMessage() == null ? "" : " " + failure.getMessage();
-											TestTracker.testFailed("'" + test + "': " + message);
+											TestTracker.JUnitTestFailed(test, message);
 											Skript.exception(failure.getException(), "JUnit test '" + failure.getTestHeader() + " failed.");
 										});
 										SkriptJUnitTest.clearJUnitTest();
@@ -747,7 +747,7 @@ public final class Skript extends JavaPlugin implements Listener {
 						// Delay server shutdown to stop the server from crashing because the current tick takes a long time due to all the tests
 						Bukkit.getScheduler().runTaskLater(Skript.this, () -> {
 							if (TestMode.JUNIT && !EffObjectives.isJUnitComplete())
-								TestTracker.testFailed(EffObjectives.getFailedObjectivesString());
+								EffObjectives.fail();
 
 							info("Collecting results to " + TestMode.RESULTS_FILE);
 							String results = new Gson().toJson(TestTracker.collectResults());
@@ -781,7 +781,7 @@ public final class Skript extends JavaPlugin implements Listener {
 					SkriptConfig.defaultEventPriority.value().name().toLowerCase(Locale.ENGLISH).replace('_', ' ')
 				));
 				metrics.addCustomChart(new SimplePie("logPlayerCommands", () ->
-					SkriptConfig.logPlayerCommands.value().toString()
+					String.valueOf((SkriptConfig.logEffectCommands.value() || SkriptConfig.logPlayerCommands.value()))
 				));
 				metrics.addCustomChart(new SimplePie("maxTargetDistance", () ->
 					SkriptConfig.maxTargetBlockDistance.value().toString()
@@ -1272,7 +1272,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	}
 	
 	public static void checkAcceptRegistrations() {
-		if (!isAcceptRegistrations())
+		if (!isAcceptRegistrations() && !Skript.testing())
 			throw new SkriptAPIException("Registration can only be done during plugin initialization");
 	}
 	
@@ -1519,7 +1519,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	) {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		for (int i = 0; i < patterns.length; i++)
-			patterns[i] = BukkitSyntaxInfos.eventPattern(patterns[i]);
+			patterns[i] = BukkitSyntaxInfos.fixPattern(patterns[i]);
 		SkriptEventInfo<E> legacy = new SkriptEventInfo<>(name, patterns, eventClass, originClass, events);
 		BukkitSyntaxInfos.Event<E> info = BukkitSyntaxInfos.Event.legacy(legacy);
 		instance().registry().register(BukkitRegistry.EVENT, info);

@@ -29,12 +29,6 @@ import java.util.Locale;
 
 public final class SkriptEventInfo<E extends SkriptEvent> extends StructureInfo<E> {
 
-	/**
-	 * @deprecated Use {@link BukkitSyntaxInfos#EVENT_PRIORITY_SYNTAX}
-	 */
-	@Deprecated
-	public static final String EVENT_PRIORITY_SYNTAX = BukkitSyntaxInfos.EVENT_PRIORITY_SYNTAX;
-
 	public Class<? extends Event>[] events;
 	public final String name;
 	

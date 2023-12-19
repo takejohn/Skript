@@ -21,14 +21,20 @@ package org.skriptlang.skript.registration;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * The origin of syntax, currently only used for documentation purposes.
+ * The origin of a syntax, currently only used for documentation purposes.
  */
 @ApiStatus.Experimental
 @FunctionalInterface
 public interface SyntaxOrigin {
-	
+
+	/**
+	 * A default origin to be used when the origin of a syntax is not known.
+	 */
 	SyntaxOrigin UNKNOWN = () -> "unknown";
-	
+
+	/**
+	 * @return A string representing this origin.
+	 */
 	String name();
 	
 }

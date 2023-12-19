@@ -23,9 +23,16 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.skriptlang.skript.registration.SyntaxOrigin;
 
+/**
+ * An origin for syntax created by Bukkit plugins.
+ */
 @ApiStatus.Experimental
 public final class BukkitOrigin implements SyntaxOrigin {
 
+	/**
+	 * @param plugin The plugin the syntax originates from.
+	 * @return An origin pointing to the provided plugin.
+	 */
 	@Contract("_ -> new")
 	public static SyntaxOrigin of(Plugin plugin) {
 		return new BukkitOrigin(plugin.getName());

@@ -25,31 +25,21 @@ import org.skriptlang.skript.registration.SyntaxOrigin;
 
 @ApiStatus.Experimental
 public final class BukkitOrigin implements SyntaxOrigin {
-	
+
 	@Contract("_ -> new")
 	public static SyntaxOrigin of(Plugin plugin) {
-		return new BukkitOrigin(plugin.getClass().getCanonicalName());
+		return new BukkitOrigin(plugin.getName());
 	}
-	
-	/**
-	 * @deprecated This method is offered for backwards compatibility, however it will be
-	 * removed in a later release, the {@link BukkitOrigin#of(Plugin)} version is preferred.
-	 */
-	@Contract("_ -> new")
-	@Deprecated
-	public static SyntaxOrigin of(String name) {
-		return new BukkitOrigin(name);
-	}
-	
+
 	private final String name;
-	
+
 	private BukkitOrigin(String name) {
 		this.name = name;
 	}
-	
+
 	@Override
 	public String name() {
 		return name;
 	}
-	
+
 }

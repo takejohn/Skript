@@ -19,7 +19,6 @@
 package org.skriptlang.skript.bukkit.registration;
 
 import ch.njol.skript.lang.SkriptEvent;
-import ch.njol.skript.lang.SkriptEventInfo;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -43,11 +42,6 @@ public interface BukkitSyntaxInfos {
 		) {
 			return new BukkitSyntaxInfosImpl.EventImpl<>(origin, type, supplier, patterns, name, id,
 					since, documentationId, description, examples, keywords, requiredPlugins, events);
-		}
-		
-		@Contract("_ -> new")
-		static <E extends SkriptEvent> BukkitSyntaxInfos.Event<E> legacy(SkriptEventInfo<E> info) {
-			return new BukkitSyntaxInfosImpl.LegacyEventImpl<>(info);
 		}
 		
 		String name();

@@ -113,6 +113,7 @@ import org.skriptlang.skript.Skript.State;
 import org.skriptlang.skript.bukkit.registration.BukkitOrigin;
 import org.skriptlang.skript.bukkit.registration.BukkitRegistry;
 import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfos;
+import org.skriptlang.skript.bukkit.registration.EventInfoBuilder;
 import org.skriptlang.skript.lang.comparator.Comparator;
 import org.skriptlang.skript.lang.comparator.Comparators;
 import org.skriptlang.skript.lang.converter.Converter;
@@ -1341,11 +1342,11 @@ public final class Skript extends JavaPlugin implements Listener {
 	 */
 	@Deprecated
 	public static <E extends Condition> void registerCondition(Class<E> conditionClass, String... patterns) throws IllegalArgumentException {
-		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		instance().registry().register(SkriptRegistry.Key.CONDITION, SyntaxInfoBuilder.builder(conditionClass)
-				.origin(BukkitOrigin.of(originClass))
+				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(conditionClass)))
 				.addPatterns(patterns)
-				.build());
+				.build()
+		);
 	}
 	
 	/**
@@ -1357,11 +1358,11 @@ public final class Skript extends JavaPlugin implements Listener {
 	 */
 	@Deprecated
 	public static <E extends Effect> void registerEffect(Class<E> effectClass, String... patterns) throws IllegalArgumentException {
-		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		instance().registry().register(SkriptRegistry.Key.EFFECT, SyntaxInfoBuilder.builder(effectClass)
-				.origin(BukkitOrigin.of(originClass))
+				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(effectClass)))
 				.addPatterns(patterns)
-				.build());
+				.build()
+		);
 	}
 
 	/**
@@ -1374,11 +1375,11 @@ public final class Skript extends JavaPlugin implements Listener {
 	 */
 	@Deprecated
 	public static <E extends Section> void registerSection(Class<E> sectionClass, String... patterns) throws IllegalArgumentException {
-		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		instance().registry().register(SkriptRegistry.Key.SECTION, SyntaxInfoBuilder.builder(sectionClass)
-				.origin(BukkitOrigin.of(originClass))
+				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(sectionClass)))
 				.addPatterns(patterns)
-				.build());
+				.build()
+		);
 	}
 
 	/**
@@ -1445,13 +1446,13 @@ public final class Skript extends JavaPlugin implements Listener {
 	public static <E extends Expression<T>, T> void registerExpression(
 		Class<E> expressionType, Class<T> returnType, ExpressionType type, String... patterns
 	) throws IllegalArgumentException {
-		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		instance().registry().register(SkriptRegistry.Key.EXPRESSION, SyntaxInfoBuilder.builder(expressionType)
-				.origin(BukkitOrigin.of(originClass))
+				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(expressionType)))
 				.addPatterns(patterns)
 				.expression(returnType)
 				.expressionType(type)
-				.build());
+				.build()
+		);
 	}
 	
 	/**
@@ -1514,15 +1515,30 @@ public final class Skript extends JavaPlugin implements Listener {
 	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
 	 */
 	@Deprecated
+	@SuppressWarnings("ConstantConditions") // caused by bad array annotations
 	public static <E extends SkriptEvent> SkriptEventInfo<E> registerEvent(
 		String name, Class<E> eventClass, Class<? extends Event>[] events, String... patterns
 	) {
-		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		for (int i = 0; i < patterns.length; i++)
 			patterns[i] = BukkitSyntaxInfos.fixPattern(patterns[i]);
-		SkriptEventInfo<E> legacy = new SkriptEventInfo<>(name, patterns, eventClass, originClass, events);
-		BukkitSyntaxInfos.Event<E> info = BukkitSyntaxInfos.Event.legacy(legacy);
-		instance().registry().register(BukkitRegistry.EVENT, info);
+		SkriptEventInfo<E> legacy = new SkriptEventInfo<>(name, patterns, eventClass, "", events);
+		EventInfoBuilder<E> builder = EventInfoBuilder.builder(legacy.getElementClass(), null, legacy.getName(), legacy.getId())
+			.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(legacy.getElementClass())))
+			.addPatterns(legacy.getPatterns())
+			.addEvents(legacy.events);
+		if (legacy.getSince() != null)
+			builder.since(legacy.getSince());
+		if (legacy.getDocumentationID() != null)
+			builder.documentationId(legacy.getDocumentationID());
+		if (legacy.getDescription() != null)
+			builder.addDescription(legacy.getDescription());
+		if (legacy.getExamples() != null)
+			builder.addExamples(legacy.getExamples());
+		if (legacy.getKeywords() != null)
+			builder.addKeywords(legacy.getKeywords());
+		if (legacy.getRequiredPlugins() != null)
+			builder.addRequiredPlugins(legacy.getRequiredPlugins());
+		instance().registry().register(BukkitRegistry.EVENT, builder.build());
 		return legacy;
 	}
 
@@ -1533,10 +1549,11 @@ public final class Skript extends JavaPlugin implements Listener {
 	public static <E extends Structure> void registerStructure(Class<E> structureClass, String... patterns) {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		instance().registry().register(SkriptRegistry.Key.STRUCTURE, SyntaxInfoBuilder.builder(structureClass)
-				.origin(BukkitOrigin.of(originClass))
+				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(structureClass)))
 				.addPatterns(patterns)
 				.structure()
-				.build());
+				.build()
+		);
 	}
 
 	/**
@@ -1548,11 +1565,12 @@ public final class Skript extends JavaPlugin implements Listener {
 	) {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		instance().registry().register(SkriptRegistry.Key.STRUCTURE, SyntaxInfoBuilder.builder(structureClass)
-				.origin(BukkitOrigin.of(originClass))
+				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(structureClass)))
 				.addPatterns(patterns)
 				.structure()
 				.entryValidator(entryValidator)
-				.build());
+				.build()
+		);
 	}
 
 	/**

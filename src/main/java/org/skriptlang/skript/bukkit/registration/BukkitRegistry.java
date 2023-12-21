@@ -23,7 +23,7 @@ import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfos.Event;
 import org.skriptlang.skript.registration.SyntaxRegistry.ChildKey;
 import org.skriptlang.skript.registration.SyntaxRegistry.Key;
 
-import static org.skriptlang.skript.registration.SyntaxRegistry.Key.STRUCTURE;
+import static org.skriptlang.skript.registration.SyntaxRegistry.STRUCTURE;
 
 @ApiStatus.Experimental
 public interface BukkitRegistry {

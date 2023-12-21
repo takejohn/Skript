@@ -1341,7 +1341,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	 */
 	@Deprecated
 	public static <E extends Condition> void registerCondition(Class<E> conditionClass, String... patterns) throws IllegalArgumentException {
-		instance().registry().register(SyntaxRegistry.Key.CONDITION, SyntaxInfo.builder(conditionClass)
+		instance().registry().register(SyntaxRegistry.CONDITION, SyntaxInfo.builder(conditionClass)
 				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(conditionClass)))
 				.addPatterns(patterns)
 				.build()
@@ -1357,7 +1357,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	 */
 	@Deprecated
 	public static <E extends Effect> void registerEffect(Class<E> effectClass, String... patterns) throws IllegalArgumentException {
-		instance().registry().register(SyntaxRegistry.Key.EFFECT, SyntaxInfo.builder(effectClass)
+		instance().registry().register(SyntaxRegistry.EFFECT, SyntaxInfo.builder(effectClass)
 				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(effectClass)))
 				.addPatterns(patterns)
 				.build()
@@ -1374,7 +1374,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	 */
 	@Deprecated
 	public static <E extends Section> void registerSection(Class<E> sectionClass, String... patterns) throws IllegalArgumentException {
-		instance().registry().register(SyntaxRegistry.Key.SECTION, SyntaxInfo.builder(sectionClass)
+		instance().registry().register(SyntaxRegistry.SECTION, SyntaxInfo.builder(sectionClass)
 				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(sectionClass)))
 				.addPatterns(patterns)
 				.build()
@@ -1388,7 +1388,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Unmodifiable
 	public static Collection<SyntaxElementInfo<? extends Statement>> getStatements() {
 		return instance().registry()
-				.syntaxes(SyntaxRegistry.Key.STATEMENT).stream()
+				.syntaxes(SyntaxRegistry.STATEMENT).stream()
 				.map(SyntaxElementInfo::<SyntaxElementInfo<Statement>, Statement>fromModern)
 				.collect(Collectors.toList());
 	}
@@ -1400,7 +1400,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Unmodifiable
 	public static Collection<SyntaxElementInfo<? extends Condition>> getConditions() {
 		return instance().registry()
-				.syntaxes(SyntaxRegistry.Key.CONDITION).stream()
+				.syntaxes(SyntaxRegistry.CONDITION).stream()
 				.map(SyntaxElementInfo::<SyntaxElementInfo<Condition>, Condition>fromModern)
 				.collect(Collectors.toList());
 	}
@@ -1412,7 +1412,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Unmodifiable
 	public static Collection<SyntaxElementInfo<? extends Effect>> getEffects() {
 		return instance().registry()
-				.syntaxes(SyntaxRegistry.Key.EFFECT).stream()
+				.syntaxes(SyntaxRegistry.EFFECT).stream()
 				.map(SyntaxElementInfo::<SyntaxElementInfo<Effect>, Effect>fromModern)
 				.collect(Collectors.toList());
 	}
@@ -1424,7 +1424,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Unmodifiable
 	public static Collection<SyntaxElementInfo<? extends Section>> getSections() {
 		return instance().registry()
-				.syntaxes(SyntaxRegistry.Key.SECTION).stream()
+				.syntaxes(SyntaxRegistry.SECTION).stream()
 				.map(SyntaxElementInfo::<SyntaxElementInfo<Section>, Section>fromModern)
 				.collect(Collectors.toList());
 	}
@@ -1445,7 +1445,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	public static <E extends Expression<T>, T> void registerExpression(
 		Class<E> expressionType, Class<T> returnType, ExpressionType type, String... patterns
 	) throws IllegalArgumentException {
-		instance().registry().register(SyntaxRegistry.Key.EXPRESSION, SyntaxInfo.Expression.builder(expressionType, returnType)
+		instance().registry().register(SyntaxRegistry.EXPRESSION, SyntaxInfo.Expression.builder(expressionType, returnType)
 				.expressionType(type)
 				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(expressionType)))
 				.addPatterns(patterns)
@@ -1459,7 +1459,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Deprecated
 	public static Iterator<ExpressionInfo<?, ?>> getExpressions() {
 		List<ExpressionInfo<?, ?>> list = new ArrayList<>();
-		for (SyntaxInfo.Expression<?, ?> info : instance().registry().syntaxes(SyntaxRegistry.Key.EXPRESSION))
+		for (SyntaxInfo.Expression<?, ?> info : instance().registry().syntaxes(SyntaxRegistry.EXPRESSION))
 			list.add(SyntaxElementInfo.<ExpressionInfo<Expression<?>, ?>, Expression<?>>fromModern(info));
 		return list.iterator();
 	}
@@ -1546,7 +1546,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Deprecated
 	public static <E extends Structure> void registerStructure(Class<E> structureClass, String... patterns) {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
-		instance().registry().register(SyntaxRegistry.Key.STRUCTURE, SyntaxInfo.Structure.builder(structureClass)
+		instance().registry().register(SyntaxRegistry.STRUCTURE, SyntaxInfo.Structure.builder(structureClass)
 				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(structureClass)))
 				.addPatterns(patterns)
 				.build()
@@ -1561,7 +1561,7 @@ public final class Skript extends JavaPlugin implements Listener {
 		Class<E> structureClass, EntryValidator entryValidator, String... patterns
 	) {
 		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
-		instance().registry().register(SyntaxRegistry.Key.STRUCTURE, SyntaxInfo.Structure.builder(structureClass)
+		instance().registry().register(SyntaxRegistry.STRUCTURE, SyntaxInfo.Structure.builder(structureClass)
 				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(structureClass)))
 				.addPatterns(patterns)
 				.entryValidator(entryValidator)
@@ -1587,7 +1587,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Unmodifiable
 	public static List<StructureInfo<? extends Structure>> getStructures() {
 		return instance().registry()
-				.syntaxes(SyntaxRegistry.Key.STRUCTURE).stream()
+				.syntaxes(SyntaxRegistry.STRUCTURE).stream()
 				.map(SyntaxElementInfo::<StructureInfo<Structure>, Structure>fromModern)
 				.collect(Collectors.toList());
 	}

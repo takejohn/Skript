@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@SuppressWarnings("unchecked")
 class SyntaxRegistryImpl implements SyntaxRegistry {
 
 	private final Map<Key<?>, SyntaxRegister<?>> registers = new ConcurrentHashMap<>();
@@ -48,8 +47,59 @@ class SyntaxRegistryImpl implements SyntaxRegistry {
 		registers.replaceAll(((key, register) -> register.closeRegistration()));
 	}
 
+	@SuppressWarnings("unchecked")
 	protected <I extends SyntaxInfo<?>> SyntaxRegister<I> register(Key<I> key) {
 		return (SyntaxRegister<I>) registers.computeIfAbsent(key, k -> new SyntaxRegisterImpl<>());
+	}
+
+	static class KeyImpl<T extends SyntaxInfo<?>> implements Key<T> {
+
+		protected final String name;
+
+		KeyImpl(String name) {
+			this.name = name;
+		}
+
+		@Override
+		public String name() {
+			return name;
+		}
+
+		@Override
+		public int hashCode() {
+			return name.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (!(other instanceof Key<?>)) {
+				return false;
+			}
+			Key<?> key = (Key<?>) other;
+			return name().equals(key.name());
+		}
+
+		@Override
+		public String toString() {
+			return name;
+		}
+
+	}
+
+	static final class ChildKeyImpl<T extends P, P extends SyntaxInfo<?>> extends KeyImpl<T> implements ChildKey<T, P> {
+
+		private final Key<P> parent;
+
+		ChildKeyImpl(Key<P> parent, String name) {
+			super(name);
+			this.parent = parent;
+		}
+
+		@Override
+		public Key<P> parent() {
+			return parent;
+		}
+
 	}
 
 }

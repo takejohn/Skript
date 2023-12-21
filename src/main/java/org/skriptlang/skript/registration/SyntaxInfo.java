@@ -27,7 +27,6 @@ import org.skriptlang.skript.lang.Priority;
 import org.skriptlang.skript.registration.SyntaxInfoImpl.BuilderImpl;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Supplier;
 
 @ApiStatus.Experimental
@@ -42,7 +41,7 @@ public interface SyntaxInfo<E extends SyntaxElement> extends DefaultSyntaxInfos 
 	@Contract("_, _, _, _ -> new")
 	static <E extends SyntaxElement> SyntaxInfo<E> of(
 		SyntaxOrigin origin, Class<E> type,
-		@Nullable Supplier<E> supplier, List<String> patterns
+		@Nullable Supplier<E> supplier, Collection<String> patterns
 	) {
 		return new SyntaxInfoImpl<>(origin, type, supplier, patterns);
 	}
@@ -55,7 +54,7 @@ public interface SyntaxInfo<E extends SyntaxElement> extends DefaultSyntaxInfos 
 	E instance();
 
 	@Unmodifiable
-	List<String> patterns();
+	Collection<String> patterns();
 
 	Priority priority();
 

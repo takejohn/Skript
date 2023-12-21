@@ -22,7 +22,6 @@ import ch.njol.skript.SkriptAPIException;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.eclipse.jdt.annotation.Nullable;
-import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfos;
 import org.skriptlang.skript.lang.structure.StructureInfo;
 
 import java.util.Locale;

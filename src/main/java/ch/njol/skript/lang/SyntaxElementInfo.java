@@ -20,7 +20,7 @@ package ch.njol.skript.lang;
 
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Contract;
-import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfos;
+import org.skriptlang.skript.bukkit.registration.BukkitInfos;
 import org.skriptlang.skript.registration.SyntaxInfo;
 import org.skriptlang.skript.lang.structure.StructureInfo;
 
@@ -83,8 +83,8 @@ public class SyntaxElementInfo<E extends SyntaxElement> {
 	@SuppressWarnings("unchecked")
 	@Contract("_ -> new")
 	public static <I extends SyntaxElementInfo<E>, E extends SyntaxElement> I fromModern(SyntaxInfo<? extends E> info) {
-		if (info instanceof BukkitSyntaxInfos.Event) {
-			BukkitSyntaxInfos.Event<?> event = (BukkitSyntaxInfos.Event<?>) info;
+		if (info instanceof BukkitInfos.Event) {
+			BukkitInfos.Event<?> event = (BukkitInfos.Event<?>) info;
 
 			// We must first go back to the raw input
 			String rawName = event.name().startsWith("On ")

@@ -19,7 +19,7 @@
 package org.skriptlang.skript.bukkit.registration;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfos.Event;
+import org.skriptlang.skript.bukkit.registration.BukkitInfos.Event;
 import org.skriptlang.skript.registration.SyntaxRegistry.ChildKey;
 import org.skriptlang.skript.registration.SyntaxRegistry.Key;
 
@@ -27,7 +27,7 @@ import static org.skriptlang.skript.registration.SyntaxRegistry.STRUCTURE;
 
 @ApiStatus.Experimental
 public interface BukkitRegistry {
-	
+
 	Key<Event<?>> EVENT = ChildKey.of(STRUCTURE, "event");
-	
+
 }

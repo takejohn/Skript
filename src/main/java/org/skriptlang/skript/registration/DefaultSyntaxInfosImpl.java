@@ -20,35 +20,34 @@ package org.skriptlang.skript.registration;
 
 import ch.njol.skript.lang.ExpressionType;
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.lang.Priority;
 import org.skriptlang.skript.lang.entry.EntryValidator;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 @ApiStatus.Experimental
 @ApiStatus.Internal
-public final class DefaultSyntaxInfosImpl implements DefaultSyntaxInfos {
+final class DefaultSyntaxInfosImpl {
 
-	@ApiStatus.Experimental
-	@ApiStatus.Internal
 	public static class ExpressionImpl<E extends ch.njol.skript.lang.Expression<R>, R>
 		extends SyntaxInfoImpl<E> implements DefaultSyntaxInfos.Expression<E, R> {
 
 		private final Class<R> returnType;
 		private final ExpressionType expressionType;
 
-		protected ExpressionImpl(
+		ExpressionImpl(
 			SyntaxOrigin origin, Class<E> type, @Nullable Supplier<E> supplier,
-			List<String> patterns, Class<R> returnType, ExpressionType expressionType
+			Collection<String> patterns, Class<R> returnType, ExpressionType expressionType
 		) {
 			super(origin, type, supplier, patterns);
-			if (returnType.isAnnotation() || returnType.isArray() || returnType.isPrimitive())
+			if (returnType.isAnnotation() || returnType.isArray() || returnType.isPrimitive()) {
 				throw new IllegalArgumentException("returnType must be a normal type");
+			}
 			this.returnType = returnType;
 			this.expressionType = expressionType;
 		}
@@ -65,19 +64,17 @@ public final class DefaultSyntaxInfosImpl implements DefaultSyntaxInfos {
 
 		@Override
 		public boolean equals(Object other) {
-			if (this == other)
-				return true;
-			if (!(other instanceof Expression))
+			if (!(other instanceof Expression) || !super.equals(other)) {
 				return false;
+			}
 			ExpressionImpl<?, ?> expression = (ExpressionImpl<?, ?>) other;
-			return origin().equals(expression.origin()) && type().equals(expression.type()) &&
-					patterns().equals(expression.patterns()) && returnType() == expression.returnType() &&
-					expressionType().equals(expression.expressionType());
+			return returnType() == expression.returnType() &&
+					Objects.equals(expressionType(), expression.expressionType());
 		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hashCode(origin(), type(), patterns(), returnType(), expressionType());
+			return Objects.hash(origin(), type(), patterns(), returnType(), expressionType());
 		}
 
 		@Override
@@ -96,9 +93,10 @@ public final class DefaultSyntaxInfosImpl implements DefaultSyntaxInfos {
 			return new Priority(super.priority().getPriority() | expressionType.ordinal() << 24);
 		}
 
-		static final class BuilderImpl<E extends ch.njol.skript.lang.Expression<R>, R>
-			extends SyntaxInfoImpl.BuilderImpl<Expression.Builder<E, R>, E>
-			implements Expression.Builder<E, R> {
+		@SuppressWarnings("unchecked")
+		static final class BuilderImpl<B extends Expression.Builder<B, E, R>, E extends ch.njol.skript.lang.Expression<R>, R>
+			extends SyntaxInfoImpl.BuilderImpl<B, E>
+			implements Expression.Builder<B, E, R> {
 
 			private final Class<R> returnType;
 			@Nullable
@@ -110,9 +108,9 @@ public final class DefaultSyntaxInfosImpl implements DefaultSyntaxInfos {
 			}
 
 			@Override
-			public Expression.Builder<E, R> expressionType(ExpressionType expressionType) {
+			public B expressionType(ExpressionType expressionType) {
 				this.expressionType = expressionType;
-				return this;
+				return (B) this;
 			}
 
 			@Contract("-> new")
@@ -122,21 +120,20 @@ public final class DefaultSyntaxInfosImpl implements DefaultSyntaxInfos {
 				}
 				return new ExpressionImpl<>(origin, type, supplier, patterns, returnType, expressionType);
 			}
+
 		}
 
 	}
 
-	@ApiStatus.Experimental
-	@ApiStatus.Internal
 	public static class StructureImpl<E extends org.skriptlang.skript.lang.structure.Structure>
 		extends SyntaxInfoImpl<E> implements DefaultSyntaxInfos.Structure<E> {
 
 		@Nullable
 		private final EntryValidator entryValidator;
 
-		protected StructureImpl(
+		StructureImpl(
 			SyntaxOrigin origin, Class<E> type, @Nullable Supplier<E> supplier,
-			List<String> patterns, @Nullable EntryValidator entryValidator
+			Collection<String> patterns, @Nullable EntryValidator entryValidator
 		) {
 			super(origin, type, supplier, patterns);
 			this.entryValidator = entryValidator;
@@ -150,19 +147,16 @@ public final class DefaultSyntaxInfosImpl implements DefaultSyntaxInfos {
 
 		@Override
 		public boolean equals(Object other) {
-			if (this == other)
-				return true;
-			if (!(other instanceof Structure))
+			if (!(other instanceof Structure) || !super.equals(other)) {
 				return false;
+			}
 			Structure<?> structure = (Structure<?>) other;
-			return origin().equals(structure.origin()) && type().equals(structure.type()) &&
-					patterns().equals(structure.patterns()) &&
-					Objects.equal(entryValidator(), structure.entryValidator());
+			return Objects.equals(entryValidator(), structure.entryValidator());
 		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hashCode(origin(), type(), patterns(), entryValidator());
+			return Objects.hash(origin(), type(), patterns(), entryValidator());
 		}
 
 		@Override
@@ -175,9 +169,10 @@ public final class DefaultSyntaxInfosImpl implements DefaultSyntaxInfos {
 					.toString();
 		}
 
-		static final class BuilderImpl<E extends org.skriptlang.skript.lang.structure.Structure>
-			extends SyntaxInfoImpl.BuilderImpl<Structure.Builder<E>, E>
-			implements Structure.Builder<E> {
+		@SuppressWarnings("unchecked")
+		static final class BuilderImpl<B extends Structure.Builder<B, E>, E extends org.skriptlang.skript.lang.structure.Structure>
+			extends SyntaxInfoImpl.BuilderImpl<B, E>
+			implements Structure.Builder<B, E> {
 
 			@Nullable
 			private EntryValidator entryValidator;
@@ -187,14 +182,15 @@ public final class DefaultSyntaxInfosImpl implements DefaultSyntaxInfos {
 			}
 
 			@Override
-			public Structure.Builder<E> entryValidator(EntryValidator entryValidator) {
+			public B entryValidator(EntryValidator entryValidator) {
 				this.entryValidator = entryValidator;
-				return this;
+				return (B) this;
 			}
 
 			public Structure<E> build() {
 				return new StructureImpl<>(origin, type, supplier, patterns, entryValidator);
 			}
+
 		}
 
 	}

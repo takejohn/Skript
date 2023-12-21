@@ -112,8 +112,7 @@ import org.junit.runner.Result;
 import org.skriptlang.skript.Skript.State;
 import org.skriptlang.skript.bukkit.registration.BukkitOrigin;
 import org.skriptlang.skript.bukkit.registration.BukkitRegistry;
-import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfos;
-import org.skriptlang.skript.bukkit.registration.EventInfoBuilder;
+import org.skriptlang.skript.bukkit.registration.BukkitInfos;
 import org.skriptlang.skript.lang.comparator.Comparator;
 import org.skriptlang.skript.lang.comparator.Comparators;
 import org.skriptlang.skript.lang.converter.Converter;
@@ -1518,9 +1517,9 @@ public final class Skript extends JavaPlugin implements Listener {
 		String name, Class<E> eventClass, Class<? extends Event>[] events, String... patterns
 	) {
 		for (int i = 0; i < patterns.length; i++)
-			patterns[i] = BukkitSyntaxInfos.fixPattern(patterns[i]);
+			patterns[i] = BukkitInfos.fixPattern(patterns[i]);
 		SkriptEventInfo<E> legacy = new SkriptEventInfo<>(name, patterns, eventClass, "", events);
-		EventInfoBuilder<E> builder = EventInfoBuilder.builder(legacy.getElementClass(), null, legacy.getName(), legacy.getId())
+		BukkitInfos.Event.Builder<?, E> builder = BukkitInfos.Event.builder(legacy.getElementClass(), legacy.getName(), legacy.getId())
 			.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(legacy.getElementClass())))
 			.addPatterns(legacy.getPatterns())
 			.addEvents(legacy.events);

@@ -29,7 +29,7 @@ import ch.njol.skript.structures.StructEvent.EventData;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 import org.eclipse.jdt.annotation.Nullable;
-import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfos;
+import org.skriptlang.skript.bukkit.registration.BukkitInfos;
 import org.skriptlang.skript.lang.entry.EntryContainer;
 import org.skriptlang.skript.lang.script.Script;
 import org.skriptlang.skript.lang.structure.Structure;
@@ -211,11 +211,11 @@ public abstract class SkriptEvent extends Structure {
 	 * Fixes patterns in event by modifying every {@link ch.njol.skript.patterns.TypePatternElement}
 	 * to be nullable.
 	 * 
-	 * @deprecated Use {@link BukkitSyntaxInfos#fixPattern(String)}
+	 * @deprecated Use {@link BukkitInfos#fixPattern(String)}
 	 */
 	@Deprecated
 	public static String fixPattern(String pattern) {
-		return BukkitSyntaxInfos.fixPattern(pattern);
+		return BukkitInfos.fixPattern(pattern);
 	}
 
 	@Nullable

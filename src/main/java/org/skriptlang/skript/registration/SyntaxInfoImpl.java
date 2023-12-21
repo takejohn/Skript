@@ -20,7 +20,6 @@ package org.skriptlang.skript.registration;
 
 import ch.njol.skript.lang.SyntaxElement;
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -29,22 +28,22 @@ import org.skriptlang.skript.lang.Priority;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
-// TODO consider not exposing SyntaxInfo implementations
 @ApiStatus.Experimental
-@ApiStatus.Internal
-public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
+class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 
 	private final SyntaxOrigin origin;
 	private final Class<T> type;
 	@Nullable
 	private final Supplier<T> supplier;
-	private final List<String> patterns;
+	private final Collection<String> patterns;
 	private final Priority priority = new Priority();
 
-	protected SyntaxInfoImpl(SyntaxOrigin origin, Class<T> type, @Nullable Supplier<T> supplier, List<String> patterns) {
+	protected SyntaxInfoImpl(SyntaxOrigin origin, Class<T> type, @Nullable Supplier<T> supplier, Collection<String> patterns) {
 		this.origin = origin;
 		this.type = type;
 		this.supplier = supplier;
@@ -72,7 +71,7 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 
 	@Override
 	@Unmodifiable
-	public List<String> patterns() {
+	public Collection<String> patterns() {
 		return patterns;
 	}
 
@@ -83,18 +82,21 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 
 	@Override
 	public boolean equals(Object other) {
-		if (this == other)
+		if (this == other) {
 			return true;
-		if (!(other instanceof SyntaxInfo))
+		}
+		if (!(other instanceof SyntaxInfo)) {
 			return false;
+		}
 		SyntaxInfo<?> info = (SyntaxInfo<?>) other;
-		return origin().equals(info.origin()) && type().equals(info.type()) &&
-				patterns().equals(info.patterns());
+		return Objects.equals(origin(), info.origin()) &&
+				Objects.equals(type(), info.type()) &&
+				Objects.equals(patterns(), info.patterns());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(origin(), type(), patterns());
+		return Objects.hash(origin(), type(), patterns());
 	}
 
 	@Override
@@ -131,21 +133,17 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		}
 
 		public B addPattern(String pattern) {
-			patterns.add(pattern);
+			this.patterns.add(pattern);
 			return (B) this;
 		}
 
 		public B addPatterns(String... patterns) {
-			for (String pattern : patterns) {
-				addPattern(pattern);
-			}
+			Collections.addAll(this.patterns, patterns);
 			return (B) this;
 		}
 
 		public B addPatterns(Collection<String> patterns) {
-			for (String pattern : patterns) {
-				addPattern(pattern);
-			}
+			this.patterns.addAll(patterns);
 			return (B) this;
 		}
 
@@ -154,4 +152,5 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 		}
 
 	}
+
 }

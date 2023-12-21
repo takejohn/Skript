@@ -18,7 +18,6 @@
  */
 package org.skriptlang.skript.registration;
 
-import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SyntaxElement;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
@@ -27,11 +26,14 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 import org.skriptlang.skript.lang.Priority;
-import org.skriptlang.skript.lang.entry.EntryValidator;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
+// TODO consider not exposing SyntaxInfo implementations
+@ApiStatus.Experimental
 @ApiStatus.Internal
 public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 
@@ -42,7 +44,7 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 	private final List<String> patterns;
 	private final Priority priority = new Priority();
 
-	SyntaxInfoImpl(SyntaxOrigin origin, Class<T> type, @Nullable Supplier<T> supplier, List<String> patterns) {
+	protected SyntaxInfoImpl(SyntaxOrigin origin, Class<T> type, @Nullable Supplier<T> supplier, List<String> patterns) {
 		this.origin = origin;
 		this.type = type;
 		this.supplier = supplier;
@@ -62,8 +64,8 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 	@Override
 	public T instance() {
 		try {
-			return supplier == null ? type.newInstance() : supplier.get();
-		} catch (InstantiationException | IllegalAccessException e) {
+			return supplier == null ? type.getDeclaredConstructor().newInstance() : supplier.get();
+		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -104,116 +106,52 @@ public class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 				.toString();
 	}
 
-	static final class ExpressionImpl<E extends ch.njol.skript.lang.Expression<R>, R>
-		extends SyntaxInfoImpl<E> implements DefaultSyntaxInfos.Expression<E, R> {
+	@ApiStatus.Experimental
+	@SuppressWarnings("unchecked")
+	static class BuilderImpl<B extends Builder<B, E>, E extends SyntaxElement> implements Builder<B, E> {
 
-		private final Class<R> returnType;
-		private final ExpressionType expressionType;
+		final Class<E> type;
+		final List<String> patterns = new ArrayList<>();
+		@Nullable
+		Supplier<E> supplier;
+		SyntaxOrigin origin = SyntaxOrigin.UNKNOWN;
 
-		ExpressionImpl(
-			SyntaxOrigin origin, Class<E> type, @Nullable Supplier<E> supplier,
-			List<String> patterns, Class<R> returnType, ExpressionType expressionType
-		) {
-			super(origin, type, supplier, patterns);
-			if (returnType.isAnnotation() || returnType.isArray() || returnType.isPrimitive())
-				throw new IllegalArgumentException("returnType must be a normal type");
-			this.returnType = returnType;
-			this.expressionType = expressionType;
+		BuilderImpl(Class<E> type) {
+			this.type = type;
 		}
 
-		@Override
-		public Class<R> returnType() {
-			return returnType;
+		public B origin(SyntaxOrigin origin) {
+			this.origin = origin;
+			return (B) this;
 		}
 
-		@Override
-		public ExpressionType expressionType() {
-			return expressionType;
+		public B supplier(Supplier<E> supplier) {
+			this.supplier = supplier;
+			return (B) this;
 		}
 
-		@Override
-		public boolean equals(Object other) {
-			if (this == other)
-				return true;
-			if (!(other instanceof Expression))
-				return false;
-			ExpressionImpl<?, ?> expression = (ExpressionImpl<?, ?>) other;
-			return origin().equals(expression.origin()) && type().equals(expression.type()) &&
-					patterns().equals(expression.patterns()) && returnType() == expression.returnType() &&
-					expressionType().equals(expression.expressionType());
+		public B addPattern(String pattern) {
+			patterns.add(pattern);
+			return (B) this;
 		}
 
-		@Override
-		public int hashCode() {
-			return Objects.hashCode(origin(), type(), patterns(), returnType(), expressionType());
+		public B addPatterns(String... patterns) {
+			for (String pattern : patterns) {
+				addPattern(pattern);
+			}
+			return (B) this;
 		}
 
-		@Override
-		public String toString() {
-			return MoreObjects.toStringHelper(this)
-					.add("origin", origin())
-					.add("type", type())
-					.add("patterns", patterns())
-					.add("returnType", returnType())
-					.add("expressionType", expressionType())
-					.toString();
+		public B addPatterns(Collection<String> patterns) {
+			for (String pattern : patterns) {
+				addPattern(pattern);
+			}
+			return (B) this;
 		}
 
-		@Override
-		public Priority priority() {
-			return new Priority(super.priority().getPriority() | expressionType.ordinal() << 24);
+		public SyntaxInfo<E> build() {
+			return new SyntaxInfoImpl<>(origin, type, supplier, patterns);
 		}
 
 	}
-
-	@ApiStatus.Internal
-	public static class StructureImpl<E extends org.skriptlang.skript.lang.structure.Structure>
-		extends SyntaxInfoImpl<E> implements DefaultSyntaxInfos.Structure<E> {
-
-		@Nullable
-		private final EntryValidator entryValidator;
-
-		protected StructureImpl(
-			SyntaxOrigin origin, Class<E> type, @Nullable Supplier<E> supplier,
-			List<String> patterns, @Nullable EntryValidator entryValidator
-		) {
-			super(origin, type, supplier, patterns);
-			this.entryValidator = entryValidator;
-		}
-
-		@Override
-		@Nullable
-		public EntryValidator entryValidator() {
-			return entryValidator;
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (this == other)
-				return true;
-			if (!(other instanceof Structure))
-				return false;
-			Structure<?> structure = (Structure<?>) other;
-			return origin().equals(structure.origin()) && type().equals(structure.type()) &&
-					patterns().equals(structure.patterns()) &&
-					Objects.equal(entryValidator(), structure.entryValidator());
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hashCode(origin(), type(), patterns(), entryValidator());
-		}
-
-		@Override
-		public String toString() {
-			return MoreObjects.toStringHelper(this)
-					.add("origin", origin())
-					.add("type", type())
-					.add("patterns", patterns())
-					.add("entryValidator", entryValidator())
-					.toString();
-		}
-
-	}
-
 }

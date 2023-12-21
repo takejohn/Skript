@@ -18,8 +18,8 @@
  */
 package org.skriptlang.skript.registration;
 
-import org.skriptlang.skript.registration.SkriptRegistry.ChildKey;
-import org.skriptlang.skript.registration.SkriptRegistry.Key;
+import org.skriptlang.skript.registration.SyntaxRegistry.ChildKey;
+import org.skriptlang.skript.registration.SyntaxRegistry.Key;
 
 class KeyImpl<T extends SyntaxInfo<?>> implements Key<T> {
 	

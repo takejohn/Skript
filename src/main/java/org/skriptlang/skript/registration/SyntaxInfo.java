@@ -24,13 +24,21 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 import org.skriptlang.skript.lang.Priority;
+import org.skriptlang.skript.registration.SyntaxInfoImpl.BuilderImpl;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
 @ApiStatus.Experimental
-public interface SyntaxInfo<T extends SyntaxElement> extends DefaultSyntaxInfos {
+public interface SyntaxInfo<E extends SyntaxElement> extends DefaultSyntaxInfos {
 
+	@Contract("_ -> new")
+	static <E extends SyntaxElement> Builder<? extends Builder<?, E>, E> builder(Class<E> type) {
+		return new BuilderImpl<>(type);
+	}
+
+	// TODO consider forcing builder usage
 	@Contract("_, _, _, _ -> new")
 	static <E extends SyntaxElement> SyntaxInfo<E> of(
 		SyntaxOrigin origin, Class<E> type,
@@ -39,19 +47,38 @@ public interface SyntaxInfo<T extends SyntaxElement> extends DefaultSyntaxInfos 
 		return new SyntaxInfoImpl<>(origin, type, supplier, patterns);
 	}
 
-	/**
-	 * @return {@link SyntaxOrigin}
-	 */
 	SyntaxOrigin origin();
 
-	Class<T> type();
+	Class<E> type();
 
 	@Contract("-> new")
-	T instance();
+	E instance();
 
 	@Unmodifiable
 	List<String> patterns();
 
 	Priority priority();
+
+	interface Builder<B extends Builder<B, E>, E extends SyntaxElement> {
+
+		@Contract("_ -> this")
+		B origin(SyntaxOrigin origin);
+
+		@Contract("_ -> this")
+		B supplier(Supplier<E> supplier);
+
+		@Contract("_ -> this")
+		B addPattern(String pattern);
+
+		@Contract("_ -> this")
+		B addPatterns(String... patterns);
+
+		@Contract("_ -> this")
+		B addPatterns(Collection<String> patterns);
+
+		@Contract("-> new")
+		SyntaxInfo<E> build();
+
+	}
 
 }

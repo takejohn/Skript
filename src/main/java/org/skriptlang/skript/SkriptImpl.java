@@ -20,17 +20,16 @@ package org.skriptlang.skript;
 
 import ch.njol.skript.registrations.Classes;
 import org.skriptlang.skript.lang.converter.Converters;
-import org.skriptlang.skript.registration.SimpleSkriptRegistry;
-import org.skriptlang.skript.registration.SkriptRegistry;
+import org.skriptlang.skript.registration.SyntaxRegistry;
 
 final class SkriptImpl implements Skript {
 
-	private final SkriptRegistry registry = new SimpleSkriptRegistry();
+	private final SyntaxRegistry registry = SyntaxRegistry.createInstance();
 
 	private State state = State.REGISTRATION;
 
 	@Override
-	public SkriptRegistry registry() {
+	public SyntaxRegistry registry() {
 		return registry;
 	}
 

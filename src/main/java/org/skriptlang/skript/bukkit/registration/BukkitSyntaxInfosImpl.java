@@ -19,24 +19,21 @@
 package org.skriptlang.skript.bukkit.registration;
 
 import ch.njol.skript.lang.SkriptEvent;
-import ch.njol.skript.lang.SkriptEventInfo;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfos.Event;
-import org.skriptlang.skript.registration.SyntaxInfoImpl;
+import org.skriptlang.skript.registration.DefaultSyntaxInfosImpl.StructureImpl;
 import org.skriptlang.skript.registration.SyntaxOrigin;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 final class BukkitSyntaxInfosImpl {
 	
-	static final class EventImpl<E extends SkriptEvent> extends SyntaxInfoImpl.StructureImpl<E> implements Event<E> {
+	static final class EventImpl<E extends SkriptEvent> extends StructureImpl<E> implements Event<E> {
 		
 		private final String name;
 		private final String id;

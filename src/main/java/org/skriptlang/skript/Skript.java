@@ -20,7 +20,7 @@ package org.skriptlang.skript;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
-import org.skriptlang.skript.registration.SkriptRegistry;
+import org.skriptlang.skript.registration.SyntaxRegistry;
 
 /**
  * The main class for everything related to Skript.
@@ -30,9 +30,8 @@ import org.skriptlang.skript.registration.SkriptRegistry;
 public interface Skript {
 
 	/**
-	 * Returns a new instance of the default Skript implementation.
-	 *
-	 * @return {@link Skript}
+	 * This implementation makes use of default implementations of required classes.
+	 * @return A default Skript implementation.
 	 */
 	@Contract("-> new")
 	static Skript createInstance() {
@@ -40,9 +39,9 @@ public interface Skript {
 	}
 
 	/**
-	 * @return {@link SkriptRegistry}
+	 * @return {@link SyntaxRegistry}
 	 */
-	SkriptRegistry registry();
+	SyntaxRegistry registry();
 
 	/**
 	 * @return The current state Skript is in

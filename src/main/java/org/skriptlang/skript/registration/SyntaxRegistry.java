@@ -23,16 +23,25 @@ import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Section;
 import ch.njol.skript.lang.Statement;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
 /**
- * The Skript registry manages all registries for syntax registration.
- * By default, the implementation is practically a wrapper around {@code Map<Key<?>, SyntaxRegistry<?>>}.
+ * A syntax registry manages all {@link SyntaxRegister}s for syntax registration.
  */
 @ApiStatus.Experimental
-public interface SkriptRegistry {
+public interface SyntaxRegistry {
+
+	/**
+	 * This implementation is practically a wrapper around {@code Map<Key<?>, SyntaxRegistry<?>>}.
+	 * @return A default registry implementation.
+	 */
+	@Contract("-> new")
+	static SyntaxRegistry createInstance() {
+		return new SyntaxRegistryImpl();
+	}
 
 	/**
 	 * Gets all syntaxes related to a key.
@@ -50,7 +59,7 @@ public interface SkriptRegistry {
 	<I extends SyntaxInfo<?>> void register(Key<I> key, I info);
 
 	/**
-	 * Closes registration of the registry. After this {@link SkriptRegistry#register(Key, SyntaxInfo)} is no longer
+	 * Closes registration of the registry. After this {@link SyntaxRegistry#register(Key, SyntaxInfo)} is no longer
 	 * expected to work. Do not call this method more than once.
 	 */
 	@ApiStatus.Internal

@@ -23,52 +23,82 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.lang.entry.EntryValidator;
+import org.skriptlang.skript.registration.DefaultSyntaxInfosImpl.ExpressionImpl;
+import org.skriptlang.skript.registration.DefaultSyntaxInfosImpl.StructureImpl;
 
 import java.util.List;
 import java.util.function.Supplier;
 
-@ApiStatus.Internal
+@ApiStatus.Experimental
 interface DefaultSyntaxInfos {
-	
-	@ApiStatus.NonExtendable
+
 	interface Expression<E extends ch.njol.skript.lang.Expression<R>, R> extends SyntaxInfo<E> {
-		
+
+		@Contract("_, _ -> new")
+		static <E extends ch.njol.skript.lang.Expression<R>, R> Builder<E, R> builder(Class<E> expressionClass, Class<R> returnType) {
+			return new ExpressionImpl.BuilderImpl<>(expressionClass, returnType);
+		}
+
 		@Contract("_, _, _, _, _, _ -> new")
 		static <E extends ch.njol.skript.lang.Expression<R>, R> Expression<E, R> of(
 			SyntaxOrigin origin, Class<E> type, @Nullable Supplier<E> supplier, List<String> patterns,
 			Class<R> returnType, ExpressionType expressionType
 		) {
-			return new SyntaxInfoImpl.ExpressionImpl<>(origin, type, supplier, patterns, returnType, expressionType);
+			return new ExpressionImpl<>(origin, type, supplier, patterns, returnType, expressionType);
 		}
-		
+
 		Class<R> returnType();
-		
+
 		ExpressionType expressionType();
-		
+
+		interface Builder<E extends ch.njol.skript.lang.Expression<R>, R> extends SyntaxInfo.Builder<Builder<E, R>, E> {
+
+			@Contract("_ -> this")
+			Builder<E, R> expressionType(ExpressionType expressionType);
+
+			@Contract("-> new")
+			Expression<E, R> build();
+
+		}
+
 	}
-	
-	@ApiStatus.NonExtendable
+
 	interface Structure<E extends org.skriptlang.skript.lang.structure.Structure> extends SyntaxInfo<E> {
-		
+
+		@Contract("_ -> new")
+		static <E extends org.skriptlang.skript.lang.structure.Structure> Builder<E> builder(Class<E> structureClass) {
+			return new StructureImpl.BuilderImpl<>(structureClass);
+		}
+
 		@Contract("_, _, _, _ -> new")
 		static <E extends org.skriptlang.skript.lang.structure.Structure> Structure<E> of(
 			SyntaxOrigin origin, Class<E> type, @Nullable Supplier<E> supplier, List<String> patterns
 		) {
 			return of(origin, type, supplier, patterns, null);
 		}
-		
+
 		@Contract("_, _, _, _, _ -> new")
 		static <E extends org.skriptlang.skript.lang.structure.Structure> Structure<E> of(
 			SyntaxOrigin origin, Class<E> type, @Nullable Supplier<E> supplier,
 			List<String> patterns, @Nullable EntryValidator entryValidator
 		) {
 			
-			return new SyntaxInfoImpl.StructureImpl<>(origin, type, supplier, patterns, entryValidator);
+			return new StructureImpl<>(origin, type, supplier, patterns, entryValidator);
 		}
-		
+
 		@Nullable
 		EntryValidator entryValidator();
-		
+
+		interface Builder<E extends org.skriptlang.skript.lang.structure.Structure> extends SyntaxInfo.Builder<Builder<E>, E> {
+
+			@Contract("_ -> this")
+			Builder<E> entryValidator(EntryValidator entryValidator);
+
+			@Contract("-> new")
+			Structure<E> build();
+
+		}
+
 	}
-	
+
 }

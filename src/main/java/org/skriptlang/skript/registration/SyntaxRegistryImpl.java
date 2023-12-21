@@ -18,7 +18,6 @@
  */
 package org.skriptlang.skript.registration;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
@@ -26,8 +25,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("unchecked")
-@ApiStatus.Internal
-public class SimpleSkriptRegistry implements SkriptRegistry {
+class SyntaxRegistryImpl implements SyntaxRegistry {
 
 	private final Map<Key<?>, SyntaxRegister<?>> registers = new ConcurrentHashMap<>();
 
@@ -40,8 +38,9 @@ public class SimpleSkriptRegistry implements SkriptRegistry {
 	@Override
 	public <I extends SyntaxInfo<?>> void register(Key<I> key, I info) {
 		register(key).add(info);
-		if (key instanceof ChildKey)
+		if (key instanceof ChildKey) {
 			register(((ChildKey<? extends I, I>) key).parent(), info);
+		}
 	}
 
 	@Override

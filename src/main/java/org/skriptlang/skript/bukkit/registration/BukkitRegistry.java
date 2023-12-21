@@ -20,10 +20,10 @@ package org.skriptlang.skript.bukkit.registration;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfos.Event;
-import org.skriptlang.skript.registration.SkriptRegistry.ChildKey;
-import org.skriptlang.skript.registration.SkriptRegistry.Key;
+import org.skriptlang.skript.registration.SyntaxRegistry.ChildKey;
+import org.skriptlang.skript.registration.SyntaxRegistry.Key;
 
-import static org.skriptlang.skript.registration.SkriptRegistry.Key.STRUCTURE;
+import static org.skriptlang.skript.registration.SyntaxRegistry.Key.STRUCTURE;
 
 @ApiStatus.Experimental
 public interface BukkitRegistry {

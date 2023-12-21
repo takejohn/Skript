@@ -50,7 +50,7 @@ final class SyntaxRegisterImpl<T extends SyntaxInfo<?>> implements SyntaxRegiste
 		return new FinalSyntaxRegister<>(this);
 	}
 	
-	static final class FinalSyntaxRegister<T extends SyntaxInfo<?>> implements SyntaxRegister<T> {
+	private static final class FinalSyntaxRegister<T extends SyntaxInfo<?>> implements SyntaxRegister<T> {
 		
 		private final List<T> syntaxes;
 		

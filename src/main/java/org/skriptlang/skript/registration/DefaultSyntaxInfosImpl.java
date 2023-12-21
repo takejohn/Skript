@@ -20,7 +20,6 @@ package org.skriptlang.skript.registration;
 
 import ch.njol.skript.lang.ExpressionType;
 import com.google.common.base.MoreObjects;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.lang.Priority;
@@ -30,8 +29,6 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-@ApiStatus.Experimental
-@ApiStatus.Internal
 final class DefaultSyntaxInfosImpl {
 
 	public static class ExpressionImpl<E extends ch.njol.skript.lang.Expression<R>, R>

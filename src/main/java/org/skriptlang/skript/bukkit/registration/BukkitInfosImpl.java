@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -54,13 +55,15 @@ final class BukkitInfosImpl {
 		private final Collection<Class<? extends org.bukkit.event.Event>> events;
 
 		EventImpl(
-			SyntaxInfo<E> defaultInfo, String name, String id,
+			SyntaxInfo<E> defaultInfo, String name,
 			@Nullable String since, @Nullable String documentationId, Collection<String> description, Collection<String> examples,
 			Collection<String> keywords, Collection<String> requiredPlugins, Collection<Class<? extends org.bukkit.event.Event>> events
 		) {
 			this.defaultInfo = defaultInfo;
 			this.name = name.startsWith("*") ? name.substring(1) : "On " + name;
-			this.id = id;
+			this.id = name.toLowerCase(Locale.ENGLISH)
+					.replaceAll("[#'\"<>/&]", "")
+					.replaceAll("\\s+", "_");
 			this.since = since;
 			this.documentationId = documentationId;
 			this.description = ImmutableList.copyOf(description);
@@ -183,7 +186,6 @@ final class BukkitInfosImpl {
 
 			private final SyntaxInfo.Builder<?, E> defaultBuilder;
 			private final String name;
-			private final String id;
 			@Nullable
 			private String since;
 			@Nullable
@@ -194,10 +196,9 @@ final class BukkitInfosImpl {
 			private final List<String> requiredPlugins = new ArrayList<>();
 			private final List<Class<? extends org.bukkit.event.Event>> events = new ArrayList<>();
 
-			BuilderImpl(Class<E> type, String name, String id) {
+			BuilderImpl(Class<E> type, String name) {
 				this.defaultBuilder = SyntaxInfo.builder(type);
 				this.name = name;
-				this.id = id;
 			}
 
 			@Override
@@ -340,7 +341,7 @@ final class BukkitInfosImpl {
 			@Override
 			public Event<E> build() {
 				return new EventImpl<>(
-					defaultBuilder.build(), name, id,
+					defaultBuilder.build(), name,
 					since, documentationId, description, examples, keywords, requiredPlugins, events
 				);
 			}

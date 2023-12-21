@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-@ApiStatus.Experimental
 class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 
 	private final SyntaxOrigin origin;
@@ -108,7 +107,6 @@ class SyntaxInfoImpl<T extends SyntaxElement> implements SyntaxInfo<T> {
 				.toString();
 	}
 
-	@ApiStatus.Experimental
 	@SuppressWarnings("unchecked")
 	static class BuilderImpl<B extends Builder<B, E>, E extends SyntaxElement> implements Builder<B, E> {
 

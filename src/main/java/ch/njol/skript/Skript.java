@@ -111,7 +111,7 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.skriptlang.skript.Skript.State;
 import org.skriptlang.skript.bukkit.registration.BukkitOrigin;
-import org.skriptlang.skript.bukkit.registration.BukkitRegistry;
+import org.skriptlang.skript.bukkit.registration.BukkitRegistryKeys;
 import org.skriptlang.skript.bukkit.registration.BukkitInfos;
 import org.skriptlang.skript.lang.comparator.Comparator;
 import org.skriptlang.skript.lang.comparator.Comparators;
@@ -1520,9 +1520,9 @@ public final class Skript extends JavaPlugin implements Listener {
 			patterns[i] = BukkitInfos.fixPattern(patterns[i]);
 		SkriptEventInfo<E> legacy = new SkriptEventInfo<>(name, patterns, eventClass, "", events);
 		BukkitInfos.Event.Builder<?, E> builder = BukkitInfos.Event.builder(legacy.getElementClass(), legacy.getName(), legacy.getId())
-			.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(legacy.getElementClass())))
-			.addPatterns(legacy.getPatterns())
-			.addEvents(legacy.events);
+				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(legacy.getElementClass())))
+				.addPatterns(legacy.getPatterns())
+				.addEvents(legacy.events);
 		if (legacy.getSince() != null)
 			builder.since(legacy.getSince());
 		if (legacy.getDocumentationID() != null)
@@ -1535,7 +1535,7 @@ public final class Skript extends JavaPlugin implements Listener {
 			builder.addKeywords(legacy.getKeywords());
 		if (legacy.getRequiredPlugins() != null)
 			builder.addRequiredPlugins(legacy.getRequiredPlugins());
-		instance().registry().register(BukkitRegistry.EVENT, builder.build());
+		instance().registry().register(BukkitRegistryKeys.EVENT, builder.build());
 		return legacy;
 	}
 
@@ -1544,7 +1544,6 @@ public final class Skript extends JavaPlugin implements Listener {
 	 */
 	@Deprecated
 	public static <E extends Structure> void registerStructure(Class<E> structureClass, String... patterns) {
-		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		instance().registry().register(SyntaxRegistry.STRUCTURE, SyntaxInfo.Structure.builder(structureClass)
 				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(structureClass)))
 				.addPatterns(patterns)
@@ -1559,7 +1558,6 @@ public final class Skript extends JavaPlugin implements Listener {
 	public static <E extends Structure> void registerStructure(
 		Class<E> structureClass, EntryValidator entryValidator, String... patterns
 	) {
-		String originClass = Thread.currentThread().getStackTrace()[2].getClassName();
 		instance().registry().register(SyntaxRegistry.STRUCTURE, SyntaxInfo.Structure.builder(structureClass)
 				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(structureClass)))
 				.addPatterns(patterns)
@@ -1575,7 +1573,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Unmodifiable
 	public static Collection<SkriptEventInfo<?>> getEvents() {
 		return instance().registry()
-				.syntaxes(BukkitRegistry.EVENT).stream()
+				.syntaxes(BukkitRegistryKeys.EVENT).stream()
 				.map(SyntaxElementInfo::<SkriptEventInfo<SkriptEvent>, SkriptEvent>fromModern)
 				.collect(Collectors.toList());
 	}

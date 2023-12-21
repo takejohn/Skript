@@ -29,7 +29,6 @@ class SyntaxRegistryImpl implements SyntaxRegistry {
 	private final Map<Key<?>, SyntaxRegister<?>> registers = new ConcurrentHashMap<>();
 
 	@Override
-	@Unmodifiable
 	public <I extends SyntaxInfo<?>> List<I> syntaxes(Key<I> key) {
 		return register(key).syntaxes();
 	}

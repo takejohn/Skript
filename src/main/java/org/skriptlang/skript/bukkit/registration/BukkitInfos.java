@@ -25,10 +25,8 @@ import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.bukkit.registration.BukkitInfosImpl.EventImpl;
 import org.skriptlang.skript.lang.entry.EntryValidator;
 import org.skriptlang.skript.registration.SyntaxInfo;
-import org.skriptlang.skript.registration.SyntaxOrigin;
 
 import java.util.Collection;
-import java.util.function.Supplier;
 
 /**
  * A class containing the interfaces representing Bukkit-specific SyntaxInfo implementations.
@@ -54,18 +52,6 @@ public final class BukkitInfos {
 			Class<E> eventClass, String name
 		) {
 			return new EventImpl.BuilderImpl<>(eventClass, name);
-		}
-
-		@Contract("_, _, _, _, _, _, _, _, _, _, _, _ -> new")
-		static <E extends SkriptEvent> BukkitInfos.Event<E> of(
-				SyntaxOrigin origin, Class<E> type, @Nullable Supplier<E> supplier, Collection<String> patterns, String name,
-				@Nullable String since, @Nullable String documentationId, Collection<String> description, Collection<String> examples,
-				Collection<String> keywords, Collection<String> requiredPlugins, Collection<Class<? extends org.bukkit.event.Event>> events
-		) {
-			return new EventImpl<>(
-					SyntaxInfo.of(origin, type, supplier, patterns), name,
-					since, documentationId, description, examples, keywords, requiredPlugins, events
-			);
 		}
 
 		/**

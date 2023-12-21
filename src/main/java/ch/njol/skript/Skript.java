@@ -1519,7 +1519,7 @@ public final class Skript extends JavaPlugin implements Listener {
 		for (int i = 0; i < patterns.length; i++)
 			patterns[i] = BukkitInfos.fixPattern(patterns[i]);
 		SkriptEventInfo<E> legacy = new SkriptEventInfo<>(name, patterns, eventClass, "", events);
-		BukkitInfos.Event.Builder<?, E> builder = BukkitInfos.Event.builder(legacy.getElementClass(), legacy.getName(), legacy.getId())
+		BukkitInfos.Event.Builder<?, E> builder = BukkitInfos.Event.builder(legacy.getElementClass(), name)
 				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(legacy.getElementClass())))
 				.addPatterns(legacy.getPatterns())
 				.addEvents(legacy.events);

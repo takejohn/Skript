@@ -21,7 +21,6 @@ package org.skriptlang.skript.registration;
 import ch.njol.skript.lang.SyntaxElement;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 import org.skriptlang.skript.lang.Priority;
 import org.skriptlang.skript.registration.SyntaxInfoImpl.BuilderImpl;
@@ -43,15 +42,6 @@ public interface SyntaxInfo<E extends SyntaxElement> extends DefaultSyntaxInfos 
 	@Contract("_ -> new")
 	static <E extends SyntaxElement> Builder<? extends Builder<?, E>, E> builder(Class<E> type) {
 		return new BuilderImpl<>(type);
-	}
-
-	// TODO consider forcing builder usage
-	@Contract("_, _, _, _ -> new")
-	static <E extends SyntaxElement> SyntaxInfo<E> of(
-		SyntaxOrigin origin, Class<E> type,
-		@Nullable Supplier<E> supplier, Collection<String> patterns
-	) {
-		return new SyntaxInfoImpl<>(origin, type, supplier, patterns);
 	}
 
 	/**

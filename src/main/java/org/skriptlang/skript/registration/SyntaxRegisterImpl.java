@@ -27,55 +27,53 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-final class SyntaxRegisterImpl<T extends SyntaxInfo<?>> implements SyntaxRegister<T> {
-	
-	private final Set<T> syntaxes = new ConcurrentSkipListSet<>(Comparator.comparing(SyntaxInfo::priority));
-	
+final class SyntaxRegisterImpl<I extends SyntaxInfo<?>> implements SyntaxRegister<I> {
+
+	private final Set<I> syntaxes = new ConcurrentSkipListSet<>(Comparator.comparing(SyntaxInfo::priority));
+
 	@Override
-	@Unmodifiable 
-	public List<T> syntaxes() {
+	public List<I> syntaxes() {
 		synchronized (syntaxes) {
 			return ImmutableList.copyOf(syntaxes);
 		}
 	}
-	
+
 	@Override
-	public void add(T info) {
+	public void add(I info) {
 		syntaxes.add(info);
 	}
-	
+
 	@Override
-	@Contract("-> new")
-	public SyntaxRegister<T> closeRegistration() {
+	public SyntaxRegister<I> closeRegistration() {
 		return new FinalSyntaxRegister<>(this);
 	}
-	
+
 	private static final class FinalSyntaxRegister<T extends SyntaxInfo<?>> implements SyntaxRegister<T> {
-		
+
 		private final List<T> syntaxes;
-		
+
 		FinalSyntaxRegister(SyntaxRegister<T> register) {
 			syntaxes = register.syntaxes();
 		}
-		
+
 		@Override
 		@Unmodifiable 
 		public List<T> syntaxes() {
 			return syntaxes;
 		}
-		
+
 		@Override
 		@Contract("_ -> fail")
 		public void add(T info) {
 			throw new UnsupportedOperationException("Registration is closed");
 		}
-		
+
 		@Override
 		@Contract("-> fail")
 		public SyntaxRegister<T> closeRegistration() {
 			throw new UnsupportedOperationException("Registration is closed");
 		}
-		
+
 	}
-	
+
 }

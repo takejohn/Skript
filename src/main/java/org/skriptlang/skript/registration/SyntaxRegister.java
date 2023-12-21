@@ -24,15 +24,30 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
+/**
+ * A syntax register is a collection of registered {@link SyntaxInfo}s of a common type.
+ * @param <I> The type of syntax in this register.
+ */
 @ApiStatus.Experimental
 interface SyntaxRegister<I extends SyntaxInfo<?>> {
-	
+
+	/**
+	 * @return A list of all syntaxes this register contains.
+	 */
 	@Unmodifiable
 	List<I> syntaxes();
-	
+
+	/**
+	 * Adds a new syntax info to this register.
+	 * @param info The syntax info to add.
+	 */
 	void add(I info);
-	
+
+	/**
+	 * @return An unmodifiable version of this register.
+	 * That is, no new syntax infos may be added.
+	 */
 	@Contract("-> new")
 	SyntaxRegister<I> closeRegistration();
-	
+
 }

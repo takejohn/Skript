@@ -110,6 +110,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.skriptlang.skript.Skript.State;
+import org.skriptlang.skript.addon.AddonModule;
 import org.skriptlang.skript.bukkit.registration.BukkitOrigin;
 import org.skriptlang.skript.bukkit.registration.BukkitRegistryKeys;
 import org.skriptlang.skript.bukkit.registration.BukkitInfos;
@@ -192,7 +193,10 @@ public final class Skript extends JavaPlugin implements Listener {
 	
 	@Nullable
 	private static Skript instance = null;
-	private static final org.skriptlang.skript.Skript skript = org.skriptlang.skript.Skript.createInstance();
+
+	private static org.skriptlang.skript.@Nullable Skript skript = null;
+	@SuppressWarnings("NotNullFieldNotInitialized")
+	private static org.skriptlang.skript.registration.SyntaxRegistry skriptRegistry;
 
 	private static boolean disabled = false;
 	private static boolean partDisabled = false;
@@ -205,6 +209,9 @@ public final class Skript extends JavaPlugin implements Listener {
 
 	@ApiStatus.Experimental
 	public static org.skriptlang.skript.Skript instance() {
+		if (skript == null) {
+			throw new SkriptAPIException("Skript is still initializing");
+		}
 		return skript;
 	}
 	
@@ -476,8 +483,13 @@ public final class Skript extends JavaPlugin implements Listener {
 			}
 		}
 
-		// initialize the Skript addon instance
-		getAddonInstance();
+		// initialize the modern Skript instance
+		skript = org.skriptlang.skript.Skript.createInstance(
+			getAddonInstance().dataFileDirectory(),
+			// really hacky way to gain access to the mutable registry
+			// this is purely for backwards compatibility reasons
+			(addon, registry) -> skriptRegistry = registry
+		);
 		
 		// Load classes which are always safe to use
 		new JavaClasses(); // These may be needed in configuration
@@ -1167,9 +1179,10 @@ public final class Skript extends JavaPlugin implements Listener {
 
 	private void beforeDisable() {
 		partDisabled = true;
-		EvtSkript.onSkriptStop(); // TODO [code style] warn user about delays in Skript stop events
-
-		ScriptLoader.unloadScripts(ScriptLoader.getLoadedScripts());
+		if (!isAcceptRegistrations()) { // if we are accepting registrations, we do not need to disable scripts
+			EvtSkript.onSkriptStop(); // TODO [code style] warn user about delays in Skript stop events
+			ScriptLoader.unloadScripts(ScriptLoader.getLoadedScripts());
+		}
 	}
 
 	@Override
@@ -1283,48 +1296,87 @@ public final class Skript extends JavaPlugin implements Listener {
 	
 	// ================ ADDONS ================
 	
-	private final static HashMap<String, SkriptAddon> addons = new HashMap<>();
-	
 	/**
 	 * Registers an addon to Skript. This is currently not required for addons to work, but the returned {@link SkriptAddon} provides useful methods for registering syntax elements
 	 * and adding new strings to Skript's localization system (e.g. the required "types.[type]" strings for registered classes).
 	 * 
 	 * @param p The plugin
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registerAddon(org.skriptlang.skript.addon.SkriptAddon, AddonModule...)}
 	 */
+	@Deprecated
 	public static SkriptAddon registerAddon(final JavaPlugin p) {
 		checkAcceptRegistrations();
-		if (addons.containsKey(p.getName()))
-			throw new IllegalArgumentException("The plugin " + p.getName() + " is already registered");
-		final SkriptAddon addon = new SkriptAddon(p);
-		addons.put(p.getName(), addon);
+		SkriptAddon addon = new SkriptAddon(p);
+		instance().registerAddon(addon);
 		return addon;
 	}
-	
+
+	/**
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#addons()}
+	 */
 	@Nullable
-	public static SkriptAddon getAddon(final JavaPlugin p) {
-		return addons.get(p.getName());
+	@Deprecated
+	public static SkriptAddon getAddon(JavaPlugin plugin) {
+		for (SkriptAddon addon : getAddons()) {
+			if (addon.plugin == plugin) {
+				return addon;
+			}
+		}
+		return null;
 	}
-	
+
+	/**
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#addons()}
+	 */
 	@Nullable
-	public static SkriptAddon getAddon(final String name) {
-		return addons.get(name);
+	@Deprecated
+	public static SkriptAddon getAddon(String name) {
+		for (SkriptAddon addon : getAddons()) {
+			if (addon.getName().equals(name)) {
+				return addon;
+			}
+		}
+		return null;
 	}
-	
+
+	/**
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#addons()}
+	 */
 	@SuppressWarnings("null")
+	@Deprecated
 	public static Collection<SkriptAddon> getAddons() {
-		return Collections.unmodifiableCollection(addons.values());
+		return instance().addons().stream()
+				.filter(addon -> addon instanceof SkriptAddon)
+				.map(addon -> (SkriptAddon) addon)
+				.collect(Collectors.toList());
 	}
 	
 	@Nullable
+	@Deprecated
 	private static SkriptAddon addon;
 	
 	/**
 	 * @return A {@link SkriptAddon} representing Skript.
+	 * @deprecated Use {@link Skript#instance()}
 	 */
+	@Deprecated
 	public static SkriptAddon getAddonInstance() {
 		if (addon == null) {
-			addon = new SkriptAddon(Skript.getInstance());
-			addon.setLanguageFileDirectory("lang");
+			addon = new SkriptAddon(Skript.getInstance()) {
+				@Override
+				public String getName() {
+					return Skript.instance().name();
+				}
+				@Override
+				public SkriptAddon setLanguageFileDirectory(String directory) {
+					throw new UnsupportedOperationException("The language file may not be set.");
+				}
+				@Override
+				@Nullable
+				public String getLanguageFileDirectory() {
+					return Skript.instance().languageFileDirectory();
+				}
+			};
 		}
 		return addon;
 	}
@@ -1336,11 +1388,11 @@ public final class Skript extends JavaPlugin implements Listener {
 	 * 
 	 * @param conditionClass The condition's class
 	 * @param patterns Skript patterns to match this condition
-	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry()}
 	 */
 	@Deprecated
 	public static <E extends Condition> void registerCondition(Class<E> conditionClass, String... patterns) throws IllegalArgumentException {
-		instance().registry().register(SyntaxRegistry.CONDITION, SyntaxInfo.builder(conditionClass)
+		skriptRegistry.register(SyntaxRegistry.CONDITION, SyntaxInfo.builder(conditionClass)
 				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(conditionClass)))
 				.addPatterns(patterns)
 				.build()
@@ -1352,11 +1404,11 @@ public final class Skript extends JavaPlugin implements Listener {
 	 * 
 	 * @param effectClass The effect's class
 	 * @param patterns Skript patterns to match this effect
-	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry()}
 	 */
 	@Deprecated
 	public static <E extends Effect> void registerEffect(Class<E> effectClass, String... patterns) throws IllegalArgumentException {
-		instance().registry().register(SyntaxRegistry.EFFECT, SyntaxInfo.builder(effectClass)
+		skriptRegistry.register(SyntaxRegistry.EFFECT, SyntaxInfo.builder(effectClass)
 				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(effectClass)))
 				.addPatterns(patterns)
 				.build()
@@ -1369,11 +1421,11 @@ public final class Skript extends JavaPlugin implements Listener {
 	 * @param sectionClass The section's class
 	 * @param patterns Skript patterns to match this section
 	 * @see Section
-	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry()}
 	 */
 	@Deprecated
 	public static <E extends Section> void registerSection(Class<E> sectionClass, String... patterns) throws IllegalArgumentException {
-		instance().registry().register(SyntaxRegistry.SECTION, SyntaxInfo.builder(sectionClass)
+		skriptRegistry.register(SyntaxRegistry.SECTION, SyntaxInfo.builder(sectionClass)
 				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(sectionClass)))
 				.addPatterns(patterns)
 				.build()
@@ -1381,7 +1433,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	}
 
 	/**
-	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry()}
 	 */
 	@Deprecated
 	@Unmodifiable
@@ -1393,7 +1445,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	}
 	
 	/**
-	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry()}
 	 */
 	@Deprecated
 	@Unmodifiable
@@ -1405,7 +1457,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	}
 	
 	/**
-	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry()}
 	 */
 	@Deprecated
 	@Unmodifiable
@@ -1417,7 +1469,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	}
 
 	/**
-	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry()}
 	 */
 	@Deprecated
 	@Unmodifiable
@@ -1438,13 +1490,13 @@ public final class Skript extends JavaPlugin implements Listener {
 	 * @param type The expression's {@link ExpressionType type}. This is used to determine in which order to try to parse expressions.
 	 * @param patterns Skript patterns that match this expression
 	 * @throws IllegalArgumentException if returnType is not a normal class
-	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry()}
 	 */
 	@Deprecated
 	public static <E extends Expression<T>, T> void registerExpression(
 		Class<E> expressionType, Class<T> returnType, ExpressionType type, String... patterns
 	) throws IllegalArgumentException {
-		instance().registry().register(SyntaxRegistry.EXPRESSION, SyntaxInfo.Expression.builder(expressionType, returnType)
+		skriptRegistry.register(SyntaxRegistry.EXPRESSION, SyntaxInfo.Expression.builder(expressionType, returnType)
 				.expressionType(type)
 				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(expressionType)))
 				.addPatterns(patterns)
@@ -1453,7 +1505,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	}
 	
 	/**
-	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry()}
 	 */
 	@Deprecated
 	public static Iterator<ExpressionInfo<?, ?>> getExpressions() {
@@ -1464,7 +1516,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	}
 	
 	/**
-	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry()}
 	 */
 	@Deprecated
 	public static Iterator<ExpressionInfo<?, ?>> getExpressions(Class<?>... returnTypes) {
@@ -1493,7 +1545,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	 * @param event The Bukkit event this event applies to
 	 * @param patterns Skript patterns to match this event
 	 * @return A SkriptEventInfo representing the registered event. Used to generate Skript's documentation.
-	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry()}
 	 */
 	@Deprecated
 	@SuppressWarnings("unchecked")
@@ -1509,7 +1561,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	 * @param events The Bukkit events this event applies to
 	 * @param patterns Skript patterns to match this event
 	 * @return A SkriptEventInfo representing the registered event. Used to generate Skript's documentation.
-	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry()}
 	 */
 	@Deprecated
 	@SuppressWarnings("ConstantConditions") // caused by bad array annotations
@@ -1535,16 +1587,16 @@ public final class Skript extends JavaPlugin implements Listener {
 			builder.addKeywords(legacy.getKeywords());
 		if (legacy.getRequiredPlugins() != null)
 			builder.addRequiredPlugins(legacy.getRequiredPlugins());
-		instance().registry().register(BukkitRegistryKeys.EVENT, builder.build());
+		skriptRegistry.register(BukkitRegistryKeys.EVENT, builder.build());
 		return legacy;
 	}
 
 	/**
-	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry()}
 	 */
 	@Deprecated
 	public static <E extends Structure> void registerStructure(Class<E> structureClass, String... patterns) {
-		instance().registry().register(SyntaxRegistry.STRUCTURE, SyntaxInfo.Structure.builder(structureClass)
+		skriptRegistry.register(SyntaxRegistry.STRUCTURE, SyntaxInfo.Structure.builder(structureClass)
 				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(structureClass)))
 				.addPatterns(patterns)
 				.build()
@@ -1552,13 +1604,13 @@ public final class Skript extends JavaPlugin implements Listener {
 	}
 
 	/**
-	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry()}
 	 */
 	@Deprecated
 	public static <E extends Structure> void registerStructure(
 		Class<E> structureClass, EntryValidator entryValidator, String... patterns
 	) {
-		instance().registry().register(SyntaxRegistry.STRUCTURE, SyntaxInfo.Structure.builder(structureClass)
+		skriptRegistry.register(SyntaxRegistry.STRUCTURE, SyntaxInfo.Structure.builder(structureClass)
 				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(structureClass)))
 				.addPatterns(patterns)
 				.entryValidator(entryValidator)
@@ -1567,7 +1619,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	}
 
 	/**
-	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry()}
 	 */
 	@Deprecated
 	@Unmodifiable
@@ -1579,7 +1631,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	}
 
 	/**
-	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry() }
+	 * @deprecated Use {@link org.skriptlang.skript.Skript#registry()}
 	 */
 	@Unmodifiable
 	public static List<StructureInfo<? extends Structure>> getStructures() {

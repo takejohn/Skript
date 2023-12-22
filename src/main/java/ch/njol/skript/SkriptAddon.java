@@ -29,11 +29,16 @@ import org.eclipse.jdt.annotation.Nullable;
 import ch.njol.skript.localization.Language;
 import ch.njol.skript.util.Utils;
 import ch.njol.skript.util.Version;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Utility class for Skript addons. Use {@link Skript#registerAddon(JavaPlugin)} to create a SkriptAddon instance for your plugin.
+ * @deprecated Use {@link org.skriptlang.skript.addon.SkriptAddon}.
  */
-public final class SkriptAddon {
+@Deprecated
+@ApiStatus.NonExtendable
+public class SkriptAddon implements org.skriptlang.skript.addon.SkriptAddon {
 
 	public final JavaPlugin plugin;
 	public final Version version;
@@ -124,6 +129,23 @@ public final class SkriptAddon {
 		if (file == null)
 			file = Utils.getFile(plugin);
 		return file;
+	}
+
+	@Override
+	public String name() {
+		return getName();
+	}
+
+	@Override
+	@NotNull
+	public String dataFileDirectory() {
+		return plugin.getDataFolder().getAbsolutePath();
+	}
+
+	@Override
+	@Nullable
+	public String languageFileDirectory() {
+		return getLanguageFileDirectory();
 	}
 
 }

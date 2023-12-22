@@ -28,8 +28,9 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Unmodifiable;
 import org.skriptlang.skript.lang.structure.Structure;
 import org.skriptlang.skript.registration.SyntaxRegistryImpl.ChildKeyImpl;
+import org.skriptlang.skript.registration.SyntaxRegistryImpl.UnmodifiableRegistry;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * A syntax registry manages all {@link SyntaxRegister}s for syntax registration.
@@ -78,12 +79,21 @@ public interface SyntaxRegistry {
 	}
 
 	/**
+	 * @param registry The registry backing this unmodifiable view.
+	 * @return An unmodifiable view of <code>registry</code>.
+	 */
+	@Contract("_ -> new")
+	static SyntaxRegistry unmodifiableView(SyntaxRegistry registry) {
+		return new UnmodifiableRegistry(registry);
+	}
+
+	/**
 	 * @param key The key to obtain syntaxes from.
 	 * @return All syntaxes registered under <code>key</code>.
 	 * @param <I> The syntax type.
 	 */
 	@Unmodifiable
-	<I extends SyntaxInfo<?>> List<I> syntaxes(Key<I> key);
+	<I extends SyntaxInfo<?>> Collection<I> syntaxes(Key<I> key);
 
 	/**
 	 * Registers a new syntax under a provided key.
@@ -95,7 +105,7 @@ public interface SyntaxRegistry {
 	<I extends SyntaxInfo<?>> void register(Key<I> key, I info);
 
 	/**
-	 * Closes registration of the registry. After this {@link SyntaxRegistry#register(Key, SyntaxInfo)} is no longer
+	 * Closes registration of the registry. After execution, {@link SyntaxRegistry#register(Key, SyntaxInfo)} is no longer
 	 * expected to work. Do not call this method more than once.
 	 */
 	@ApiStatus.Internal

@@ -20,7 +20,7 @@ package org.skriptlang.skript.registration;
 
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,7 +29,8 @@ class SyntaxRegistryImpl implements SyntaxRegistry {
 	private final Map<Key<?>, SyntaxRegister<?>> registers = new ConcurrentHashMap<>();
 
 	@Override
-	public <I extends SyntaxInfo<?>> List<I> syntaxes(Key<I> key) {
+	@Unmodifiable
+	public <I extends SyntaxInfo<?>> Collection<I> syntaxes(Key<I> key) {
 		return register(key).syntaxes();
 	}
 
@@ -49,6 +50,32 @@ class SyntaxRegistryImpl implements SyntaxRegistry {
 	@SuppressWarnings("unchecked")
 	protected <I extends SyntaxInfo<?>> SyntaxRegister<I> register(Key<I> key) {
 		return (SyntaxRegister<I>) registers.computeIfAbsent(key, k -> new SyntaxRegisterImpl<>());
+	}
+
+	static class UnmodifiableRegistry implements SyntaxRegistry {
+
+		private final SyntaxRegistry registry;
+
+		UnmodifiableRegistry(SyntaxRegistry registry) {
+			this.registry = registry;
+		}
+
+		@Override
+		@Unmodifiable
+		public <I extends SyntaxInfo<?>> Collection<I> syntaxes(Key<I> key) {
+			return registry.syntaxes(key);
+		}
+
+		@Override
+		public <I extends SyntaxInfo<?>> void register(Key<I> key, I info) {
+			throw new UnsupportedOperationException("A read-only registry cannot have syntax infos added");
+		}
+
+		@Override
+		public void closeRegistration() {
+			throw new UnsupportedOperationException("A read-only registry cannot be closed");
+		}
+
 	}
 
 	static class KeyImpl<T extends SyntaxInfo<?>> implements Key<T> {

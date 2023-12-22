@@ -216,30 +216,30 @@ public final class BukkitInfos {
 
 			/**
 			 * Adds a required plugin to the syntax info.
-			 * @param requiredPlugin The required plugin to add.
+			 * @param plugin The required plugin to add.
 			 * @return This builder.
 			 * @see Event#requiredPlugins()
 			 */
 			@Contract("_ -> this")
-			B addRequiredPlugin(String requiredPlugin);
+			B addRequiredPlugin(String plugin);
 
 			/**
 			 * Adds required plugins to the syntax info.
-			 * @param requiredPlugins The required plugins to add.
+			 * @param plugins The required plugins to add.
 			 * @return This builder.
 			 * @see Event#requiredPlugins()
 			 */
 			@Contract("_ -> this")
-			B addRequiredPlugins(String... requiredPlugins);
+			B addRequiredPlugins(String... plugins);
 
 			/**
 			 * Adds required plugins to the syntax info.
-			 * @param requiredPlugins The required plugins to add.
+			 * @param plugins The required plugins to add.
 			 * @return This builder.
 			 * @see Event#requiredPlugins()
 			 */
 			@Contract("_ -> this")
-			B addRequiredPlugins(Collection<String> requiredPlugins);
+			B addRequiredPlugins(Collection<String> plugins);
 
 			/**
 			 * Adds an event to the syntax info.

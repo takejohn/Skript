@@ -268,20 +268,20 @@ final class BukkitInfosImpl {
 			}
 
 			@Override
-			public B addRequiredPlugin(String requiredPlugin) {
-				this.requiredPlugins.add(requiredPlugin);
+			public B addRequiredPlugin(String plugin) {
+				this.requiredPlugins.add(plugin);
 				return (B) this;
 			}
 
 			@Override
-			public B addRequiredPlugins(String... requiredPlugins) {
-				Collections.addAll(this.requiredPlugins, requiredPlugins);
+			public B addRequiredPlugins(String... plugins) {
+				Collections.addAll(this.requiredPlugins, plugins);
 				return (B) this;
 			}
 
 			@Override
-			public B addRequiredPlugins(Collection<String> requiredPlugins) {
-				this.requiredPlugins.addAll(requiredPlugins);
+			public B addRequiredPlugins(Collection<String> plugins) {
+				this.requiredPlugins.addAll(plugins);
 				return (B) this;
 			}
 

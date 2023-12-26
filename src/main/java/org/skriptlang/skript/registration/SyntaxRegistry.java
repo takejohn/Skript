@@ -26,6 +26,7 @@ import ch.njol.skript.lang.Statement;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.UnmodifiableView;
 import org.skriptlang.skript.lang.structure.Structure;
 import org.skriptlang.skript.registration.SyntaxRegistryImpl.ChildKeyImpl;
 import org.skriptlang.skript.registration.SyntaxRegistryImpl.UnmodifiableRegistry;
@@ -83,6 +84,7 @@ public interface SyntaxRegistry {
 	 * @return An unmodifiable view of <code>registry</code>.
 	 */
 	@Contract("_ -> new")
+	@UnmodifiableView
 	static SyntaxRegistry unmodifiableView(SyntaxRegistry registry) {
 		return new UnmodifiableRegistry(registry);
 	}

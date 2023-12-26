@@ -196,7 +196,7 @@ public final class Skript extends JavaPlugin implements Listener {
 
 	private static org.skriptlang.skript.@Nullable Skript skript = null;
 	@SuppressWarnings("NotNullFieldNotInitialized")
-	private static org.skriptlang.skript.registration.SyntaxRegistry skriptRegistry;
+	private static SyntaxRegistry skriptRegistry;
 
 	private static boolean disabled = false;
 	private static boolean partDisabled = false;
@@ -1342,13 +1342,13 @@ public final class Skript extends JavaPlugin implements Listener {
 	/**
 	 * @deprecated Use {@link org.skriptlang.skript.Skript#addons()}
 	 */
-	@SuppressWarnings("null")
 	@Deprecated
+	@Unmodifiable
 	public static Collection<SkriptAddon> getAddons() {
-		return instance().addons().stream()
-				.filter(addon -> addon instanceof SkriptAddon)
-				.map(addon -> (SkriptAddon) addon)
-				.collect(Collectors.toList());
+		return Collections.unmodifiableCollection(instance().addons().stream()
+				.map(SkriptAddon::fromModern)
+				.collect(Collectors.toList())
+		);
 	}
 	
 	@Nullable

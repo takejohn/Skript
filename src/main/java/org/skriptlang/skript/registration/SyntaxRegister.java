@@ -22,7 +22,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * A syntax register is a collection of registered {@link SyntaxInfo}s of a common type.
@@ -32,10 +32,10 @@ import java.util.List;
 interface SyntaxRegister<I extends SyntaxInfo<?>> {
 
 	/**
-	 * @return A list of all syntaxes this register contains.
+	 * @return A collection of all syntaxes this register contains.
 	 */
 	@Unmodifiable
-	List<I> syntaxes();
+	Collection<I> syntaxes();
 
 	/**
 	 * Adds a new syntax info to this register.

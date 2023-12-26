@@ -18,12 +18,12 @@
  */
 package org.skriptlang.skript.registration;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.Collection;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -32,9 +32,9 @@ final class SyntaxRegisterImpl<I extends SyntaxInfo<?>> implements SyntaxRegiste
 	private final Set<I> syntaxes = new ConcurrentSkipListSet<>(Comparator.comparing(SyntaxInfo::priority));
 
 	@Override
-	public List<I> syntaxes() {
+	public Collection<I> syntaxes() {
 		synchronized (syntaxes) {
-			return ImmutableList.copyOf(syntaxes);
+			return ImmutableSet.copyOf(syntaxes);
 		}
 	}
 
@@ -50,7 +50,7 @@ final class SyntaxRegisterImpl<I extends SyntaxInfo<?>> implements SyntaxRegiste
 
 	private static final class FinalSyntaxRegister<T extends SyntaxInfo<?>> implements SyntaxRegister<T> {
 
-		private final List<T> syntaxes;
+		private final Collection<T> syntaxes;
 
 		FinalSyntaxRegister(SyntaxRegister<T> register) {
 			syntaxes = register.syntaxes();
@@ -58,7 +58,7 @@ final class SyntaxRegisterImpl<I extends SyntaxInfo<?>> implements SyntaxRegiste
 
 		@Override
 		@Unmodifiable 
-		public List<T> syntaxes() {
+		public Collection<T> syntaxes() {
 			return syntaxes;
 		}
 

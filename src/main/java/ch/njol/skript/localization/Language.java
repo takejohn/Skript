@@ -191,6 +191,9 @@ public class Language {
 		}
 		// sanitization
 		languageFileDirectory = languageFileDirectory.replace('\\', '/');
+		if (languageFileDirectory.startsWith("/")) {
+			languageFileDirectory = languageFileDirectory.substring(1);
+		}
 		if (languageFileDirectory.endsWith("/")) {
 			languageFileDirectory = languageFileDirectory.substring(0, languageFileDirectory.length() - 1);
 		}

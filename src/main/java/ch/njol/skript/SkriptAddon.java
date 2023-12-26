@@ -67,7 +67,7 @@ public class SkriptAddon implements org.skriptlang.skript.addon.SkriptAddon {
 
 	@Override
 	public final String toString() {
-		return name;
+		return getName();
 	}
 
 	public String getName() {
@@ -146,6 +146,31 @@ public class SkriptAddon implements org.skriptlang.skript.addon.SkriptAddon {
 	@Nullable
 	public String languageFileDirectory() {
 		return getLanguageFileDirectory();
+	}
+
+	@ApiStatus.Internal
+	static SkriptAddon fromModern(org.skriptlang.skript.addon.SkriptAddon addon) {
+		return new SkriptAddon(JavaPlugin.getProvidingPlugin(addon.getClass())) {
+			@Override
+			public String getName() {
+				return addon.name();
+			}
+			@Override
+			public SkriptAddon setLanguageFileDirectory(String directory) {
+				throw new UnsupportedOperationException("The language file may not be set.");
+			}
+			@Override
+			@Nullable
+			public String getLanguageFileDirectory() {
+				return addon.languageFileDirectory();
+			}
+			@Override
+			@NotNull
+			public String dataFileDirectory() {
+				String directory = addon.dataFileDirectory();
+				return directory != null ? directory : super.dataFileDirectory();
+			}
+		};
 	}
 
 }

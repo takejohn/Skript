@@ -485,11 +485,13 @@ public final class Skript extends JavaPlugin implements Listener {
 
 		// initialize the modern Skript instance
 		skript = org.skriptlang.skript.Skript.createInstance(
-			getAddonInstance().dataFileDirectory(),
+			getDataFolder().getAbsolutePath(),
 			// really hacky way to gain access to the mutable registry
 			// this is purely for backwards compatibility reasons
 			(addon, registry) -> skriptRegistry = registry
 		);
+		// initialize the old Skript SkriptAddon instance
+		getAddonInstance();
 		
 		// Load classes which are always safe to use
 		new JavaClasses(); // These may be needed in configuration
@@ -1362,21 +1364,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	@Deprecated
 	public static SkriptAddon getAddonInstance() {
 		if (addon == null) {
-			addon = new SkriptAddon(Skript.getInstance()) {
-				@Override
-				public String getName() {
-					return Skript.instance().name();
-				}
-				@Override
-				public SkriptAddon setLanguageFileDirectory(String directory) {
-					throw new UnsupportedOperationException("The language file may not be set.");
-				}
-				@Override
-				@Nullable
-				public String getLanguageFileDirectory() {
-					return Skript.instance().languageFileDirectory();
-				}
-			};
+			addon = SkriptAddon.fromModern(instance());
 		}
 		return addon;
 	}

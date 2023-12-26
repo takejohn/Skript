@@ -223,8 +223,7 @@ public class Language {
 			}
 
 			Map<String, String> def = load(defaultLangIs, "default", false);
-			// noinspection deprecation - due to weird load order, must use old instance
-			Map<String, String> en = load(englishLangIs, "english", addon == Skript.getAddonInstance());
+			Map<String, String> en = load(englishLangIs, "english", addon instanceof org.skriptlang.skript.Skript);
 
 			String v = def.get("version");
 			if (v == null)

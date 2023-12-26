@@ -18,6 +18,7 @@
  */
 package org.skriptlang.skript.registration;
 
+import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
@@ -42,11 +43,6 @@ class SyntaxRegistryImpl implements SyntaxRegistry {
 		}
 	}
 
-	@Override
-	public void closeRegistration() {
-		registers.replaceAll(((key, register) -> register.closeRegistration()));
-	}
-
 	@SuppressWarnings("unchecked")
 	protected <I extends SyntaxInfo<?>> SyntaxRegister<I> register(Key<I> key) {
 		return (SyntaxRegister<I>) registers.computeIfAbsent(key, k -> new SyntaxRegisterImpl<>());
@@ -68,12 +64,7 @@ class SyntaxRegistryImpl implements SyntaxRegistry {
 
 		@Override
 		public <I extends SyntaxInfo<?>> void register(Key<I> key, I info) {
-			throw new UnsupportedOperationException("A read-only registry cannot have syntax infos added");
-		}
-
-		@Override
-		public void closeRegistration() {
-			throw new UnsupportedOperationException("A read-only registry cannot be closed");
+			throw new UnsupportedOperationException("An unmodifiable registry cannot have syntax infos added.");
 		}
 
 	}

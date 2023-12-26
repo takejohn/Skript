@@ -23,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * A Skript addon is an extension to Skript that expands its features.
- *
  */
 @ApiStatus.Experimental
 public interface SkriptAddon {

@@ -91,7 +91,7 @@ public interface SyntaxRegistry {
 
 	/**
 	 * @param key The key to obtain syntaxes from.
-	 * @return All syntaxes registered under <code>key</code>.
+	 * @return An unmodifiable snapshot of all syntaxes registered under <code>key</code>.
 	 * @param <I> The syntax type.
 	 */
 	@Unmodifiable
@@ -105,13 +105,6 @@ public interface SyntaxRegistry {
 	 * @param <I> The syntax type.
 	 */
 	<I extends SyntaxInfo<?>> void register(Key<I> key, I info);
-
-	/**
-	 * Closes registration of the registry. After execution, {@link SyntaxRegistry#register(Key, SyntaxInfo)} is no longer
-	 * expected to work. Do not call this method more than once.
-	 */
-	@ApiStatus.Internal
-	void closeRegistration();
 
 	/**
 	 * Represents a syntax element type.

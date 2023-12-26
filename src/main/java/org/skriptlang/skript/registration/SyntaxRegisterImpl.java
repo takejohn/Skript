@@ -19,8 +19,6 @@
 package org.skriptlang.skript.registration;
 
 import com.google.common.collect.ImmutableSet;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -41,39 +39,6 @@ final class SyntaxRegisterImpl<I extends SyntaxInfo<?>> implements SyntaxRegiste
 	@Override
 	public void add(I info) {
 		syntaxes.add(info);
-	}
-
-	@Override
-	public SyntaxRegister<I> closeRegistration() {
-		return new FinalSyntaxRegister<>(this);
-	}
-
-	private static final class FinalSyntaxRegister<T extends SyntaxInfo<?>> implements SyntaxRegister<T> {
-
-		private final Collection<T> syntaxes;
-
-		FinalSyntaxRegister(SyntaxRegister<T> register) {
-			syntaxes = register.syntaxes();
-		}
-
-		@Override
-		@Unmodifiable 
-		public Collection<T> syntaxes() {
-			return syntaxes;
-		}
-
-		@Override
-		@Contract("_ -> fail")
-		public void add(T info) {
-			throw new UnsupportedOperationException("Registration is closed");
-		}
-
-		@Override
-		@Contract("-> fail")
-		public SyntaxRegister<T> closeRegistration() {
-			throw new UnsupportedOperationException("Registration is closed");
-		}
-
 	}
 
 }

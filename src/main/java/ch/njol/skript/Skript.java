@@ -109,7 +109,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Unmodifiable;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
-import org.skriptlang.skript.Skript.State;
 import org.skriptlang.skript.addon.AddonModule;
 import org.skriptlang.skript.bukkit.registration.BukkitOrigin;
 import org.skriptlang.skript.bukkit.registration.BukkitRegistryKeys;
@@ -1279,10 +1278,12 @@ public final class Skript extends JavaPlugin implements Listener {
 	
 	// ================ REGISTRATIONS ================
 
+	private static boolean acceptRegistrations = true;
+
 	public static boolean isAcceptRegistrations() {
 		if (instance == null)
 			throw new IllegalStateException("Skript was never loaded");
-		return instance().state().acceptsRegistration() && instance.isEnabled();
+		return acceptRegistrations && instance.isEnabled();
 	}
 	
 	public static void checkAcceptRegistrations() {
@@ -1291,9 +1292,9 @@ public final class Skript extends JavaPlugin implements Listener {
 	}
 	
 	private static void stopAcceptingRegistrations() {
-		org.skriptlang.skript.Skript instance = instance();
-		instance.updateState(State.ENDED_REGISTRATION);
-		instance.updateState(State.CLOSED_REGISTRATION);
+		Converters.createChainedConverters();
+		acceptRegistrations = false;
+		Classes.onRegistrationsStop();
 	}
 	
 	// ================ ADDONS ================
@@ -1380,6 +1381,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	 */
 	@Deprecated
 	public static <E extends Condition> void registerCondition(Class<E> conditionClass, String... patterns) throws IllegalArgumentException {
+		checkAcceptRegistrations();
 		skriptRegistry.register(SyntaxRegistry.CONDITION, SyntaxInfo.builder(conditionClass)
 				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(conditionClass)))
 				.addPatterns(patterns)
@@ -1396,6 +1398,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	 */
 	@Deprecated
 	public static <E extends Effect> void registerEffect(Class<E> effectClass, String... patterns) throws IllegalArgumentException {
+		checkAcceptRegistrations();
 		skriptRegistry.register(SyntaxRegistry.EFFECT, SyntaxInfo.builder(effectClass)
 				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(effectClass)))
 				.addPatterns(patterns)
@@ -1413,6 +1416,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	 */
 	@Deprecated
 	public static <E extends Section> void registerSection(Class<E> sectionClass, String... patterns) throws IllegalArgumentException {
+		checkAcceptRegistrations();
 		skriptRegistry.register(SyntaxRegistry.SECTION, SyntaxInfo.builder(sectionClass)
 				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(sectionClass)))
 				.addPatterns(patterns)
@@ -1484,6 +1488,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	public static <E extends Expression<T>, T> void registerExpression(
 		Class<E> expressionType, Class<T> returnType, ExpressionType type, String... patterns
 	) throws IllegalArgumentException {
+		checkAcceptRegistrations();
 		skriptRegistry.register(SyntaxRegistry.EXPRESSION, SyntaxInfo.Expression.builder(expressionType, returnType)
 				.expressionType(type)
 				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(expressionType)))
@@ -1556,6 +1561,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	public static <E extends SkriptEvent> SkriptEventInfo<E> registerEvent(
 		String name, Class<E> eventClass, Class<? extends Event>[] events, String... patterns
 	) {
+		checkAcceptRegistrations();
 		for (int i = 0; i < patterns.length; i++)
 			patterns[i] = BukkitInfos.fixPattern(patterns[i]);
 		SkriptEventInfo<E> legacy = new SkriptEventInfo<>(name, patterns, eventClass, "", events);
@@ -1584,6 +1590,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	 */
 	@Deprecated
 	public static <E extends Structure> void registerStructure(Class<E> structureClass, String... patterns) {
+		checkAcceptRegistrations();
 		skriptRegistry.register(SyntaxRegistry.STRUCTURE, SyntaxInfo.Structure.builder(structureClass)
 				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(structureClass)))
 				.addPatterns(patterns)
@@ -1598,6 +1605,7 @@ public final class Skript extends JavaPlugin implements Listener {
 	public static <E extends Structure> void registerStructure(
 		Class<E> structureClass, EntryValidator entryValidator, String... patterns
 	) {
+		checkAcceptRegistrations();
 		skriptRegistry.register(SyntaxRegistry.STRUCTURE, SyntaxInfo.Structure.builder(structureClass)
 				.origin(BukkitOrigin.of(JavaPlugin.getProvidingPlugin(structureClass)))
 				.addPatterns(patterns)

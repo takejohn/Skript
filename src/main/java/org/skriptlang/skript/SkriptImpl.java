@@ -20,13 +20,11 @@ package org.skriptlang.skript;
 
 import ch.njol.skript.SkriptAPIException;
 import ch.njol.skript.localization.Language;
-import ch.njol.skript.registrations.Classes;
 import com.google.common.collect.ImmutableSet;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 import org.skriptlang.skript.addon.AddonModule;
 import org.skriptlang.skript.addon.SkriptAddon;
-import org.skriptlang.skript.lang.converter.Converters;
 import org.skriptlang.skript.registration.SyntaxRegistry;
 
 import java.util.Arrays;
@@ -42,8 +40,6 @@ final class SkriptImpl implements Skript {
 	private final SyntaxRegistry registry = SyntaxRegistry.createInstance();
 	private final SyntaxRegistry unmodifiableRegistry = SyntaxRegistry.unmodifiableView(registry);
 
-	private State state = State.REGISTRATION;
-
 	SkriptImpl(@Nullable String dataFileDirectory, AddonModule... modules) {
 		this.dataFileDirectory = dataFileDirectory;
 		this.registerAddon(this, modules);
@@ -52,22 +48,6 @@ final class SkriptImpl implements Skript {
 	@Override
 	public SyntaxRegistry registry() {
 		return unmodifiableRegistry;
-	}
-
-	@Override
-	public State state() {
-		return state;
-	}
-
-	@Override
-	public void updateState(State state) {
-		if (state == State.ENDED_REGISTRATION) {
-			Converters.createChainedConverters();
-		} else if (state == State.CLOSED_REGISTRATION) {
-			registry.closeRegistration();
-			Classes.onRegistrationsStop();
-		}
-		this.state = state;
 	}
 
 	//
@@ -83,11 +63,6 @@ final class SkriptImpl implements Skript {
 
 	@Override
 	public void registerAddon(SkriptAddon addon, Collection<? extends AddonModule> modules) {
-		// ensure registration can proceed
-		if (!state().acceptsRegistration()) {
-			throw new UnsupportedOperationException("Registration is closed");
-		}
-
 		// make sure an addon is not already registered with this name
 		if (addons.stream().anyMatch(otherAddon -> addon.name().equals(otherAddon.name()))) {
 			// TODO more detailed error?

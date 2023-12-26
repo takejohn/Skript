@@ -19,7 +19,6 @@
 package org.skriptlang.skript.registration;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
@@ -32,7 +31,7 @@ import java.util.Collection;
 interface SyntaxRegister<I extends SyntaxInfo<?>> {
 
 	/**
-	 * @return A collection of all syntaxes this register contains.
+	 * @return An unmodifiable snapshot of all syntaxes this register contains.
 	 */
 	@Unmodifiable
 	Collection<I> syntaxes();
@@ -42,12 +41,5 @@ interface SyntaxRegister<I extends SyntaxInfo<?>> {
 	 * @param info The syntax info to add.
 	 */
 	void add(I info);
-
-	/**
-	 * @return An unmodifiable version of this register.
-	 * That is, no new syntax infos may be added.
-	 */
-	@Contract("-> new")
-	SyntaxRegister<I> closeRegistration();
 
 }

@@ -21,6 +21,7 @@ package org.skriptlang.skript;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.UnmodifiableView;
 import org.skriptlang.skript.addon.AddonModule;
 import org.skriptlang.skript.addon.SkriptAddon;
 import org.skriptlang.skript.registration.SyntaxRegistry;
@@ -55,63 +56,10 @@ public interface Skript extends SkriptAddon {
 	}
 
 	/**
-	 * @return A read-only view of the syntax registry containing all syntax registered by this Skript and its addons.
-	 * This is not a snapshot. Changes made to registers (by other sources) will be reflected.
+	 * @return An unmodifiable view of the syntax registry containing all syntax registered by this Skript and its addons.
 	 */
+	@UnmodifiableView
 	SyntaxRegistry registry();
-
-	/**
-	 * @return The current State this Skript is in.
-	 */
-	State state();
-
-	// TODO listeners for when the state changes
-	// For example, Converters will listen for when registration closes to construct chained converters
-	@ApiStatus.Internal
-	void updateState(State state);
-
-	/**
-	 * A State describes the point of initialization that a Skript instance is in.
-	 */
-	// TODO consider additional states for addon registration.
-	enum State {
-
-		/**
-		 * A state in which a Skript instance is still performing its initialization.
-		 * New registrations are permitted.
-		 */
-		REGISTRATION(true),
-
-		/**
-		 * A state in which a Skript instance has finished its initialization and addons may now load.
-		 * New registrations are permitted.
-		 */
-		ADDON_REGISTRATION(true),
-
-		/**
-		 * A state in which registration is over, but not yet forbidden.
-		 */
-		ENDED_REGISTRATION(false),
-
-		/**
-		 * A state in which registration is over and forbidden.
-		 */
-		CLOSED_REGISTRATION(false);
-
-		private final boolean acceptsRegistration;
-
-		State(boolean acceptsRegistration) {
-			this.acceptsRegistration = acceptsRegistration;
-		}
-
-		/**
-		 * @return Whether registrations can occur in this state.
-		 */
-		public boolean acceptsRegistration() {
-			return acceptsRegistration;
-		}
-
-	}
 
 	/**
 	 * Registers the provided addon with this Skript and loads the provided modules.

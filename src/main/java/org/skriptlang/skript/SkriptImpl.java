@@ -91,7 +91,9 @@ final class SkriptImpl implements Skript {
 		// make sure an addon is not already registered with this name
 		if (addons.stream().anyMatch(otherAddon -> addon.name().equals(otherAddon.name()))) {
 			// TODO more detailed error?
-			throw new SkriptAPIException("An addon with the name '" + addon.name() + "' is already registered");
+			throw new SkriptAPIException(
+				"An addon (provided by '" + addon.getClass().getName() + "') with the name '" + addon.name() + "' is already registered"
+			);
 		}
 
 		// load and register the addon

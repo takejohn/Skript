@@ -36,12 +36,12 @@ public class Priority implements Comparable<Priority> {
 	 * The default {@link Priority}.
 	 */
 	public static final Priority DEFAULT_PRIORITY = new Priority(1000);
-	private static final AtomicInteger IOTA = new AtomicInteger();
+	private static final AtomicInteger iota = new AtomicInteger();
 
 	private final int priority;
 
 	public Priority() {
-		this.priority = IOTA.getAndIncrement();
+		this.priority = iota.getAndIncrement();
 	}
 
 	public Priority(@Range(from = 0, to = Integer.MAX_VALUE) int priority) {

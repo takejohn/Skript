@@ -31,6 +31,9 @@ import java.util.function.Supplier;
 
 final class DefaultSyntaxInfosImpl {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public static class ExpressionImpl<E extends ch.njol.skript.lang.Expression<R>, R>
 		extends SyntaxInfoImpl<E> implements DefaultSyntaxInfos.Expression<E, R> {
 
@@ -90,6 +93,9 @@ final class DefaultSyntaxInfosImpl {
 			return new Priority(super.priority().getPriority() | expressionType.ordinal() << 24);
 		}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		@SuppressWarnings("unchecked")
 		static final class BuilderImpl<B extends Expression.Builder<B, E, R>, E extends ch.njol.skript.lang.Expression<R>, R>
 			extends SyntaxInfoImpl.BuilderImpl<B, E>
@@ -122,6 +128,9 @@ final class DefaultSyntaxInfosImpl {
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public static class StructureImpl<E extends org.skriptlang.skript.lang.structure.Structure>
 		extends SyntaxInfoImpl<E> implements DefaultSyntaxInfos.Structure<E> {
 
@@ -166,6 +175,9 @@ final class DefaultSyntaxInfosImpl {
 					.toString();
 		}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		@SuppressWarnings("unchecked")
 		static final class BuilderImpl<B extends Structure.Builder<B, E>, E extends org.skriptlang.skript.lang.structure.Structure>
 			extends SyntaxInfoImpl.BuilderImpl<B, E>

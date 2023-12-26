@@ -31,12 +31,15 @@ interface DefaultSyntaxInfos {
 	 * A syntax info to be used for {@link ch.njol.skript.lang.Expression}s.
 	 * It contains additional details including the return type and {@link ExpressionType}.
 	 * @param <E> The class providing the implementation of the Expression this info represents.
+	 * @param <R> The type of the return type of the Expression.
 	 */
 	interface Expression<E extends ch.njol.skript.lang.Expression<R>, R> extends SyntaxInfo<E> {
 
 		/**
 		 * @param expressionClass The Expression class the info will represent.
 		 * @return An Expression-specific builder for creating a syntax info representing <code>type</code>.
+		 * @param <E> The class providing the implementation of the Expression this info represents.
+		 * @param <R> The type of the return type of the Expression.
 		 */
 		@Contract("_, _ -> new")
 		static <E extends ch.njol.skript.lang.Expression<R>, R> Builder<? extends Builder<?, E, R>, E, R> builder(Class<E> expressionClass, Class<R> returnType) {
@@ -61,6 +64,7 @@ interface DefaultSyntaxInfos {
 		 * @see #builder(Class, Class)
 		 * @param <B> The type of builder being used.
 		 * @param <E> The Expression class providing the implementation of the syntax info being built.
+		 * @param <R> The type of the return type of the Expression.
 		 */
 		interface Builder<B extends Builder<B, E, R>, E extends ch.njol.skript.lang.Expression<R>, R> extends SyntaxInfo.Builder<B, E> {
 
@@ -94,6 +98,7 @@ interface DefaultSyntaxInfos {
 		/**
 		 * @param structureClass The Structure class the info will represent.
 		 * @return A Structure-specific builder for creating a syntax info representing <code>type</code>.
+		 * @param <E> The class providing the implementation of the Structure this info represents.
 		 */
 		@Contract("_ -> new")
 		static <E extends org.skriptlang.skript.lang.structure.Structure> Builder<? extends Builder<?, E>, E> builder(Class<E> structureClass) {

@@ -30,24 +30,19 @@ import java.util.Arrays;
  * @deprecated Use {@link SyntaxInfo}
  * @param <E> the syntax element this info is for
  */
-@Deprecated
 public class SyntaxElementInfo<E extends SyntaxElement> {
-	
-	@Deprecated
-	public final Class<E> c;
-	@Deprecated
+
+	// todo: 2.9 make all fields private
+	public final Class<E> elementClass;
 	public final String[] patterns;
-	@Deprecated
 	public final String originClassPath;
-	
+
 	public SyntaxElementInfo(String[] patterns, Class<E> elementClass, String originClassPath) throws IllegalArgumentException {
 		this.patterns = patterns;
-		this.c = elementClass;
+		this.elementClass = elementClass;
 		this.originClassPath = originClassPath;
 		try {
 			elementClass.getConstructor();
-//			if (!c.getDeclaredConstructor().isAccessible())
-//				throw new IllegalArgumentException("The nullary constructor of class "+c.getName()+" is not public");
 		} catch (final NoSuchMethodException e) {
 			// throwing an Exception throws an (empty) ExceptionInInitializerError instead, thus an Error is used
 			throw new Error(elementClass + " does not have a public nullary constructor", e);
@@ -55,15 +50,15 @@ public class SyntaxElementInfo<E extends SyntaxElement> {
 			throw new IllegalStateException("Skript cannot run properly because a security manager is blocking it!");
 		}
 	}
-	
+
 	/**
 	 * Get the class that represents this element.
 	 * @return The Class of the element
 	 */
 	public Class<E> getElementClass() {
-		return c;
+		return elementClass;
 	}
-	
+
 	/**
 	 * Get the patterns of this syntax element.
 	 * @return Array of Skript patterns for this element
@@ -71,7 +66,7 @@ public class SyntaxElementInfo<E extends SyntaxElement> {
 	public String[] getPatterns() {
 		return Arrays.copyOf(patterns, patterns.length);
 	}
-	
+
 	/**
 	 * Get the original classpath for this element.
 	 * @return The original ClassPath for this element

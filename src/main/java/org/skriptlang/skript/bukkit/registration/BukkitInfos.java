@@ -295,10 +295,10 @@ public final class BukkitInfos {
 
 		boolean inType = false;
 		for (int i = 0; i < chars.length; i++) {
-			char c = chars[i];
-			stringBuilder.append(c);
+			char character = chars[i];
+			stringBuilder.append(character);
 
-			if (c == '%') {
+			if (character == '%') {
 				// toggle inType
 				inType = !inType;
 
@@ -306,7 +306,7 @@ public final class BukkitInfos {
 				// a type specification can have two prefix characters for modification
 				if (inType && i + 2 < chars.length && chars[i + 1] != '-' && chars[i + 2] != '-')
 					stringBuilder.append('-');
-			} else if (c == '\\' && i + 1 < chars.length) {
+			} else if (character == '\\' && i + 1 < chars.length) {
 				// Make sure we don't toggle inType for escape percentage signs
 				stringBuilder.append(chars[i + 1]);
 				i++;

@@ -18,14 +18,13 @@
  */
 package org.skriptlang.skript.registration;
 
-import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-class SyntaxRegistryImpl implements SyntaxRegistry {
+final class SyntaxRegistryImpl implements SyntaxRegistry {
 
 	private final Map<Key<?>, SyntaxRegister<?>> registers = new ConcurrentHashMap<>();
 
@@ -44,7 +43,7 @@ class SyntaxRegistryImpl implements SyntaxRegistry {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected <I extends SyntaxInfo<?>> SyntaxRegister<I> register(Key<I> key) {
+	private <I extends SyntaxInfo<?>> SyntaxRegister<I> register(Key<I> key) {
 		return (SyntaxRegister<I>) registers.computeIfAbsent(key, k -> new SyntaxRegisterImpl<>());
 	}
 

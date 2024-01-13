@@ -20,10 +20,13 @@ package org.skriptlang.skript;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.skriptlang.skript.addon.AddonModule;
 import org.skriptlang.skript.addon.SkriptAddon;
+import org.skriptlang.skript.localization.Localizer;
 import org.skriptlang.skript.registration.SyntaxRegistry;
 
 import java.util.Collection;
@@ -36,23 +39,13 @@ public interface Skript extends SkriptAddon {
 
 	/**
 	 * This implementation makes use of default implementations of required classes.
-	 * @param modules Modules for the Skript to use. These modules would make up the "built-in" syntax.
-	 * @return A default Skript implementation.
-	 */
-	@Contract("_ -> new")
-	static Skript createInstance(AddonModule... modules) {
-		return new SkriptImpl(null, modules);
-	}
-
-	/**
-	 * This implementation makes use of default implementations of required classes.
-	 * @param dataFileDirectory {@link #dataFileDirectory()}
+	 * @param localizer Localizer for the Skript to use in translating strings.
 	 * @param modules Modules for the Skript to use. These modules would make up the "built-in" syntax.
 	 * @return A default Skript implementation.
 	 */
 	@Contract("_, _ -> new")
-	static Skript createInstance(String dataFileDirectory, AddonModule... modules) {
-		return new SkriptImpl(dataFileDirectory, modules);
+	static Skript createInstance(Localizer localizer, AddonModule... modules) {
+		return new SkriptImpl(localizer, modules);
 	}
 
 	/**
@@ -87,5 +80,12 @@ public interface Skript extends SkriptAddon {
 	default String name() {
 		return "Skript";
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	@NotNull // Skript will always have a localizer
+	Localizer localizer();
 
 }

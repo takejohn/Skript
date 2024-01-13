@@ -26,6 +26,7 @@ import ch.njol.skript.util.Version;
 import org.bukkit.plugin.Plugin;
 import org.eclipse.jdt.annotation.Nullable;
 import org.skriptlang.skript.addon.SkriptAddon;
+import org.skriptlang.skript.localization.Localizer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -185,7 +186,11 @@ public class Language {
 
 	@Nullable
 	private static String getSanitizedLanguageDirectory(SkriptAddon addon) {
-		String languageFileDirectory = addon.languageFileDirectory();
+		Localizer localizer = addon.localizer();
+		if (localizer == null) {
+			return null;
+		}
+		String languageFileDirectory = localizer.languageFileDirectory();
 		if (languageFileDirectory == null) {
 			return null;
 		}
@@ -294,7 +299,8 @@ public class Language {
 			throw new RuntimeException(e);
 		}
 
-		String dataFileDirectory = addon.dataFileDirectory();
+		//noinspection ConstantConditions - localizer should not be null because languageFileDirectory is not null
+		String dataFileDirectory = addon.localizer().dataFileDirectory();
 		if (dataFileDirectory != null) { // attempt to load language files from disk
 			File file = new File(dataFileDirectory, languageFileDirectory + File.separator + name + ".lang");
 			try {

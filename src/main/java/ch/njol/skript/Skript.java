@@ -124,6 +124,7 @@ import org.skriptlang.skript.lang.entry.EntryValidator;
 import org.skriptlang.skript.lang.script.Script;
 import org.skriptlang.skript.lang.structure.Structure;
 import org.skriptlang.skript.lang.structure.StructureInfo;
+import org.skriptlang.skript.localization.Localizer;
 import org.skriptlang.skript.registration.SyntaxRegistry;
 import org.skriptlang.skript.registration.SyntaxInfo;
 
@@ -487,7 +488,7 @@ public final class Skript extends JavaPlugin implements Listener {
 
 		// initialize the modern Skript instance
 		skript = org.skriptlang.skript.Skript.createInstance(
-			getDataFolder().getAbsolutePath(),
+			Localizer.of("lang", getDataFolder().getAbsolutePath()),
 			// really hacky way to gain access to the mutable registry
 			// this is purely for backwards compatibility reasons
 			(addon, registry) -> skriptRegistry = registry

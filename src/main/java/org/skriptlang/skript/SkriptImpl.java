@@ -21,10 +21,11 @@ package org.skriptlang.skript;
 import ch.njol.skript.SkriptAPIException;
 import ch.njol.skript.localization.Language;
 import com.google.common.collect.ImmutableSet;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 import org.skriptlang.skript.addon.AddonModule;
 import org.skriptlang.skript.addon.SkriptAddon;
+import org.skriptlang.skript.localization.Localizer;
 import org.skriptlang.skript.registration.SyntaxRegistry;
 
 import java.util.Arrays;
@@ -34,14 +35,13 @@ import java.util.Set;
 
 final class SkriptImpl implements Skript {
 
-	@Nullable
-	private final String dataFileDirectory;
+	private final Localizer localizer;
 
 	private final SyntaxRegistry registry = SyntaxRegistry.createInstance();
 	private final SyntaxRegistry unmodifiableRegistry = SyntaxRegistry.unmodifiableView(registry);
 
-	SkriptImpl(@Nullable String dataFileDirectory, AddonModule... modules) {
-		this.dataFileDirectory = dataFileDirectory;
+	SkriptImpl(Localizer localizer, AddonModule... modules) {
+		this.localizer = localizer;
 		this.registerAddon(this, modules);
 	}
 
@@ -65,14 +65,13 @@ final class SkriptImpl implements Skript {
 	public void registerAddon(SkriptAddon addon, Collection<? extends AddonModule> modules) {
 		// make sure an addon is not already registered with this name
 		if (addons.stream().anyMatch(otherAddon -> addon.name().equals(otherAddon.name()))) {
-			// TODO more detailed error?
 			throw new SkriptAPIException(
 				"An addon (provided by '" + addon.getClass().getName() + "') with the name '" + addon.name() + "' is already registered"
 			);
 		}
 
+		Language.loadDefault(addon); // Language will abort if no localizer is present
 		// load and register the addon
-		Language.loadDefault(addon);
 		for (AddonModule module : modules) {
 			module.load(addon, registry);
 		}
@@ -90,14 +89,9 @@ final class SkriptImpl implements Skript {
 	//
 
 	@Override
-	@Nullable
-	public String dataFileDirectory() {
-		return dataFileDirectory;
-	}
-
-	@Override
-	public String languageFileDirectory() {
-		return "lang";
+	@NotNull
+	public Localizer localizer() {
+		return localizer;
 	}
 
 }

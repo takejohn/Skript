@@ -16,29 +16,32 @@
  *
  * Copyright Peter Güttinger, SkriptLang team and contributors
  */
-package org.skriptlang.skript.addon;
+package org.skriptlang.skript.localization;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
-import org.skriptlang.skript.localization.Localizer;
 
-/**
- * A Skript addon is an extension to Skript that expands its features.
- */
-@ApiStatus.Experimental
-public interface SkriptAddon {
+final class LocalizerImpl implements Localizer {
 
-	/**
-	 * @return The name of this addon.
-	 */
-	String name();
-
-	/**
-	 * @return A Localizer for this addon's localizations.
-	 */
 	@Nullable
-	default Localizer localizer() {
-		return null;
+	private final String languageFileDirectory;
+	@Nullable
+	private final String dataFileDirectory;
+
+	LocalizerImpl(@Nullable String languageFileDirectory, @Nullable String dataFileDirectory) {
+		this.languageFileDirectory = languageFileDirectory;
+		this.dataFileDirectory = dataFileDirectory;
+	}
+
+	@Override
+	@Nullable
+	public String languageFileDirectory() {
+		return languageFileDirectory;
+	}
+
+	@Override
+	@Nullable
+	public String dataFileDirectory() {
+		return dataFileDirectory;
 	}
 
 }

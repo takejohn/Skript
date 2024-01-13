@@ -31,6 +31,7 @@ import ch.njol.skript.util.Utils;
 import ch.njol.skript.util.Version;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.skriptlang.skript.localization.Localizer;
 
 /**
  * Utility class for Skript addons. Use {@link Skript#registerAddon(JavaPlugin)} to create a SkriptAddon instance for your plugin.
@@ -90,6 +91,8 @@ public class SkriptAddon implements org.skriptlang.skript.addon.SkriptAddon {
 
 	@Nullable
 	private String languageFileDirectory = null;
+	@Nullable
+	private Localizer localizer = null;
 
 	/**
 	 * Makes Skript load language files from the specified directory, e.g. "lang" or "skript lang" if you have a lang folder yourself. Localised files will be read from the
@@ -105,6 +108,7 @@ public class SkriptAddon implements org.skriptlang.skript.addon.SkriptAddon {
 		if (directory.endsWith("/"))
 			directory = "" + directory.substring(0, directory.length() - 1);
 		languageFileDirectory = directory;
+		localizer = Localizer.of(languageFileDirectory, plugin.getDataFolder().getAbsolutePath());
 		Language.loadDefault(this);
 		return this;
 	}
@@ -137,15 +141,9 @@ public class SkriptAddon implements org.skriptlang.skript.addon.SkriptAddon {
 	}
 
 	@Override
-	@NotNull
-	public String dataFileDirectory() {
-		return plugin.getDataFolder().getAbsolutePath();
-	}
-
-	@Override
 	@Nullable
-	public String languageFileDirectory() {
-		return getLanguageFileDirectory();
+	public Localizer localizer() {
+		return localizer;
 	}
 
 	@ApiStatus.Internal
@@ -160,15 +158,8 @@ public class SkriptAddon implements org.skriptlang.skript.addon.SkriptAddon {
 				throw new UnsupportedOperationException("The language file may not be set.");
 			}
 			@Override
-			@Nullable
-			public String getLanguageFileDirectory() {
-				return addon.languageFileDirectory();
-			}
-			@Override
-			@NotNull
-			public String dataFileDirectory() {
-				String directory = addon.dataFileDirectory();
-				return directory != null ? directory : super.dataFileDirectory();
+			public Localizer localizer() {
+				return addon.localizer();
 			}
 		};
 	}

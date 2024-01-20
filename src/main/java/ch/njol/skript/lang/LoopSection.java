@@ -29,7 +29,7 @@ import java.util.WeakHashMap;
  * @see ch.njol.skript.sections.SecWhile
  * @see ch.njol.skript.sections.SecLoop
  */
-public abstract class LoopSection extends Section implements SyntaxElement, Debuggable, ExitHandlingSection {
+public abstract class LoopSection extends Section implements SyntaxElement, Debuggable, SectionExitHandler {
 
 	protected final transient Map<Event, Long> currentLoopCounter = new WeakHashMap<>();
 

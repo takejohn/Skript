@@ -25,7 +25,7 @@ import org.bukkit.event.Event;
  * it is exited by an {@link ch.njol.skript.effects.EffExit 'exit'} or
  * {@link ch.njol.skript.effects.EffReturn 'return'} effect.
  */
-public interface ExitHandlingSection {
+public interface SectionExitHandler {
 
 	/**
 	 * Exits the section

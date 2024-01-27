@@ -47,22 +47,22 @@ public final class Debuggers {
 
 	/**
 	 * Attaches a debugger
+	 *
 	 * @param debugger The debugger to attach
 	 */
-	public static Debugger attachDebugger(Debugger debugger) {
+	public static void attachDebugger(Debugger debugger) {
 		if (debugger == null)
 			throw new SkriptAPIException("Cannot attach a debugger because it is null");
 		attachedDebuggers.add(debugger);
-		return debugger;
 	}
 
 	/**
 	 * Detaches a debugger
+	 *
 	 * @param debugger The debugger to detach
 	 */
-	public static Debugger detachDebugger(Debugger debugger) {
+	public static void detachDebugger(Debugger debugger) {
 		attachedDebuggers.remove(debugger);
-		return debugger;
 	}
 
 }

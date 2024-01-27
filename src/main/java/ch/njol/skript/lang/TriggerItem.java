@@ -85,8 +85,10 @@ public abstract class TriggerItem implements Debuggable {
 	public static boolean walk(TriggerItem start, Event event) {
 		TriggerItem triggerItem = start;
 		try {
-			while (triggerItem != null)
+			while (triggerItem != null) {
+				Debuggers.onWalk(triggerItem, event);
 				triggerItem = triggerItem.walk(event);
+			}
 
 			return true;
 		} catch (StackOverflowError err) {
@@ -134,7 +136,6 @@ public abstract class TriggerItem implements Debuggable {
 	}
 
 	protected final void debug(Event event, boolean run) {
-		Debuggers.onWalk(this, event);
 		if (!Skript.debug())
 			return;
 		Skript.debug(SkriptColor.replaceColorChar(getIndentation() + (run ? "" : "-") + toString(event, true)));

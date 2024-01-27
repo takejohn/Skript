@@ -87,7 +87,7 @@ public class DebuggerTest extends SkriptJUnitTest {
 		if (mainFunction == null)
 			Assert.fail("Global function " + mainFunctionName + " was not found");
 		mainFunction.execute(new Object[0][]);
-		Assert.assertArrayEquals(new Object[] { 1L, 2L }, variableStates.toArray(new Object[0]));
+		Assert.assertArrayEquals(new Object[] { null, 1L }, variableStates.toArray(new Object[0]));
 	}
 
 	@After

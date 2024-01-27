@@ -21,8 +21,16 @@ package org.skriptlang.skript.lang.debug;
 import ch.njol.skript.lang.TriggerItem;
 import org.bukkit.event.Event;
 
+/**
+ * An interface to debug or profile script execution.
+ */
 public interface Debugger {
 
+	/**
+	 * Called before a {@link TriggerItem} is called.
+	 * @param triggerItem The TriggerItem going to be executed
+	 * @param event The event
+	 */
 	void onWalk(TriggerItem triggerItem, Event event);
 
 }

@@ -18,6 +18,7 @@
  */
 package org.skriptlang.skript.lang.debug;
 
+import ch.njol.skript.lang.SyntaxElement;
 import ch.njol.skript.lang.TriggerItem;
 import org.bukkit.event.Event;
 
@@ -25,6 +26,12 @@ import org.bukkit.event.Event;
  * An interface to debug or profile script execution.
  */
 public interface Debugger {
+
+	/**
+	 * Called after a {@link SyntaxElement} is parsed.
+	 * @param element The SyntaxElement parsed
+	 */
+	void onParse(SyntaxElement element);
 
 	/**
 	 * Called before a {@link TriggerItem} is called.

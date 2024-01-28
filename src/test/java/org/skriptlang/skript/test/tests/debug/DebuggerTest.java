@@ -18,13 +18,17 @@
  */
 package org.skriptlang.skript.test.tests.debug;
 
-import ch.njol.skript.effects.EffChange;
+import ch.njol.skript.ScriptLoader;
+import ch.njol.skript.config.Node;
+import ch.njol.skript.lang.SyntaxElement;
 import ch.njol.skript.lang.Trigger;
 import ch.njol.skript.lang.TriggerItem;
 import ch.njol.skript.lang.function.Function;
 import ch.njol.skript.lang.function.Functions;
+import ch.njol.skript.lang.parser.ParserInstance;
 import ch.njol.skript.test.runner.SkriptJUnitTest;
 import ch.njol.skript.variables.Variables;
+import ch.njol.util.OpenCloseable;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
 import org.junit.After;
@@ -37,8 +41,11 @@ import org.skriptlang.skript.lang.script.Script;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 public class DebuggerTest extends SkriptJUnitTest {
 
@@ -46,19 +53,33 @@ public class DebuggerTest extends SkriptJUnitTest {
 		setShutdownDelay(1);
 	}
 
-	final Path scriptPath = Paths.get("..", "..", "..", "src", "test", "skript", "junit", "DebuggerTest.sk")
+	private final Path scriptPath = Paths.get("..", "..", "..", "src", "test", "skript", "junit", "DebuggerTest.sk")
 		.toAbsolutePath().normalize();
 
-	final String mainFunctionName = "DebuggerTest_main";
+	private final Map<TriggerItem, Integer> lineMap = new WeakHashMap<>();
 
-	public final List<Object> variableStates = new ArrayList<>();
+	private final Map<Integer, Consumer<? super Event>> actionMap = new HashMap<>();
 
 	final Debugger debugger = new Debugger() {
 
 		@Override
+		public void onParse(SyntaxElement element) {
+			if (!(element instanceof TriggerItem))
+				return;
+			TriggerItem triggerItem = (TriggerItem) element;
+			Node node = ParserInstance.get().getNode();
+			if (node == null)
+				return;
+            lineMap.put(triggerItem, node.getLine());
+        }
+
+		@Override
 		public void onWalk(TriggerItem triggerItem, Event event) {
-			if (checkFile(triggerItem) && triggerItem instanceof EffChange)
-				variableStates.add(Variables.getVariable("test", event, true));
+			if (checkFile(triggerItem)) {
+				final Consumer<? super Event> action = actionMap.get(lineMap.get(triggerItem));
+				if (action != null)
+					action.accept(event);
+			}
 		}
 
 		private boolean checkFile(TriggerItem triggerItem) {
@@ -74,20 +95,32 @@ public class DebuggerTest extends SkriptJUnitTest {
 
 	};
 
+	private void setBreakPoint(int line, Consumer<? super Event> action) {
+		actionMap.put(line, action);
+	}
+
 	@Before
 	public void attach() {
 		Debuggers.attachDebugger(debugger);
 	}
 
 	@Test
-	public void test() {
+	public void test() throws ExecutionException, InterruptedException {
+		Script script = ScriptLoader.getScript(scriptPath.toFile());
+		if (script == null)
+			Assert.fail("Script is not loaded");
+        ScriptLoader.reloadScript(script, OpenCloseable.EMPTY).get();  // wait for reload
+        Object[] variableStates = new Object[2];
+		setBreakPoint(6, event -> variableStates[0] = Variables.getVariable("test", event, true));
+		setBreakPoint(7, event -> variableStates[1] = Variables.getVariable("test", event, true));
+        String mainFunctionName = "DebuggerTest_main";
 		@Nullable Function<?> mainFunction = Functions.getGlobalFunction(mainFunctionName);
 		if (!Debuggers.enabled())
 			Assert.fail("Debugger is not enabled");
 		if (mainFunction == null)
 			Assert.fail("Global function " + mainFunctionName + " was not found");
 		mainFunction.execute(new Object[0][]);
-		Assert.assertArrayEquals(new Object[] { null, 1L }, variableStates.toArray(new Object[0]));
+		Assert.assertArrayEquals(new Object[] { null, 1L }, variableStates);
 	}
 
 	@After

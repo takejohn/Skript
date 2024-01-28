@@ -19,6 +19,7 @@
 package org.skriptlang.skript.lang.debug;
 
 import ch.njol.skript.SkriptAPIException;
+import ch.njol.skript.lang.SyntaxElement;
 import ch.njol.skript.lang.TriggerItem;
 import org.bukkit.event.Event;
 
@@ -32,6 +33,14 @@ public final class Debuggers {
 	}
 
 	private static final List<Debugger> attachedDebuggers = new ArrayList<>();
+
+	public static void onParse(SyntaxElement element) {
+		if (attachedDebuggers.isEmpty())
+			return;
+		for (Debugger debugger : attachedDebuggers) {
+			debugger.onParse(element);
+		}
+	}
 
 	public static void onWalk(TriggerItem triggerItem, Event event) {
 		if (attachedDebuggers.isEmpty())

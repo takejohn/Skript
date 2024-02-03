@@ -110,9 +110,10 @@ public class DebuggerTest extends SkriptJUnitTest {
 		if (script == null)
 			Assert.fail("Script is not loaded");
         ScriptLoader.reloadScript(script, OpenCloseable.EMPTY).get();  // wait for reload
-        Object[] variableStates = new Object[2];
+        Object[] variableStates = new Object[3];
 		setBreakPoint(6, event -> variableStates[0] = Variables.getVariable("test", event, true));
 		setBreakPoint(7, event -> variableStates[1] = Variables.getVariable("test", event, true));
+		setBreakPoint(8, event -> variableStates[2] = Variables.getVariable("test", event, true));
         String mainFunctionName = "DebuggerTest_main";
 		@Nullable Function<?> mainFunction = Functions.getGlobalFunction(mainFunctionName);
 		if (!Debuggers.enabled())
@@ -120,7 +121,7 @@ public class DebuggerTest extends SkriptJUnitTest {
 		if (mainFunction == null)
 			Assert.fail("Global function " + mainFunctionName + " was not found");
 		mainFunction.execute(new Object[0][]);
-		Assert.assertArrayEquals(new Object[] { null, 1L }, variableStates);
+		Assert.assertArrayEquals(new Object[] { null, 1L, 2L }, variableStates);
 	}
 
 	@After

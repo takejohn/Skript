@@ -30,7 +30,6 @@ import ch.njol.skript.test.runner.SkriptJUnitTest;
 import ch.njol.skript.variables.Variables;
 import ch.njol.util.OpenCloseable;
 import org.bukkit.event.Event;
-import org.jetbrains.annotations.Nullable;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -83,13 +82,13 @@ public class DebuggerTest extends SkriptJUnitTest {
 		}
 
 		private boolean checkFile(TriggerItem triggerItem) {
-			@Nullable Trigger trigger = triggerItem.getTrigger();
+			Trigger trigger = triggerItem.getTrigger();
 			if (trigger == null)
 				return false;
-			@Nullable Script script = trigger.getScript();
+			Script script = trigger.getScript();
 			if (script == null)
 				return false;
-			@Nullable Path path = script.getConfig().getPath();
+			Path path = script.getConfig().getPath();
             return scriptPath.equals(path);
         }
 
@@ -115,7 +114,7 @@ public class DebuggerTest extends SkriptJUnitTest {
 		setBreakPoint(7, event -> variableStates[1] = Variables.getVariable("test", event, true));
 		setBreakPoint(8, event -> variableStates[2] = Variables.getVariable("test", event, true));
         String mainFunctionName = "DebuggerTest_main";
-		@Nullable Function<?> mainFunction = Functions.getGlobalFunction(mainFunctionName);
+		Function<?> mainFunction = Functions.getGlobalFunction(mainFunctionName);
 		if (!Debuggers.enabled())
 			Assert.fail("Debugger is not enabled");
 		if (mainFunction == null)
